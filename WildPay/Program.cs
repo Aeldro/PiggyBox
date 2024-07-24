@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using WildPay.Data;
+
 namespace WildPay
 {
     public class Program
@@ -8,6 +11,11 @@ namespace WildPay
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddDbContext<WildPayDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
 
             var app = builder.Build();
 
