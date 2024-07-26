@@ -1,0 +1,14 @@
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@model WildPay.Models.Entities.ApplicationUser
+
+<div>
+    <h2>GROUPES</h2>
+    <ul>
+        @foreach (var group in Model.Groups)
+        {
+            <li>@group.Name</li> 
+        }
+        <a asp-controller="Group" asp-action="Create">Nouveau groupe</a>
+        <a asp-controller="Group" asp-action="Create"><span class="material-symbols-outlined">add_circle</span></a>
+    </ul>
+</div>
