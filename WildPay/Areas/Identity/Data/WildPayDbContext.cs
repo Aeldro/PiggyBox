@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
+using WildPay.Areas.Identity.Data;
 using WildPay.Models.Entities;
 
 namespace WildPay.Data;
@@ -29,17 +30,9 @@ public class WildPayDbContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey(c => c.GroupId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Cascade doesn't work so we will have to manage in our code
-        // the deletion of all the expenditures before the delete of the group
-        builder.Entity<Expenditure>()
-            .HasOne(e => e.Group)
-            .WithMany(g => g.Expenditures)
-            .HasForeignKey(e => e.GroupId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         // if a user is delete,
         // the expenditure will not be deleted.
-        // ApplicationUserId will only be set to the default value (empty string).
+        // ApplicationUserId will only be set to null.
         builder.Entity<Expenditure>()
             .HasOne(e => e.ApplicationUser)
             .WithMany(g => g.Expenditures)
@@ -53,7 +46,15 @@ public class WildPayDbContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey(e => e.CategoryId)
             .OnDelete(DeleteBehavior.SetNull);
 
-        var hasher = new PasswordHasher<IdentityUser>();
+        // Cascade doesn't work so we will have to manage in our code
+        // the deletion of all the expenditures before the delete of the group
+        builder.Entity<Expenditure>()
+            .HasOne(e => e.Group)
+            .WithMany(g => g.Expenditures)
+            .HasForeignKey(e => e.GroupId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        var hasher = new PasswordHasher<ApplicationUser>();
 
         builder.Entity<ApplicationUser>().HasData(
             new ApplicationUser
@@ -61,48 +62,52 @@ public class WildPayDbContext : IdentityDbContext<ApplicationUser>
                 Id = "1",
                 Firstname = "Helena",
                 Lastname = "Yamasaki",
-                UserName = "Lele",
-                NormalizedUserName = "LELE",
+                UserName = "helena@gmail.com",
+                NormalizedUserName = "HELENA@GMAIL.COM",
                 Email = "helena@gmail.com",
                 NormalizedEmail = "HELENA@GMAIL.COM",
                 EmailConfirmed = true,
-                PasswordHash = hasher.HashPassword(null, "Helena.123")
+                PasswordHash = hasher.HashPassword(null, "Helena.123"),
+                SecurityStamp = Guid.NewGuid().ToString("D")
             },
             new ApplicationUser
             {
                 Id = "2",
                 Firstname = "Pauline",
                 Lastname = "Bouyssou",
-                UserName = "popo",
-                NormalizedUserName = "POPO",
+                UserName = "pauline@gmail.com",
+                NormalizedUserName = "PAULINE@GMAIL.COM",
                 Email = "pauline@gmail.com",
                 NormalizedEmail = "PAULINE@GMAIL.COM",
                 EmailConfirmed = true,
-                PasswordHash = hasher.HashPassword(null, "Pauline.123")
+                PasswordHash = hasher.HashPassword(null, "Pauline.123"),
+                SecurityStamp = Guid.NewGuid().ToString("D")
             },
             new ApplicationUser
             {
                 Id = "3",
                 Firstname = "Nolan",
                 Lastname = "De Puydt",
-                UserName = "Nono",
-                NormalizedUserName = "NONO",
+                UserName = "nolan@gmail.com",
+                NormalizedUserName = "NOLAN@GMAIL.COM",
                 Email = "nolan@gmail.com",
                 NormalizedEmail = "NOLAN@GMAIL.COM",
                 EmailConfirmed = true,
-                PasswordHash = hasher.HashPassword(null, "Nolan.123")
+                PasswordHash = hasher.HashPassword(null, "Nolan.123"),
+                SecurityStamp = Guid.NewGuid().ToString("D")
             },
             new ApplicationUser
             {
                 Id = "4",
                 Firstname = "Kevin",
                 Lastname = "Osei Yaw",
-                UserName = "Kev",
-                NormalizedUserName = "KEV",
+                UserName = "kevin@gmail.com",
+                NormalizedUserName = "KEVIN@GMAIL.COM",
                 Email = "kevin@gmail.com",
                 NormalizedEmail = "KEVIN@GMAIL.COM",
                 EmailConfirmed = true,
-                PasswordHash = hasher.HashPassword(null, "Kevin.123")
+                PasswordHash = hasher.HashPassword(null, "Kevin.123"),
+                SecurityStamp = Guid.NewGuid().ToString("D")
             });
 
         builder.Entity<Group>().HasData(
@@ -181,5 +186,26 @@ public class WildPayDbContext : IdentityDbContext<ApplicationUser>
                 CategoryId = 2,
                 GroupId = 1
             });
+    }
+
+    // manage the deletion of the expenditures when a group is deleted
+    public override int SaveChanges()
+    {
+        // select all the groups that are to be deleted
+        List<Group> deletedGroups = ChangeTracker.Entries<Group>()
+            .Where(e => e.State == EntityState.Deleted)
+            .Select(e => e.Entity)
+            .ToList();
+
+        // Delete all the records in Expenditures
+        // that depends on the deleted groups
+        foreach (Group group in deletedGroups)
+        {
+            List<Expenditure> expenditures = Expenditures.Where(e => e.GroupId == group.Id).ToList();
+            Expenditures.RemoveRange(expenditures);
+        }
+
+        // call the SaveChanges() function from DbContext
+        return base.SaveChanges();
     }
 }
