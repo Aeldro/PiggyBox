@@ -1,0 +1,18 @@
+@model WildPay.Models.Entities.Group
+
+<div>
+    <h2>@Model.Name</h2>
+    <h3>liste de dépenses</h3>
+    <table>
+        @foreach (var expenditure in Model.Expenditures)
+        {
+            <tr>
+                <td>@expenditure.Name <br/>
+                    payé par @expenditure.ApplicationUser</td> <!-- check the user -->
+                <td>@expenditure.Amount</td>
+            </tr>
+        }
+    </table>
+
+
+</div>
