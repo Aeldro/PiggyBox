@@ -9,9 +9,12 @@
         @foreach (var expenditure in Model.Expenditures)
         {
             <tr>
-                <td>@expenditure.Name <br/>
-                    payé par @expenditure.ApplicationUserId.</td> <!-- see how to get the user name -->
-                <td>@expenditure.Amount</td>
+                <a asp-action="Edit" asp-controller="Expenditure">
+                    <td>@expenditure.Name <br/>
+                        payé par @expenditure.ApplicationUserId.</td> <!-- see how to get the user name -->
+                    <td>@expenditure.Amount</td> 
+                </a>
+
             </tr>
         }
     </table>
