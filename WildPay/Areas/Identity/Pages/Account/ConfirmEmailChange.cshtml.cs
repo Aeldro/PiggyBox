@@ -49,7 +49,7 @@ namespace WildPay.Areas.Identity.Pages.Account
             var result = await _userManager.ChangeEmailAsync(user, email, code);
             if (!result.Succeeded)
             {
-                StatusMessage = "Error changing email.";
+                StatusMessage = "Une erreur est survenue lors du changement d'adresse email.";
                 return Page();
             }
 
@@ -58,12 +58,12 @@ namespace WildPay.Areas.Identity.Pages.Account
             var setUserNameResult = await _userManager.SetUserNameAsync(user, email);
             if (!setUserNameResult.Succeeded)
             {
-                StatusMessage = "Error changing user name.";
+                StatusMessage = "Une erreur est survenue lors du changement d'identifiant.";
                 return Page();
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Thank you for confirming your email change.";
+            StatusMessage = "Le changement d'adresse email a bien été validé.";
             return Page();
         }
     }
