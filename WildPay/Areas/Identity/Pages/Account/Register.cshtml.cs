@@ -81,10 +81,11 @@ namespace WildPay.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
-            [Display(Name = "Firstname")]
+            [MaxLength(25)]
             public string Firstname { get; set; }
 
-            [Display(Name = "Lastname")]
+            [Required]
+            [MaxLength(25)]
             public string Lastname { get; set; }
 
             /// <summary>
