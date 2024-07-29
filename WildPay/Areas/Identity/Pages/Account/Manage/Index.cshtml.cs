@@ -57,8 +57,10 @@ namespace WildPay.Areas.Identity.Pages.Account.Manage
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Phone]
-            [Display(Name = "Phone number")]
+            [Display(Name = "Téléphone")]
             public string PhoneNumber { get; set; }
+            public string Firstname { get; set; }
+            public string Lastname { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
