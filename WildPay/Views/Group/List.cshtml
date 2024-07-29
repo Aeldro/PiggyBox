@@ -1,10 +1,10 @@
 @using Microsoft.EntityFrameworkCore.Metadata.Internal
-@model WildPay.Models.Entities.ApplicationUser
+@model List<WildPay.Models.Entities.Group>
 
 <div>
     <h2>GROUPES</h2>
     <ul>
-        @foreach (var group in Model.Groups)
+        @foreach (var group in Model)
         {
             <li>@group.Name</li> 
         }
