@@ -6,13 +6,14 @@
     <h2>@Model.Name</h2>
     <h3>liste de dépenses</h3>
     <table>
+        
         @foreach (var expenditure in Model.Expenditures)
         {
             <tr>
                 <a asp-action="Edit" asp-controller="Expenditure">
                     <td>@expenditure.Name <br/>
-                        payé par @expenditure.ApplicationUserId.</td> <!-- see how to get the user name -->
-                    <td>@expenditure.Amount</td> 
+                    payé par @expenditure.ApplicationUser.Firstname<td>
+                    <td>@expenditure.Amount</td>
                 </a>
 
             </tr>
