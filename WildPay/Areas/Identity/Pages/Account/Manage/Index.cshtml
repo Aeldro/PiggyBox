@@ -13,21 +13,21 @@
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
                 <input asp-for="Username" class="form-control" placeholder="Please choose your username." disabled />
-                <label asp-for="Username" class="form-label">Identifiant</label>
+                <label asp-for="Username" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Firstname" class="form-control" placeholder="Please enter your first name." />
-                <label asp-for="Input.Firstname" class="form-label">Prénom</label>
+                <input asp-for="Input.Firstname" class="form-control" placeholder="Please enter your firstname." />
+                <label asp-for="Input.Firstname" class="form-label"></label>
                 <span asp-validation-for="Input.Firstname" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Lastname" class="form-control" placeholder="Please enter your last name." />
-                <label asp-for="Input.Lastname" class="form-label">Prénom</label>
+                <input asp-for="Input.Lastname" class="form-control" placeholder="Please enter your lastname." />
+                <label asp-for="Input.Lastname" class="form-label"></label>
                 <span asp-validation-for="Input.Lastname" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number."/>
-                <label asp-for="Input.PhoneNumber" class="form-label">Téléphone</label>
+                <label asp-for="Input.PhoneNumber" class="form-label"></label>
                 <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
             </div>
             <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Sauvegarder</button>
