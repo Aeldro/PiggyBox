@@ -73,8 +73,8 @@ namespace WildPay.Areas.Identity.Pages.Account
 
                 await _emailSender.SendEmailAsync(
                     Input.Email,
-                    "Reset Password",
-                    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    "Réinitialisation du mot de passe",
+                    $"<a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Cliquez ici</a> pour réinitialiser votre mot de passe.");
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }
