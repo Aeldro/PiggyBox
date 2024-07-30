@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
-using WildPay.Areas.Identity.Data;
 using WildPay.Models.Entities;
 
 namespace WildPay.Data;

@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using WildPay.Models.Entities;
 using WildPay.Data;
+using WildPay.Interfaces;
+using WildPay.Repositories;
 
 namespace WildPay
 {
@@ -20,6 +22,9 @@ namespace WildPay
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddRazorPages();
+
+            builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+            // to add Expenditure Repository
 
             var app = builder.Build();
 
