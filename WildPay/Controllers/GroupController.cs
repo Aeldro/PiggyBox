@@ -1,9 +1,12 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WildPay.Interfaces;
 using WildPay.Models.Entities;
 
 namespace WildPay.Controllers;
 
+[Authorize]
 public class GroupController : Controller
 {
     private readonly IGroupRepository _repository;
@@ -16,22 +19,34 @@ public class GroupController : Controller
     [HttpGet]
     public async Task<IActionResult> List()
     {
-        var groups = await _repository.GetGroupsAsync();
-        return View(groups);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ViewBag.UserId = userId;
+            var groups = await _repository.GetGroupsAsync(userId);
+            Console.WriteLine(userId);
+            return View(groups);
     }
 
     // CREATE view
     [HttpGet]
-    public IActionResult Create()
+    public IActionResult Add()
     {
         return View();
     }
 
     // CREATE action
     [HttpPost]
-    public async Task<IActionResult> Create(Group group)
+    public async Task<IActionResult> Add(Group group)
     {
-        await _repository.AddGroupAsync(group.Name, group.Image);
+        if (User.Identity.IsAuthenticated)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = User.Identity.Name;
+
+            ViewBag.UserId = userId;
+            ViewBag.UserName = userName;
+            await _repository.AddGroupAsync(group.Name, group.Image, userId);
+        }
+        
         return RedirectToAction(actionName: "List", controllerName: "Group");
     }
     
