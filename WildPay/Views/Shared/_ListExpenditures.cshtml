@@ -1,0 +1,32 @@
+﻿@using WildPay.Models.Entities
+@model List<WildPay.Models.Entities.Expenditure>
+
+<section>
+    <h3>Dépenses :</h3>
+    @if (Model is not null && Model.Count != 0)
+    {
+        foreach (Expenditure expenditure in Model)
+        {
+            <div>
+                <div>
+                    <p>@expenditure.Name</p>
+                    @if (expenditure.ApplicationUser is not null)
+                    {
+                        <p>payé par @expenditure.ApplicationUser.Firstname @expenditure.ApplicationUser.Lastname</p>
+                    }
+                    else
+                    {
+                        <p>le payeur ne fait plus partie du groupe</p>
+                    }
+                </div>
+                <div>
+                    <p>@expenditure.Amount</p>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>Ce groupe ne contient aucune dépense.</p>
+    }
+</section>

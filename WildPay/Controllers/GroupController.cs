@@ -25,6 +25,13 @@ public class GroupController : Controller
         return View(groups);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetGroup(int id)
+    {
+        Group group = await _repository.GetGroupByIdAsync(id);
+        return View(group);
+    }
+
     // CREATE view
     [HttpGet]
     public IActionResult Add()
