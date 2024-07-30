@@ -37,10 +37,7 @@ public class GroupController : Controller
     public async Task<IActionResult> Add(Group group)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var userName = User.Identity.Name;
-
         ViewBag.UserId = userId;
-        ViewBag.UserName = userName;
         await _repository.AddGroupAsync(group.Name, group.Image, userId);
         
         return RedirectToAction(actionName: "List", controllerName: "Group");
