@@ -18,10 +18,6 @@ namespace WildPay
 
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<WildPayDbContext>();
 
-            //builder.Services.AddDbContext<WildPayDbContext>(options => options.UseSqlServer(connectionString));
-
-            //builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<WildPayDbContext>();
-
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
