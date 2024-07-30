@@ -30,6 +30,8 @@ namespace WildPay.Areas.Identity.Pages.Account.Manage
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
+        /// 
+        [Display(Name = "Identifiant")]
         public string Username { get; set; }
 
         /// <summary>
@@ -57,20 +59,34 @@ namespace WildPay.Areas.Identity.Pages.Account.Manage
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Phone]
-            [Display(Name = "Phone number")]
+            [Display(Name = "Téléphone")]
             public string PhoneNumber { get; set; }
+
+            [Required]
+            [MaxLength(25)]
+            [Display(Name = "Prénom")]
+            public string Firstname { get; set; }
+
+            [Required]
+            [MaxLength(25)]
+            [Display(Name = "Nom de famille")]
+            public string Lastname { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var firstname = user.Firstname;
+            var lastname = user.Lastname;
 
             Username = userName;
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                Firstname = firstname,
+                Lastname = lastname
             };
         }
 
@@ -111,8 +127,13 @@ namespace WildPay.Areas.Identity.Pages.Account.Manage
                 }
             }
 
+            user.Firstname = Input.Firstname;
+            user.Lastname = Input.Lastname;
+
+            var result = await _userManager.UpdateAsync(user);
+
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
+            StatusMessage = "Le profil a bien été modifié";
             return RedirectToPage();
         }
     }
