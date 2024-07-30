@@ -10,6 +10,7 @@ namespace WildPay.Controllers;
 public class GroupController : Controller
 {
     private readonly IGroupRepository _repository;
+
     public GroupController(IGroupRepository repository)
     {
         _repository = repository;
@@ -25,14 +26,14 @@ public class GroupController : Controller
         return View(groups);
     }
 
-    // CREATE view
+    // CREATE group view
     [HttpGet]
     public IActionResult Add()
     {
         return View();
     }
 
-    // CREATE action
+    // CREATE group action
     [HttpPost]
     public async Task<IActionResult> Add(Group group)
     {
@@ -43,14 +44,14 @@ public class GroupController : Controller
         return RedirectToAction(actionName: "List", controllerName: "Group");
     }
     
-    // UPDATE view
+    // UPDATE group view
     [HttpGet]
     public IActionResult Edit()
     {
         return View();
     }
     
-    // UPDATE action
+    // UPDATE group action
     [HttpPost]
     public async Task<IActionResult> Update(Group group)
     {
@@ -58,14 +59,45 @@ public class GroupController : Controller
         return RedirectToAction(actionName: "List", controllerName: "Group");
     }
 
-    // DELETE view 
+    // Add a member to a group using a form
+    // Make sure to add a hidden field for the group ID
+    [HttpPost]
+    public async Task<IActionResult> AddMember(int groupId, string email)
+    {
+        Group? group = await _repository.GetGroupByIdAsync(groupId);
+       
+        if (group != null)
+        {
+            // Returns false if no match is found;
+            // think about a way to handle the case the email doesn't match a user
+            await _repository.AddMemberToGroupAsync(group, email);
+        }
+        return RedirectToAction(actionName: "Edit", controllerName: "Group");    
+    }
+
+    // Delete a member from a group
+    [HttpGet]
+    public async Task<IActionResult> DeleteMember(int groupId, string userId)
+    {
+        Group? group = await _repository.GetGroupByIdAsync(groupId);
+
+        if (group != null)
+        {
+            // Returns false if no match is found;
+            // think about a way to handle the case the email doesn't match a user
+            await _repository.DeleteMemberFromGroupAsync(group, userId);
+        }
+        return RedirectToAction(actionName: "Edit", controllerName: "Group");
+    }
+
+    // DELETE group view 
     [HttpGet]
     public IActionResult Delete()
     {
         return View();
     }
     
-    // DELETE action 
+    // DELETE group action 
     [HttpPost]
     public async Task<IActionResult> Delete(int groupId)
     {

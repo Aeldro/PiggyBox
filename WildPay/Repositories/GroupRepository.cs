@@ -27,7 +27,11 @@ namespace WildPay.Repositories
 
         public async Task<Group?> GetGroupByIdAsync(int groupId)
         {
-            Group? group = await _context.Groups.FindAsync(groupId);
+            Group? group = await _context.Groups
+                .Include(g => g.ApplicationUsers)
+                .Include(g => g.Expenditures)
+                .Include(g => g.Categories)
+                .FirstOrDefaultAsync(g => g.Id == groupId);
             return group;
         }
 
@@ -61,24 +65,35 @@ namespace WildPay.Repositories
             await AddMemberToGroupAsync(newGroup, userId);
         }
 
-        public async Task AddMemberToGroupAsync(Group group, string userId)
+        // Add a member to the group using its email (case insensitive)
+        public async Task<bool> AddMemberToGroupAsync(Group group, string email)
         {
-            ApplicationUser? user = await _context.Users.FindAsync(userId);
+            email = email.ToUpper();
+
+            // returns the default value for user (null?) if no match is found
+            ApplicationUser? user = await _context.Users
+                .FirstOrDefaultAsync(user => user.NormalizedEmail == email);
 
             if (user != null)
             {
                 user.Groups.Add(group);
 
                 await _context.SaveChangesAsync();
+                return true;
             }
+            // return HttpNotFound?
+            return false;
         }
 
         // Delete the link between the user and the group;
         // user and group should remain untouched.
-        public async Task DeleteMemberFromGroupAsync(Group group, ApplicationUser member)
+        public async Task DeleteMemberFromGroupAsync(Group group, string userId)
         {
+            ApplicationUser? member = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
             if (member != null && member.Groups.Exists(g => g == group))
             {
+                // check if that remove the member in the list of Group
                 member.Groups.Remove(group);
 
                 await _context.SaveChangesAsync();
