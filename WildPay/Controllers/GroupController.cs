@@ -19,11 +19,10 @@ public class GroupController : Controller
     [HttpGet]
     public async Task<IActionResult> List()
     {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            ViewBag.UserId = userId;
-            var groups = await _repository.GetGroupsAsync(userId);
-            Console.WriteLine(userId);
-            return View(groups);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        ViewBag.UserId = userId;
+        var groups = await _repository.GetGroupsAsync(userId);
+        return View(groups);
     }
 
     // CREATE view
@@ -37,15 +36,12 @@ public class GroupController : Controller
     [HttpPost]
     public async Task<IActionResult> Add(Group group)
     {
-        if (User.Identity.IsAuthenticated)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userName = User.Identity.Name;
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userName = User.Identity.Name;
 
-            ViewBag.UserId = userId;
-            ViewBag.UserName = userName;
-            await _repository.AddGroupAsync(group.Name, group.Image, userId);
-        }
+        ViewBag.UserId = userId;
+        ViewBag.UserName = userName;
+        await _repository.AddGroupAsync(group.Name, group.Image, userId);
         
         return RedirectToAction(actionName: "List", controllerName: "Group");
     }
