@@ -13,9 +13,6 @@
         <li class="nav-item">
             <a class="nav-link text-dark" asp-area="" asp-controller="Group" asp-action="List">Mes Groupes</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Expenditures" asp-action="ExpendituresList">Soldes</a>
-        </li>
     <li class="nav-item">
         <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                 <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">Déconnexion</button>
@@ -26,11 +23,14 @@
 
 else
 {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Accueil</a>
+        </li>
     <li class="nav-item">
-            <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">S'Inscrire</a>
+            <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">S'inscrire</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">Se Connecter</a>
+        <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">Se connecter</a>
     </li>
 }
 </ul>
