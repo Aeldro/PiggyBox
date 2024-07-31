@@ -41,12 +41,12 @@ public class GroupController : Controller
         }
 
         //Verify if the User belongs to the group, else we block the access
-        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }
+        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
 
         return View(group);
     }
 
-    // CREATE view
+    // CREATE group view
     [HttpGet]
     public IActionResult Add()
     {
@@ -68,6 +68,10 @@ public class GroupController : Controller
     public async Task<IActionResult> Update(int id)
     {
         var group = await _repository.GetGroupByIdAsync(id);
+
+        // check if the user is connected + is part of the group
+        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
+
         return View(group);
     }
     
@@ -105,6 +109,8 @@ public class GroupController : Controller
     public async Task<IActionResult> DeleteMember(int groupId, string userId)
     {
         Group? group = await _repository.GetGroupByIdAsync(groupId);
+
+        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
 
         if (group != null)
         {
