@@ -5,40 +5,48 @@
 }
 
 <div>
-    <h3>Modifier groupe</h3>
-    <form method="post">
-        <label asp-for="Name">Nom du groupe</label>
-        <input type="text" asp-for="Name" value=@Model.Name/>
-
-        <label asp-for="Image">Image du groupe</label>
-        <input type="text" asp-for="Image" value=@Model.Image/>
-        
-        <h3>Supprimer un participant</h3>
-        <table>
-            <tr>
-                @foreach (var user in Model.ApplicationUsers)
-                {
-                    <td>@user.Firstname</td>
-                    <td><a><span class="material-symbols-outlined">delete</span></a></td> <!--bin icon-->
-                }
-            </tr>
-        </table>
-
-
-        <h3>ajouter un participant</h3>
-        <div>
-            <span class="material-symbols-outlined">person_add</span> <!-- person add icon-->
+    <partial name="_GroupTitlePartial" model="Model" />
+    <hr />
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_GroupNavBarPartial" model="Model" />
         </div>
-        <div>
-            <label>Email</label>
-            <input type="email"/>
-        </div>
+        <div class="col-md-9">
+            <h3>Modifier groupe</h3>
+            <form method="post">
+                <label asp-for="Name">Nom du groupe</label>
+                <input type="text" asp-for="Name" value=@Model.Name />
 
-        <button asp-action="Update" asp-controller="Group" asp-route-groupId=@Model.Id>Enregistrer</button>
-    </form>
-    
-    <a asp-action="Delete" asp-controller="Group" asp-route-Id=@Model.Id>
-        <span>Supprimer le groupe</span>
-        <span class="material-symbols-outlined">delete</span>
-    </a>
+                <label asp-for="Image">Image du groupe</label>
+                <input type="text" asp-for="Image" value=@Model.Image />
+
+                <h3>Supprimer un participant</h3>
+                <table>
+                    <tr>
+                        @foreach (var user in Model.ApplicationUsers)
+                        {
+                            <td>@user.Firstname</td>
+                            <td>@user.Lastname</td>
+                            <td><a class="btn btn-danger material-symbols-outlined" asp-action="DeleteUserFromGroup" asp-controller="Group" asp-route-id=@Model.Id>delete</a></td> <!--bin icon-->
+                        }
+                    </tr>
+                </table>
+
+
+                <h3>ajouter un participant</h3>
+                <div>
+                    <span class="material-symbols-outlined">person_add</span> <!-- person add icon-->
+                </div>
+                <div>
+                    <label>Email</label>
+                    <input type="email" />
+                </div>
+
+                <button asp-action="Update" asp-controller="Group" asp-route-groupId=@Model.Id>Enregistrer</button>
+            </form>
+
+            <a class="btn btn-danger d-flex justify-content-center align-items-center w-25" asp-action="Delete" asp-controller="Group" asp-route-id=@Model.Id><span class="material-symbols-outlined">delete</span> Supprimer le groupe</a>
+        </div>
+    </div>
+
 </div>

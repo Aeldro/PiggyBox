@@ -1,6 +1,10 @@
 ﻿@using WildPay.Models.Entities
 @model WildPay.Models.Entities.Group
 
+@{
+    ViewData["Title"] = "Dépenses " + Model.Name;
+}
+
 <div>
     <partial name="_GroupTitlePartial" model="Model" />
     <hr />
@@ -10,33 +14,33 @@
         </div>
         <div class="col-md-9">
             <section>
-                <h3>Dépenses :</h3>
-                @if (Model is not null && Model.Expenditures.Count != 0)
-                {
-                    foreach (Expenditure expenditure in Model.Expenditures)
+                <div class="card">
+                    <h5 class="card-header">
+                        <a class="btn btn-outline-success material-symbols-outlined" asp-action="Add" asp-controller="Expenditure" asp-route-id=@Model.Id>add</a> Dépenses :
+                    </h5>
+                    @if (Model is not null && Model.Expenditures.Count != 0)
                     {
-                        <div>
-                            <div>
-                                <p>@expenditure.Name</p>
+                        foreach (Expenditure expenditure in Model.Expenditures)
+                        {
+                            <div class="card-body">
+                                <h5 class="card-title"><a class="group-settings-button material-symbols-outlined" asp-action="Update" asp-controller="Expenditure" asp-route-id=@Model.Id>edit</a> @expenditure.Name - @expenditure.Amount€</h5>
                                 @if (expenditure.ApplicationUser is not null)
                                 {
-                                    <p>@expenditure.Amount€ payé par @expenditure.ApplicationUser.Firstname @expenditure.ApplicationUser.Lastname.</p>
+                                    <p class="card-text">@expenditure.Amount€ payé par @expenditure.ApplicationUser.Firstname @expenditure.ApplicationUser.Lastname.</p>
                                 }
                                 else
                                 {
-                                    <p>@expenditure.Amount€ payé par un ancien membre.</p>
+                                    <p class="card-text">@expenditure.Amount€ payé par un ancien membre.</p>
                                 }
+                                <div class="card-footer text-body-secondary">@expenditure.Date.ToShortDateString()</div>
                             </div>
-                            <div>
-                                <p>@expenditure.Amount</p>
-                            </div>
-                        </div>
+                        }
                     }
-                }
-                else
-                {
-                    <p>Ce groupe ne contient aucune dépense.</p>
-                }
+                    else
+                    {
+                        <p>Ce groupe ne contient aucune dépense.</p>
+                    }
+                </div>
             </section>
         </div>
     </div>
