@@ -28,10 +28,7 @@ public class ExpenditureController : Controller
         Group? group = await _groupRepository.GetGroupByIdAsync(Id);
 
         //Return not found if no group is found
-        if (group == null)
-        {
-            return NotFound();
-        }
+        if (group == null) { return NotFound(); }
 
         //Verify if the User belongs to the group, else we block the access
         if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }
@@ -45,10 +42,7 @@ public class ExpenditureController : Controller
         Group? group = await _groupRepository.GetGroupByIdAsync(Id);
 
         //Return not found if no group is found
-        if (group == null)
-        {
-            return NotFound();
-        }
+        if (group == null) { return NotFound(); }
 
         //Verify if the User belongs to the group, else we block the access
         if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }
