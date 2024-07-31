@@ -1,6 +1,10 @@
 ﻿@using WildPay.Models.Entities
 @model WildPay.Models.Entities.Group
 
+@{
+    ViewData["Title"] = "Soldes " + Model.Name;
+}
+
 <div>
     <partial name="_GroupTitlePartial" model="Model" />
     <hr />
@@ -10,7 +14,7 @@
         </div>
         <div class="col-md-9">
             <section>
-                <h3>Dépenses :</h3>
+                <h3>Soldes :</h3>
                 @if (Model is not null && Model.Expenditures.Count != 0)
                 {
                     foreach (Expenditure expenditure in Model.Expenditures)

@@ -28,6 +28,15 @@
     {
         <li id="balances" class="nav-item"><a class="nav-link" asp-action="GroupBalances" asp-controller="Expenditure" asp-route-id=@Model.Id>Soldes</a></li>
     }
+
+    @if (Html.ViewContext.RouteData.Values["action"].ToString() == "GroupCategories" && Html.ViewContext.RouteData.Values["controller"].ToString() == "Category")
+    {
+        <li id="balances" class="nav-item"><a class="nav-link active" asp-action="GroupCategories" asp-controller="Category" asp-route-id=@Model.Id>Catégories</a></li>
+    }
+    else
+    {
+        <li id="balances" class="nav-item"><a class="nav-link" asp-action="GroupCategories" asp-controller="Category" asp-route-id=@Model.Id>Catégories</a></li>
+    }
 </ul>
 
 @* <script>

@@ -1,6 +1,10 @@
 ﻿@using WildPay.Models.Entities
 @model WildPay.Models.Entities.Group
 
+@{
+    ViewData["Title"] = "Index " + Model.Name;
+}
+
 <div>
     <partial name="_GroupTitlePartial" model="Model" />
     <hr />
@@ -12,30 +16,30 @@
             <section>
                 @if (Model is not null)
                 {
-                    <h3>Votre groupe :</h3>
-                    @if (Model.ApplicationUsers is not null && Model.ApplicationUsers.Count != 0)
-                    {
-                        foreach (ApplicationUser user in Model.ApplicationUsers)
-                        {
-                            <div>
-                                <div>
-                                    <p>@user.Firstname @user.Lastname</p>
-                                </div>
-                                <div>
-                                    <p>@user.Email</p>
-                                </div>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <p>Ce groupe ne contient aucun membre.</p>
-                    }
+                    <div class="card">
+                        <h5 class="card-header">Votre groupe :</h5>
+                        <div class="card-body">
+                            @if (Model.ApplicationUsers is not null && Model.ApplicationUsers.Count != 0)
+                            {
+                                foreach (ApplicationUser user in Model.ApplicationUsers)
+                                {
+                                    <hr/>
+                                    <h5 class="card-title">@user.Firstname @user.Lastname</h5>
+                                    <p class="card-text">@user.Email</p>
+                                }
+                            }
+                            else
+                            {
+                                <p class="card-text">Ce groupe ne contient aucun membre.</p>
+                            }
+                        </div>
+                    </div>
                 }
                 else
                 {
                     <p>How did you get there?</p>
                 }
+                <a class="btn btn-danger d-flex justify-content-center align-items-center w-25" asp-action="Delete" asp-controller="Group" asp-route-id=@Model.Id><span class="material-symbols-outlined">delete</span> Supprimer le groupe</a>
             </section>
         </div>
     </div>
