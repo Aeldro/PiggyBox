@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using WildPay.Models.Entities;
 using WildPay.Data;
 using WildPay.Interfaces;

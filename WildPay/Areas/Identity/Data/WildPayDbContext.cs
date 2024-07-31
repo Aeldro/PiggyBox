@@ -187,7 +187,7 @@ public class WildPayDbContext : IdentityDbContext<ApplicationUser>
     }
 
     // manage the deletion of the expenditures when a group is deleted
-    public override int SaveChanges()
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         // select all the groups that are to be deleted
         List<Group> deletedGroups = ChangeTracker.Entries<Group>()
@@ -199,11 +199,14 @@ public class WildPayDbContext : IdentityDbContext<ApplicationUser>
         // that depends on the deleted groups
         foreach (Group group in deletedGroups)
         {
-            List<Expenditure> expenditures = Expenditures.Where(e => e.GroupId == group.Id).ToList();
+            List<Expenditure> expenditures = await Expenditures
+            .Where(e => e.GroupId == group.Id)
+            .ToListAsync(cancellationToken);
+
             Expenditures.RemoveRange(expenditures);
         }
 
         // call the SaveChanges() function from DbContext
-        return base.SaveChanges();
+        return await base.SaveChangesAsync(cancellationToken);
     }
 }
