@@ -27,7 +27,11 @@ namespace WildPay.Repositories
 
         public async Task<Group?> GetGroupByIdAsync(int groupId)
         {
-            Group? group = await _context.Groups.FindAsync(groupId);
+            Group? group = await _context.Groups
+                .Include(g => g.ApplicationUsers)
+                .Include(g => g.Expenditures)
+                .Include(g => g.Categories)
+                .FirstOrDefaultAsync(g => g.Id == groupId);
             return group;
         }
 
