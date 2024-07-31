@@ -9,31 +9,31 @@
         <label asp-for="Image">Image</label>
         <input type="text" asp-for="Image" value=@Model.Image/>
         
-        @* <h3>supprimer un participant</h3> *@
-        @* <table> *@
-        @*     <tr> *@
-        @*         @foreach (var user in Model.ApplicationUsers) *@
-        @*         { *@
-        @*             <td>@user.Firstname</td> *@
-        @*             <td><a><span class="material-symbols-outlined">delete</span></a></td> <!--bin icon--> *@
-        @*         } *@
-        @*     </tr> *@
-        @* </table> *@
+        <h3>supprimer un participant</h3>
+        <table>
+            <tr>
+                @foreach (var user in Model.ApplicationUsers)
+                {
+                    <td>@user.Firstname</td>
+                    <td><a><span class="material-symbols-outlined">delete</span></a></td> <!--bin icon-->
+                }
+            </tr>
+        </table>
 
 
-        @* <h3>ajouter un participant</h3> *@
-        @* <div> *@
-        @*     <span class="material-symbols-outlined">person_add</span> <!-- person add icon--> *@
-        @* </div> *@
-        @* <div> *@
-        @*     <label>Email</label> *@
-        @*     <input type="email"/> *@
-        @* </div> *@
+        <h3>ajouter un participant</h3>
+        <div>
+            <span class="material-symbols-outlined">person_add</span> <!-- person add icon-->
+        </div>
+        <div>
+            <label>Email</label>
+            <input type="email"/>
+        </div>
 
         <button asp-action="Update" asp-controller="Group">Enregistrer</button>
     </form>
     
-    <a asp-action="Delete" asp-controller="Group">
+    <a asp-action="Delete" asp-controller="Group" asp-route-id=@Model.Id>
         <span>Supprimer le groupe</span>
         <span class="material-symbols-outlined">delete</span>
     </a>

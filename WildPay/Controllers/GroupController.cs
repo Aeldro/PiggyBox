@@ -57,20 +57,12 @@ public class GroupController : Controller
         await _repository.EditGroupAsync(group);
         return RedirectToAction(actionName: "List", controllerName: "Group");
     }
-
-    // DELETE view 
-    [HttpGet]
-    public IActionResult Delete()
-    {
-        
-        return View();
-    }
     
     // DELETE action 
-    [HttpPost]
-    public async Task<IActionResult> Delete(int groupId)
+    [HttpGet]
+    public async Task<IActionResult> Delete(int id)
     {
-        await _repository.DeleteGroupAsync(groupId);
+        await _repository.DeleteGroupAsync(id);
         return RedirectToAction(actionName: "List", controllerName: "Group");
     }
 }
