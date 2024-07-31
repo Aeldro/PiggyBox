@@ -23,6 +23,7 @@ namespace WildPay
             builder.Services.AddRazorPages();
 
             builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+            builder.Services.AddScoped<IExpenditureRepository, ExpenditureRepository>();
             // to add Expenditure Repository
 
             var app = builder.Build();
