@@ -60,9 +60,11 @@ namespace WildPay.Repositories
             await _context.Groups.AddAsync(newGroup);
             await _context.SaveChangesAsync();
 
+            var user = await _context.Users.FindAsync(userId);
+
             // Add the user that creates the group to the group
             // == new record into the join table ApplicationUserGroups
-            await AddMemberToGroupAsync(newGroup, userId);
+            await AddMemberToGroupAsync(newGroup, user.NormalizedEmail);
         }
 
         // Add a member to the group using its email (case insensitive)
