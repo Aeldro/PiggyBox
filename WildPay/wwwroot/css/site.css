@@ -21,6 +21,9 @@ body {
     margin-bottom: 60px;
 }
 
+.above {
+    z-index: 1040;
+}
 
 .group-settings-button {
     text-decoration: none;
