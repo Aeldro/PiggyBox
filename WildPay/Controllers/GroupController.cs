@@ -38,7 +38,6 @@ public class GroupController : Controller
     public async Task<IActionResult> Add(Group group)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        ViewBag.UserId = userId;
         await _repository.AddGroupAsync(group.Name, group.Image, userId);
         
         return RedirectToAction(actionName: "List", controllerName: "Group");
@@ -46,9 +45,10 @@ public class GroupController : Controller
     
     // UPDATE group view
     [HttpGet]
-    public IActionResult Edit()
+    public async Task<IActionResult> Update(int id)
     {
-        return View();
+        var group = await _repository.GetGroupByIdAsync(id);
+        return View(group);
     }
     
     // UPDATE group action
@@ -94,6 +94,7 @@ public class GroupController : Controller
     [HttpGet]
     public IActionResult Delete()
     {
+        
         return View();
     }
     
