@@ -1,57 +1,43 @@
 ﻿@using WildPay.Models.Entities
 @model WildPay.Models.Entities.Group
 
-<ul class="nav nav-pills flex-column">
-    @if (Html.ViewContext.RouteData.Values["action"].ToString() == "Index" && Html.ViewContext.RouteData.Values["controller"].ToString() == "Group")
-    {
-        <li id="group" class="nav-item"><a class="nav-link active" asp-action="Index" asp-controller="Group" asp-route-id=@Model.Id>Groupe</a></li>
-    }
-    else
-    {
-        <li id="group" class="nav-item"><a class="nav-link" asp-action="Index" asp-controller="Group" asp-route-id=@Model.Id>Groupe</a></li>
-    }
+<div class="col-md-3 responsive-container">
 
-    @if (Html.ViewContext.RouteData.Values["action"].ToString() == "GroupExpenditures" && Html.ViewContext.RouteData.Values["controller"].ToString() == "Expenditure")
-    {
-        <li id="expenditures" class="nav-item"><a class="nav-link active" asp-action="GroupExpenditures" asp-controller="Expenditure" asp-route-id=@Model.Id>Dépenses</a></li>
-    }
-    else
-    {
-        <li id="expenditures" class="nav-item"><a class="nav-link" asp-action="GroupExpenditures" asp-controller="Expenditure" asp-route-id=@Model.Id>Dépenses</a></li>
-    }
-
-    @if (Html.ViewContext.RouteData.Values["action"].ToString() == "GroupBalances" && Html.ViewContext.RouteData.Values["controller"].ToString() == "Expenditure")
-    {
-        <li id="balances" class="nav-item"><a class="nav-link active" asp-action="GroupBalances" asp-controller="Expenditure" asp-route-id=@Model.Id>Soldes</a></li>
-    }
-    else
-    {
-        <li id="balances" class="nav-item"><a class="nav-link" asp-action="GroupBalances" asp-controller="Expenditure" asp-route-id=@Model.Id>Soldes</a></li>
-    }
-
-    @if (Html.ViewContext.RouteData.Values["action"].ToString() == "GroupCategories" && Html.ViewContext.RouteData.Values["controller"].ToString() == "Category")
-    {
-        <li id="balances" class="nav-item"><a class="nav-link active" asp-action="GroupCategories" asp-controller="Category" asp-route-id=@Model.Id>Catégories</a></li>
-    }
-    else
-    {
-        <li id="balances" class="nav-item"><a class="nav-link" asp-action="GroupCategories" asp-controller="Category" asp-route-id=@Model.Id>Catégories</a></li>
-    }
-</ul>
-
-@* <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var path = window.location.pathname;
-        var page = path.split("/").pop();
-
-        if (page === "index.html") {
-            document.getElementById("home-link").classList.add("active");
-        } else if (page === "about.html") {
-            document.getElementById("about-link").classList.add("active");
-        } else if (page === "services.html") {
-            document.getElementById("services-link").classList.add("active");
-        } else if (page === "contact.html") {
-            document.getElementById("contact-link").classList.add("active");
+    <ul class="nav nav-pills flex-column">
+        @if (Html.ViewContext.RouteData.Values["action"].ToString() == "Index" && Html.ViewContext.RouteData.Values["controller"].ToString() == "Group")
+        {
+            <li id="group" class="nav-item"><a class="nav-link active" asp-action="Index" asp-controller="Group" asp-route-id=@Model.Id>Groupe</a></li>
         }
-    });
-</script> *@
+        else
+        {
+            <li id="group" class="nav-item"><a class="nav-link" asp-action="Index" asp-controller="Group" asp-route-id=@Model.Id>Groupe</a></li>
+        }
+
+        @if (Html.ViewContext.RouteData.Values["action"].ToString() == "GroupExpenditures" && Html.ViewContext.RouteData.Values["controller"].ToString() == "Expenditure")
+        {
+            <li id="expenditures" class="nav-item"><a class="nav-link active" asp-action="GroupExpenditures" asp-controller="Expenditure" asp-route-id=@Model.Id>Dépenses</a></li>
+        }
+        else
+        {
+            <li id="expenditures" class="nav-item"><a class="nav-link" asp-action="GroupExpenditures" asp-controller="Expenditure" asp-route-id=@Model.Id>Dépenses</a></li>
+        }
+
+        @if (Html.ViewContext.RouteData.Values["action"].ToString() == "GroupBalances" && Html.ViewContext.RouteData.Values["controller"].ToString() == "Expenditure")
+        {
+            <li id="balances" class="nav-item"><a class="nav-link active" asp-action="GroupBalances" asp-controller="Expenditure" asp-route-id=@Model.Id>Soldes</a></li>
+        }
+        else
+        {
+            <li id="balances" class="nav-item"><a class="nav-link" asp-action="GroupBalances" asp-controller="Expenditure" asp-route-id=@Model.Id>Soldes</a></li>
+        }
+
+        @if (Html.ViewContext.RouteData.Values["action"].ToString() == "GroupCategories" && Html.ViewContext.RouteData.Values["controller"].ToString() == "Category")
+        {
+            <li id="balances" class="nav-item"><a class="nav-link active" asp-action="GroupCategories" asp-controller="Category" asp-route-id=@Model.Id>Catégories</a></li>
+        }
+        else
+        {
+            <li id="balances" class="nav-item"><a class="nav-link" asp-action="GroupCategories" asp-controller="Category" asp-route-id=@Model.Id>Catégories</a></li>
+        }
+    </ul>
+</div>

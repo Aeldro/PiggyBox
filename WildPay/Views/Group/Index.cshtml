@@ -9,11 +9,9 @@
     <partial name="_GroupTitlePartial" model="Model" />
     <hr />
     <div class="row">
-        <div class="col-md-3">
-            <partial name="_GroupNavBarPartial" model="Model" />
-        </div>
+        <partial name="_GroupNavBarPartial" model="Model" />
         <div class="col-md-9">
-            <section>
+            <section class="">
                 @if (Model is not null)
                 {
                     <div class="card">
@@ -23,7 +21,7 @@
                             {
                                 foreach (ApplicationUser user in Model.ApplicationUsers)
                                 {
-                                    <hr/>
+                                    <hr />
                                     <h5 class="card-title">@user.Firstname @user.Lastname</h5>
                                     <p class="card-text">@user.Email</p>
                                 }
@@ -39,7 +37,9 @@
                 {
                     <p>How did you get there?</p>
                 }
-                <a class="btn btn-danger d-flex justify-content-center align-items-center w-25" asp-action="Delete" asp-controller="Group" asp-route-id=@Model.Id><span class="material-symbols-outlined">delete</span> Supprimer le groupe</a>
+                <div class="d-flex justify-content-center">
+                    <a class="btn btn-danger d-flex justify-content-center align-items-center w-50" asp-action="Delete" asp-controller="Group" asp-route-id=@Model.Id><span class="material-symbols-outlined">delete</span> Supprimer le groupe</a>
+                </div>
             </section>
         </div>
     </div>
