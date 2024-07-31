@@ -1,5 +1,9 @@
 @model WildPay.Models.Entities.Group
 
+@{
+    ViewData["Title"] = "Modifier " + Model.Name;
+}
+
 <div>
     <h3>Modifier groupe</h3>
     <form method="post">
@@ -30,10 +34,10 @@
             <input type="email"/>
         </div>
 
-        <button asp-action="Update" asp-controller="Group">Enregistrer</button>
+        <button asp-action="Update" asp-controller="Group" asp-route-groupId=@Model.Id>Enregistrer</button>
     </form>
     
-    <a asp-action="Delete" asp-controller="Group" asp-route-id=@Model.Id>
+    <a asp-action="Delete" asp-controller="Group" asp-route-Id=@Model.Id>
         <span>Supprimer le groupe</span>
         <span class="material-symbols-outlined">delete</span>
     </a>
