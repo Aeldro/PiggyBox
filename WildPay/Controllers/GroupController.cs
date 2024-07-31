@@ -23,7 +23,7 @@ public class GroupController : Controller
     [HttpGet]
     public async Task<IActionResult> List()
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = _userManager.GetUserId(User);
         var groups = await _repository.GetGroupsAsync(userId);
         return View(groups);
     }
@@ -65,9 +65,9 @@ public class GroupController : Controller
     
     // UPDATE group view
     [HttpGet]
-    public async Task<IActionResult> Update(int id)
+    public async Task<IActionResult> Update(int Id)
     {
-        var group = await _repository.GetGroupByIdAsync(id);
+        var group = await _repository.GetGroupByIdAsync(Id);
         return View(group);
     }
     
@@ -115,11 +115,19 @@ public class GroupController : Controller
         return RedirectToAction(actionName: "Edit", controllerName: "Group");
     }
 
-    // DELETE group action 
+    // DELETE group view
     [HttpGet]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int Id)
     {
-        await _repository.DeleteGroupAsync(id);
+        var group = await _repository.GetGroupByIdAsync(Id);
+        return View(group);
+    }
+
+    // DELETE group action 
+    [HttpPost]
+    public async Task<IActionResult> Delete(int Id, Group group)
+    {
+        await _repository.DeleteGroupAsync(Id);
         return RedirectToAction(actionName: "List", controllerName: "Group");
     }
 }
