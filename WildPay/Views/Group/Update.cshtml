@@ -1,15 +1,15 @@
 @model WildPay.Models.Entities.Group
 
 <div>
-    <h3>modifier groupe</h3>
+    <h3>Modifier groupe</h3>
     <form method="post">
         <label asp-for="Name">Nom du groupe</label>
         <input type="text" asp-for="Name" value=@Model.Name/>
 
-        <label asp-for="Image">Image</label>
+        <label asp-for="Image">Image du groupe</label>
         <input type="text" asp-for="Image" value=@Model.Image/>
         
-        <h3>supprimer un participant</h3>
+        <h3>Supprimer un participant</h3>
         <table>
             <tr>
                 @foreach (var user in Model.ApplicationUsers)
