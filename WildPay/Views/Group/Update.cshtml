@@ -12,7 +12,11 @@
 
         <label asp-for="Image">Image du groupe</label>
         <input type="text" asp-for="Image" value=@Model.Image/>
-        
+
+        <button asp-action="Update" asp-controller="Group" asp-route-groupId=@Model.Id>Enregistrer</button>
+    </form>
+      
+    <form method="post">
         <h3>Supprimer un participant</h3>
         <table>
             <tr>
@@ -23,6 +27,7 @@
                 }
             </tr>
         </table>
+    </form>
 
 
         <h3>ajouter un participant</h3>
@@ -33,9 +38,6 @@
             <label>Email</label>
             <input type="email"/>
         </div>
-
-        <button asp-action="Update" asp-controller="Group" asp-route-groupId=@Model.Id>Enregistrer</button>
-    </form>
     
     <a asp-action="Delete" asp-controller="Group" asp-route-Id=@Model.Id>
         <span>Supprimer le groupe</span>

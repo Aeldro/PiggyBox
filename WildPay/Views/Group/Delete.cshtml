@@ -6,7 +6,7 @@
 
 <h2>Voulez-vous vraiment supprimer le groupe @Model.Name ?</h2>
 
-<form method="post" asp-route-groupId=@Model.Id>
+<form method="post">
     <button asp-action="Delete" asp-controller="Group" class="btn btn-danger">Oui</button>
     <a class="btn btn-primary" href="@Url.ActionLink("Update", "Group", new {Id = @Model.Id})">Non</a>
 </form>

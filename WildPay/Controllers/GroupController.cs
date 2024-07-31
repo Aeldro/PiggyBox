@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +6,7 @@ using WildPay.Models.Entities;
 
 namespace WildPay.Controllers;
 
-// only accessible if the user is connected
+// methods are only accessible if the user is connected
 [Authorize]
 public class GroupController : Controller
 {
@@ -23,8 +22,8 @@ public class GroupController : Controller
     [HttpGet]
     public async Task<IActionResult> List()
     {
-        var userId = _userManager.GetUserId(User);
-        var groups = await _repository.GetGroupsAsync(userId);
+        string? userId = _userManager.GetUserId(User);
+        List<Group> groups = await _repository.GetGroupsAsync(userId);
         return View(groups);
     }
 
@@ -32,7 +31,7 @@ public class GroupController : Controller
     public async Task<IActionResult> Index(int Id)
     {
         //Get the group
-        Group ?group = await _repository.GetGroupByIdAsync(Id);
+        Group? group = await _repository.GetGroupByIdAsync(Id);
 
         //Return not found if no group is found
         if (group == null)
@@ -57,7 +56,7 @@ public class GroupController : Controller
     [HttpPost]
     public async Task<IActionResult> Add(Group group)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        string? userId = _userManager.GetUserId(User);
         await _repository.AddGroupAsync(group.Name, group.Image, userId);
         
         return RedirectToAction(actionName: "List", controllerName: "Group");
@@ -67,9 +66,13 @@ public class GroupController : Controller
     [HttpGet]
     public async Task<IActionResult> Update(int Id)
     {
-        var group = await _repository.GetGroupByIdAsync(id);
+        Group? group = await _repository.GetGroupByIdAsync(Id);
 
-        // check if the user is connected + is part of the group
+        if (group == null)
+        {
+            return NotFound();
+        }
+
         if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
 
         return View(group);
@@ -94,13 +97,18 @@ public class GroupController : Controller
     public async Task<IActionResult> AddMember(int groupId, string email)
     {
         Group? group = await _repository.GetGroupByIdAsync(groupId);
-       
-        if (group != null)
+
+        if (group == null)
         {
-            // Returns false if no match is found;
-            // think about a way to handle the case the email doesn't match a user
-            await _repository.AddMemberToGroupAsync(group, email);
+            return NotFound();
         }
+
+        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
+
+        // Returns false if no match is found;
+        // think about a way to handle the case the email doesn't match a user
+        await _repository.AddMemberToGroupAsync(group, email);
+
         return RedirectToAction(actionName: "Edit", controllerName: "Group");    
     }
 
@@ -110,14 +118,17 @@ public class GroupController : Controller
     {
         Group? group = await _repository.GetGroupByIdAsync(groupId);
 
+        if (group == null)
+        {
+            return NotFound();
+        }
+
         if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
 
-        if (group != null)
-        {
-            // Returns false if no match is found;
-            // think about a way to handle the case the email doesn't match a user
-            await _repository.DeleteMemberFromGroupAsync(group, userId);
-        }
+        // Returns false if no match is found;
+        // think about a way to handle the case the email doesn't match a user
+        await _repository.DeleteMemberFromGroupAsync(group, userId);
+
         return RedirectToAction(actionName: "Edit", controllerName: "Group");
     }
 
@@ -125,7 +136,15 @@ public class GroupController : Controller
     [HttpGet]
     public async Task<IActionResult> Delete(int Id)
     {
-        var group = await _repository.GetGroupByIdAsync(Id);
+        Group? group = await _repository.GetGroupByIdAsync(Id);
+
+        if (group == null)
+        {
+            return NotFound();
+        }
+
+        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
+
         return View(group);
     }
 
