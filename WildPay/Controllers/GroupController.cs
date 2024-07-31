@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WildPay.Interfaces;
 using WildPay.Models.Entities;
@@ -9,9 +10,11 @@ namespace WildPay.Controllers;
 [Authorize]
 public class GroupController : Controller
 {
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly IGroupRepository _repository;
-    public GroupController(IGroupRepository repository)
+    public GroupController(UserManager<ApplicationUser> userManager, IGroupRepository repository)
     {
+        _userManager = userManager;
         _repository = repository;
     }
 
@@ -26,9 +29,20 @@ public class GroupController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetGroup(int id)
+    public async Task<IActionResult> Index(int Id)
     {
-        Group group = await _repository.GetGroupByIdAsync(id);
+        //Get the group
+        Group ?group = await _repository.GetGroupByIdAsync(Id);
+
+        //Return not found if no group is found
+        if (group == null)
+        {
+            return NotFound();
+        }
+
+        //Verify if the User belongs to the group, else we block the access
+        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }
+
         return View(group);
     }
 

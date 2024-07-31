@@ -1,0 +1,42 @@
+﻿@using WildPay.Models.Entities
+@model WildPay.Models.Entities.Group
+
+<div>
+    <partial name="_GroupTitlePartial" model="Model" />
+    <hr />
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_GroupNavBarPartial" model="Model" />
+        </div>
+        <div class="col-md-9">
+            <section>
+                @if (Model is not null)
+                {
+                    <h3>Votre groupe :</h3>
+                    @if (Model.ApplicationUsers is not null && Model.ApplicationUsers.Count != 0)
+                    {
+                        foreach (ApplicationUser user in Model.ApplicationUsers)
+                        {
+                            <div>
+                                <div>
+                                    <p>@user.Firstname @user.Lastname</p>
+                                </div>
+                                <div>
+                                    <p>@user.Email</p>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p>Ce groupe ne contient aucun membre.</p>
+                    }
+                }
+                else
+                {
+                    <p>How did you get there?</p>
+                }
+            </section>
+        </div>
+    </div>
+</div>

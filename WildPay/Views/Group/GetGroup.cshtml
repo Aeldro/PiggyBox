@@ -1,9 +1,0 @@
-﻿@using WildPay.Models.Entities
-@model WildPay.Models.Entities.Group
-
-<div>
-    <h2>Group Name: @Model.Name</h2>
-    <ul>
-        @await Html.PartialAsync("_ListExpenditures", Model.Expenditures)
-    </ul>
-</div>
