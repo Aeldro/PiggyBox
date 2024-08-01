@@ -6,7 +6,8 @@
     ViewData["Title"] = "Soldes " + Model.Group.Name;
     double PercentFillCalculation(double contribution, double totalContribution)
     {
-        if (totalContribution == 0) { return 0; }
+        if (totalContribution == 0) return 0;
+        if (contribution < 0) contribution = -contribution;
         return Math.Round(contribution / totalContribution * 100, 2);
     }
 }
@@ -30,8 +31,14 @@
                             <h5 class="card-text">@member.Key.Firstname @member.Key.Lastname</h5>
                             <h5 class="card-title">@member.Value€</h5>
                             <div class="progress">
-                                <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: @PercentFillCalculation(member.Value, Model.TotalAmount).ToString().Replace(',','.')%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                                <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: -50%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                @if (member.Value >= 0)
+                                {
+                                    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: @PercentFillCalculation(member.Value, Model.TotalAmount).ToString().Replace(',','.')%" aria-valuemin="0" aria-valuemax="100"></div>
+                                }
+                                else
+                                {
+                                    <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: @PercentFillCalculation(member.Value, Model.TotalAmount).ToString().Replace(',','.')%" aria-valuemin="0" aria-valuemax="100"></div>
+                                }
                             </div>
                         </div>
                     }
