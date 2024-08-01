@@ -1,44 +1,44 @@
-﻿@using WildPay.Models.Entities
-@model WildPay.Models.Entities.Group
+﻿@using WildPay.Models
+@model GroupBalance
 
 @{
-    ViewData["Title"] = "Soldes " + Model.Name;
+    ViewData["Title"] = "Soldes " + Model.Group.Name;
 }
 
 <div>
-    <partial name="_GroupTitlePartial" model="Model" />
+    <partial name="_GroupTitlePartial" model="Model.Group" />
     <hr />
     <div class="row">
-        <partial name="_GroupNavBarPartial" model="Model" />
+        <partial name="_GroupNavBarPartial" model="Model.Group" />
         <div class="col-md-9">
             <section>
-                <h3>Soldes :</h3>
-                @if (Model is not null && Model.Expenditures.Count != 0)
-                {
-                    foreach (Expenditure expenditure in Model.Expenditures)
-                    {
-                        <div>
-                            <div>
-                                <p>@expenditure.Name</p>
-                                @if (expenditure.Payer is not null)
-                                {
-                                    <p>@expenditure.Amount€ payé par @expenditure.Payer.Firstname @expenditure.Payer.Lastname.</p>
-                                }
-                                else
-                                {
-                                    <p>@expenditure.Amount€ payé par un ancien membre.</p>
-                                }
+                <div class="card">
+                    <h5 class="card-header">Soldes :</h5>
+                    @* @foreach() { *@
+                    <div class="card-body">
+                        <h5 class="card-title">Special title treatment</h5>
+                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                    </div>
+                    @* } *@
+
+                    <div class="card">
+                        <h5 class="card-header">Remboursements à effectuer :</h5>
+                        <p class="card-text">@Model.Message</p>
+                        @foreach (Debt debt in Model.Debts)
+                        {
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <span class=".text-danger">@debt.Debtor.Firstname @debt.Debtor.Lastname</span>
+                                    doit
+                                    <span class=".text-info">@debt.Amount€</span>
+                                    à
+                                    <span class=".text-success">@debt.Creditor.Firstname @debt.Creditor.Lastname</span>
+                                </h5>
+                                @* <p class="card-text">With supporting text below as a natural lead-in to additional content.</p> *@
                             </div>
-                            <div>
-                                <p>@expenditure.Amount</p>
-                            </div>
-                        </div>
-                    }
-                }
-                else
-                {
-                    <p>Ce groupe ne contient aucune dépense.</p>
-                }
+                        }
+                    </div>
+
             </section>
         </div>
     </div>
