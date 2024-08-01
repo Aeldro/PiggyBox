@@ -9,6 +9,6 @@ namespace WildPay.Models
         public double TotalAmount { get; set; }
         public List<Debt> Debts { get; set; } = new List<Debt>();
         public string Message { get; set; } = string.Empty;
-        public Dictionary<string, double> UsersBalance { get; set; } = new Dictionary<string, double>();
+        public Dictionary<ApplicationUser, double> UsersBalance { get; set; } = new Dictionary<ApplicationUser, double>();
     }
 }
