@@ -66,17 +66,32 @@ public class ExpenditureController : Controller
 
     // CREATE
     [HttpGet]
-    public IActionResult Create()
+    public async Task<IActionResult> Add(int Id)
     {
+        ViewBag.idGroup = Id;
         return View();
     }
 
     // CREATE
     [HttpPost]
-    public IActionResult Create(Expenditure expenditure)
+    public async Task<IActionResult> Add(Expenditure expenditure)
     {
-        return RedirectToAction(actionName: "List", controllerName: "Expenditure");
+        if (ModelState.IsValid)
+        {
+            string applicationUserId = _userManager.GetUserId(User); // get the id of the connected user
+            await _expenditureRepository.AddExpenditureAsync( // add expediture to the repository
+                expenditure.Name, 
+                (double)expenditure.Amount, 
+                expenditure.Date, 
+                applicationUserId, 
+                expenditure.CategoryId, 
+                expenditure.GroupId);
+            return RedirectToAction(actionName: "GroupExpenditures", controllerName: "Expenditure", new {id = expenditure.GroupId});
+        }
+
+        return View();
     }
+
 
     // DELETE
     [HttpGet]
