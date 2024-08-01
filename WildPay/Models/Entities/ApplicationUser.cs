@@ -14,6 +14,7 @@ namespace WildPay.Models.Entities
         public string Lastname { get; set; } = string.Empty;
         public string Image { get; set; } = string.Empty;
         public List<Group> Groups { get; set; } = new List<Group>();
-        public List<Expenditure> Expenditures { get; set; } = new List<Expenditure>();
+        public List<Expenditure> ExpendituresPayer { get; set; } = new List<Expenditure>();
+        public List<Expenditure> RefundContributions { get; set; } = new List<Expenditure>();
     }
 }
