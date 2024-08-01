@@ -9,9 +9,7 @@
     <partial name="_GroupTitlePartial" model="Model" />
     <hr />
     <div class="row">
-        <div class="col-md-3">
-            <partial name="_GroupNavBarPartial" model="Model" />
-        </div>
+        <partial name="_GroupNavBarPartial" model="Model" />
         <div class="col-md-9">
             <section>
                 <div class="card">
@@ -24,9 +22,9 @@
                         {
                             <div class="card-body">
                                 <h5 class="card-title"><a class="group-settings-button material-symbols-outlined" asp-action="Update" asp-controller="Expenditure" asp-route-id=@Model.Id>edit</a> @expenditure.Name - @expenditure.Amount€</h5>
-                                @if (expenditure.ApplicationUser is not null)
+                                @if (expenditure.Payer is not null)
                                 {
-                                    <p class="card-text">@expenditure.Amount€ payé par @expenditure.ApplicationUser.Firstname @expenditure.ApplicationUser.Lastname.</p>
+                                    <p class="card-text">@expenditure.Amount€ payé par @expenditure.Payer.Firstname @expenditure.Payer.Lastname.</p>
                                 }
                                 else
                                 {

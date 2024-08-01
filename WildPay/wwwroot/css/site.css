@@ -1,3 +1,6 @@
+@import "edit-button.css";
+@import "responsive.css";
+
 html {
     font-size: 14px;
 }
@@ -21,16 +24,6 @@ body {
     margin-bottom: 60px;
 }
 
-
-.group-settings-button {
-    text-decoration: none;
-    color: black;
-    padding: 3px;
-    border-radius: 50%;
+.above {
+    z-index: 1040;
 }
-
-    .group-settings-button:hover {
-        transition-duration: 0.2s;
-        background-color: lightgray;
-        color: black;
-    }
