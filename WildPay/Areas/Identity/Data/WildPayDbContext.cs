@@ -32,9 +32,9 @@ public class WildPayDbContext : IdentityDbContext<ApplicationUser>
         // the expenditure will not be deleted.
         // ApplicationUserId will only be set to null.
         builder.Entity<Expenditure>()
-            .HasOne(e => e.ApplicationUser)
-            .WithMany(g => g.Expenditures)
-            .HasForeignKey(e => e.ApplicationUserId)
+            .HasOne(e => e.Payer)
+            .WithMany(g => g.ExpendituresPayer)
+            .HasForeignKey(e => e.PayerId)
             .OnDelete(DeleteBehavior.SetNull);
 
         // same, but it is CategoryId that will be set to null.
@@ -152,7 +152,7 @@ public class WildPayDbContext : IdentityDbContext<ApplicationUser>
                 Name = "Courses Auchan",
                 Amount = 10.5,
                 Date = new DateTime(2024, 04, 17),
-                ApplicationUserId = "1",
+                PayerId = "1",
                 GroupId = 1
             },
             new Expenditure()
@@ -161,7 +161,7 @@ public class WildPayDbContext : IdentityDbContext<ApplicationUser>
                 Name = "Restaurant Toulouse",
                 Amount = 60,
                 Date = new DateTime(2024, 05, 01),
-                ApplicationUserId = "1",
+                PayerId = "1",
                 CategoryId = 3,
                 GroupId = 1
             },
@@ -171,7 +171,7 @@ public class WildPayDbContext : IdentityDbContext<ApplicationUser>
                 Name = "Café Capitole",
                 Amount = 16.5,
                 Date = new DateTime(2024, 04, 29),
-                ApplicationUserId = "2",
+                PayerId = "2",
                 GroupId = 2
             },
             new Expenditure()
@@ -180,7 +180,7 @@ public class WildPayDbContext : IdentityDbContext<ApplicationUser>
                 Name = "Bonbons",
                 Amount = 6.9,
                 Date = new DateTime(2024, 05, 10),
-                ApplicationUserId = "3",
+                PayerId = "3",
                 CategoryId = 2,
                 GroupId = 1
             });

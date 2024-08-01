@@ -20,9 +20,9 @@
                         <div>
                             <div>
                                 <p>@expenditure.Name</p>
-                                @if (expenditure.ApplicationUser is not null)
+                                @if (expenditure.Payer is not null)
                                 {
-                                    <p>@expenditure.Amount€ payé par @expenditure.ApplicationUser.Firstname @expenditure.ApplicationUser.Lastname.</p>
+                                    <p>@expenditure.Amount€ payé par @expenditure.Payer.Firstname @expenditure.Payer.Lastname.</p>
                                 }
                                 else
                                 {
