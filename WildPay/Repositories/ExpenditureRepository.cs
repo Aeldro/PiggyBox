@@ -29,9 +29,10 @@ namespace WildPay.Repositories
             throw new NotImplementedException();
         }
 
+        // method to create a new expenditure in a given group
         public async Task AddExpenditureAsync(string name, double amount, DateTime date, string? payerId, int? categoryId, int? groupId)
         {
-            Expenditure expenditure = new Expenditure()
+            Expenditure expenditure = new Expenditure() // create the new object expenditure to save in database
             {
                 Name = name,
                 Amount = amount,
@@ -40,8 +41,8 @@ namespace WildPay.Repositories
                 CategoryId = categoryId,
                 GroupId = groupId
             };
-            await _context.Expenditures.AddAsync(expenditure);
-            await _context.SaveChangesAsync();
+            await _context.Expenditures.AddAsync(expenditure); // calls the method from Entity Framework to add the new expenditure to database
+            await _context.SaveChangesAsync(); // commit the new change to the database
         }
 
         public async Task<bool> DeleteExpenditureAsync(int expenditureId)
