@@ -1,0 +1,29 @@
+﻿@media screen and (max-width: 767px) {
+    .responsive-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        z-index: 1040;
+        background-color: white;
+    }
+
+        .responsive-container ul {
+            width: 100%;
+            display: flex;
+            flex-direction: row !important;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: initial;
+            overflow: scroll;
+        }
+
+        .responsive-container ul li {
+            width: 100%;
+            text-align: center;
+        }
+
+    responsive-whitespace {
+        height: 1000px;
+        background-color: blue;
+    }
+}
