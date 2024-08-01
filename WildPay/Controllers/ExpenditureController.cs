@@ -88,7 +88,6 @@ public class ExpenditureController : Controller
                 expenditure.GroupId);
             return RedirectToAction(actionName: "GroupExpenditures", controllerName: "Expenditure", new {id = expenditure.GroupId});
         }
-
         return View();
     }
 
