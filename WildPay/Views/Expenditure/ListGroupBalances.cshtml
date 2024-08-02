@@ -7,7 +7,7 @@
     double PercentFillCalculation(double contribution, double totalContribution)
     {
         if (totalContribution == 0) return 0;
-        if (contribution < 0) contribution = -contribution;
+        if (contribution < 0) contribution = Math.Abs(contribution);
         return Math.Round(contribution / totalContribution * 100, 2);
     }
 }
