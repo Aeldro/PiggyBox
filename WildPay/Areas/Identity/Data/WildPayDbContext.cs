@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
-using WildPay.Areas.Identity.Data;
 using WildPay.Models.Entities;
 
 namespace WildPay.Data;
@@ -34,9 +32,9 @@ public class WildPayDbContext : IdentityDbContext<ApplicationUser>
         // the expenditure will not be deleted.
         // ApplicationUserId will only be set to null.
         builder.Entity<Expenditure>()
-            .HasOne(e => e.ApplicationUser)
-            .WithMany(g => g.Expenditures)
-            .HasForeignKey(e => e.ApplicationUserId)
+            .HasOne(e => e.Payer)
+            .WithMany(g => g.ExpendituresPayer)
+            .HasForeignKey(e => e.PayerId)
             .OnDelete(DeleteBehavior.SetNull);
 
         // same, but it is CategoryId that will be set to null.
@@ -154,7 +152,7 @@ public class WildPayDbContext : IdentityDbContext<ApplicationUser>
                 Name = "Courses Auchan",
                 Amount = 10.5,
                 Date = new DateTime(2024, 04, 17),
-                ApplicationUserId = "1",
+                PayerId = "1",
                 GroupId = 1
             },
             new Expenditure()
@@ -163,7 +161,7 @@ public class WildPayDbContext : IdentityDbContext<ApplicationUser>
                 Name = "Restaurant Toulouse",
                 Amount = 60,
                 Date = new DateTime(2024, 05, 01),
-                ApplicationUserId = "1",
+                PayerId = "1",
                 CategoryId = 3,
                 GroupId = 1
             },
@@ -173,7 +171,7 @@ public class WildPayDbContext : IdentityDbContext<ApplicationUser>
                 Name = "Café Capitole",
                 Amount = 16.5,
                 Date = new DateTime(2024, 04, 29),
-                ApplicationUserId = "2",
+                PayerId = "2",
                 GroupId = 2
             },
             new Expenditure()
@@ -182,14 +180,14 @@ public class WildPayDbContext : IdentityDbContext<ApplicationUser>
                 Name = "Bonbons",
                 Amount = 6.9,
                 Date = new DateTime(2024, 05, 10),
-                ApplicationUserId = "3",
+                PayerId = "3",
                 CategoryId = 2,
                 GroupId = 1
             });
     }
 
     // manage the deletion of the expenditures when a group is deleted
-    public override int SaveChanges()
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         // select all the groups that are to be deleted
         List<Group> deletedGroups = ChangeTracker.Entries<Group>()
@@ -201,11 +199,14 @@ public class WildPayDbContext : IdentityDbContext<ApplicationUser>
         // that depends on the deleted groups
         foreach (Group group in deletedGroups)
         {
-            List<Expenditure> expenditures = Expenditures.Where(e => e.GroupId == group.Id).ToList();
+            List<Expenditure> expenditures = await Expenditures
+            .Where(e => e.GroupId == group.Id)
+            .ToListAsync(cancellationToken);
+
             Expenditures.RemoveRange(expenditures);
         }
 
         // call the SaveChanges() function from DbContext
-        return base.SaveChanges();
+        return await base.SaveChangesAsync(cancellationToken);
     }
 }

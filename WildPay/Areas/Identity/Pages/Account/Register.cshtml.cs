@@ -81,10 +81,13 @@ namespace WildPay.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
-            [Display(Name = "Firstname")]
+            [MaxLength(25)]
+            [Display(Name = "Prénom")]
             public string Firstname { get; set; }
 
-            [Display(Name = "Lastname")]
+            [Required]
+            [MaxLength(25)]
+            [Display(Name = "Nom de famille")]
             public string Lastname { get; set; }
 
             /// <summary>
@@ -92,9 +95,9 @@ namespace WildPay.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [StringLength(100, ErrorMessage = "Le {0} doit contenir entre {2} et {1} caractères.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
+            [Display(Name = "Mot de passe")]
             public string Password { get; set; }
 
             /// <summary>
@@ -102,8 +105,8 @@ namespace WildPay.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "Confirmation du mot de passe")]
+            [Compare("Password", ErrorMessage = "Le mot de passe et sa confirmation doivent être identiques.")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -141,8 +144,8 @@ namespace WildPay.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    await _emailSender.SendEmailAsync(Input.Email, "Validez votre adresse email",
+                        $"<a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Cliquez ici</a> pour valider votre adresse email");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

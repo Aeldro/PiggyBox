@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using WildPay.Models.Entities;
 using WildPay.Data;
+using WildPay.Interfaces;
+using WildPay.Repositories;
 
 namespace WildPay
 {
@@ -21,13 +22,16 @@ namespace WildPay
 
             builder.Services.AddRazorPages();
 
+            builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+            builder.Services.AddScoped<IExpenditureRepository, ExpenditureRepository>();
+            // to add Expenditure Repository
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -44,6 +48,10 @@ namespace WildPay
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            app.MapControllerRoute(
+                name: "defaultWithQueryString",
+                pattern: "{controller=Home}/{action=Index}");
 
             app.Run();
         }

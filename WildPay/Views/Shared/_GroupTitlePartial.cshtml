@@ -1,0 +1,7 @@
+﻿@using WildPay.Models.Entities
+@model WildPay.Models.Entities.Group
+
+<h2>
+    Groupe : @Model.Name
+    <a class="group-settings-button material-symbols-outlined" asp-action="Update" asp-controller="Group" asp-route-id=@Model.Id>edit</a>
+</h2>

@@ -1,0 +1,59 @@
+@model WildPay.Models.ViewModels.UpdateGroupModel
+
+@{
+    ViewData["Title"] = "Modifier " + Model.GroupToUpdate.Name;
+}
+
+<div>
+    <partial name="_GroupTitlePartial" model="Model.GroupToUpdate" />
+    <hr />
+    <div class="row">
+        <partial name="_GroupNavBarPartial" model="Model.GroupToUpdate" />
+
+        <div class="col-md-9">
+            <h3>Modifier groupe</h3>
+
+            <form method="post">
+                <input type="text" asp-for="@Model.GroupToUpdate.Id" hidden="hidden" readonly />
+
+                <label class="control-label" asp-for="@Model.GroupToUpdate.Name">Nom du groupe</label>
+                <input class="form-control" type="text" asp-for="GroupToUpdate.Name" />
+
+                <label class="control-label" asp-for="@Model.GroupToUpdate.Image">Image du groupe</label>
+                <input class="form-control" type="text" asp-for="GroupToUpdate.Image" />
+
+                <button asp-action="Update" asp-controller="Group">Enregistrer</button>
+            </form>
+
+            <h3>Supprimer un participant</h3>
+            <table>
+                <tr>
+                    @foreach (var user in Model.GroupToUpdate.ApplicationUsers)
+                    {
+                        <td>@user.Firstname</td>
+                        <td>@user.Lastname</td>
+                        <td><a href="@Url.ActionLink("DeleteMember", "Group", new {userId = user.Id, groupId = Model.GroupToUpdate.Id})"><span class="material-symbols-outlined">delete</span></a></td> <!--bin icon-->
+                    }
+                </tr>
+            </table>
+
+            <h3>Ajouter un participant</h3>
+            <div>
+                <span class="material-symbols-outlined">person_add</span> <!-- person add icon-->
+            </div>
+
+            <form method="post">
+                <div class="form-group">
+                    <input type="text" asp-for="@Model.NewMember.GroupId" hidden="hidden" readonly />
+
+                    <label class="control-label" asp-for="@Model.NewMember.Email">Email</label>
+                    <input class="form-control" type="email" asp-for="@Model.NewMember.Email" />
+
+                    <button asp-action="AddMember" asp-controller="Group">Ajouter</button>
+                </div>
+            </form>
+
+            <a class="btn btn-danger d-flex justify-content-center align-items-center w-25" asp-action="Delete" asp-controller="Group" asp-route-Id="@Model.GroupToUpdate.Id"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
+        </div>
+    </div>
+</div>

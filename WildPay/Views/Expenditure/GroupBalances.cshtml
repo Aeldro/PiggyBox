@@ -1,0 +1,45 @@
+﻿@using WildPay.Models.Entities
+@model WildPay.Models.Entities.Group
+
+@{
+    ViewData["Title"] = "Soldes " + Model.Name;
+}
+
+<div>
+    <partial name="_GroupTitlePartial" model="Model" />
+    <hr />
+    <div class="row">
+        <partial name="_GroupNavBarPartial" model="Model" />
+        <div class="col-md-9">
+            <section>
+                <h3>Soldes :</h3>
+                @if (Model is not null && Model.Expenditures.Count != 0)
+                {
+                    foreach (Expenditure expenditure in Model.Expenditures)
+                    {
+                        <div>
+                            <div>
+                                <p>@expenditure.Name</p>
+                                @if (expenditure.Payer is not null)
+                                {
+                                    <p>@expenditure.Amount€ payé par @expenditure.Payer.Firstname @expenditure.Payer.Lastname.</p>
+                                }
+                                else
+                                {
+                                    <p>@expenditure.Amount€ payé par un ancien membre.</p>
+                                }
+                            </div>
+                            <div>
+                                <p>@expenditure.Amount</p>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>Ce groupe ne contient aucune dépense.</p>
+                }
+            </section>
+        </div>
+    </div>
+</div>
