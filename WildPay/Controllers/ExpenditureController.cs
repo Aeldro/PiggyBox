@@ -53,10 +53,10 @@ public class ExpenditureController : Controller
         groupBalance.Group = group;
         groupBalance.TotalAmount = group.Expenditures.Sum(el => el.Amount);
 
-        Dictionary<string, double> membersBalance = CalculateMembersBalance(group); //Calculate the balance of each member
-        membersBalance.OrderBy(el => el.Value);
+        Dictionary<ApplicationUser, double> membersBalance = await CalculateMembersBalance(group); //Calculate the balance of each member
+        membersBalance = membersBalance.OrderByDescending(el => el.Value).ToDictionary(el => el.Key, el => el.Value);
         groupBalance.UsersBalance = membersBalance;
-        groupBalance = CalculateDebtsList(groupBalance, group); //Calculate who must pay who
+        groupBalance = await CalculateDebtsList(groupBalance, group); //Calculate who must pay who
 
         if (group.Expenditures.Any(el => el.PayerId is null) || group.Expenditures.Any(el => el.Payer is null)) groupBalance.Message = "Attention ! Les dépenses qui n'ont pas de payeur n'ont pas été prises en compte. Vérifiez les dépenses du groupe et ajoutez-y un payeur si vous voulez les inclure au calcul.";
         else if (groupBalance.Debts.Count > 0 && groupBalance.Message == "") groupBalance.Message = "Calcul effectué avec succès.";
@@ -66,21 +66,21 @@ public class ExpenditureController : Controller
     }
 
     //Used in the GroupBalances method to calculate the balance of each member
-    public Dictionary<string, double> CalculateMembersBalance(Group group)
+    public async Task<Dictionary<ApplicationUser, double>> CalculateMembersBalance(Group group)
     {
-        Dictionary<string, double> membersBalance = new Dictionary<string, double>();
+        Dictionary<ApplicationUser, double> membersBalance = new Dictionary<ApplicationUser, double>();
 
-        foreach (ApplicationUser member in group.ApplicationUsers) membersBalance.Add(member.Id, 0);
+        foreach (ApplicationUser member in group.ApplicationUsers) membersBalance.Add(member, 0);
 
         foreach (Expenditure expenditure in group.Expenditures)
         {
             if (expenditure.PayerId is not null && expenditure.Payer is not null)
             {
-                double expenditureContributionPerPerson = expenditure.Amount / expenditure.RefundContributors.Count;
-                membersBalance[expenditure.PayerId] = membersBalance[expenditure.PayerId] + expenditure.Amount;
+                double expenditureContributionPerPerson = expenditure.Amount / await _expenditureRepository.GetContributorsCount(expenditure.Id);
+                membersBalance[expenditure.Payer] = membersBalance[expenditure.Payer] + expenditure.Amount;
                 foreach (ApplicationUser contributor in expenditure.RefundContributors)
                 {
-                    membersBalance[contributor.Id] = membersBalance[contributor.Id] - expenditureContributionPerPerson;
+                    membersBalance[contributor] = membersBalance[contributor] - expenditureContributionPerPerson;
                 }
             }
         }
@@ -89,12 +89,12 @@ public class ExpenditureController : Controller
     }
 
     //Used in the GroupBalances method to calculate who must pay who
-    public GroupBalance CalculateDebtsList(GroupBalance groupBalance, Group group)
+    public async Task<GroupBalance> CalculateDebtsList(GroupBalance groupBalance, Group group)
     {
         //Split the users balances into two parts : positives balances and negative balances. This aims to make the further calculation easier
-        Dictionary<string, double> positiveBalanceMembers = new Dictionary<string, double>();
-        Dictionary<string, double> negativeBalanceMembers = new Dictionary<string, double>();
-        foreach (KeyValuePair<string, double> member in groupBalance.UsersBalance)
+        Dictionary<ApplicationUser, double> positiveBalanceMembers = new Dictionary<ApplicationUser, double>();
+        Dictionary<ApplicationUser, double> negativeBalanceMembers = new Dictionary<ApplicationUser, double>();
+        foreach (KeyValuePair<ApplicationUser, double> member in groupBalance.UsersBalance)
         {
             if (member.Value < 0) negativeBalanceMembers.Add(member.Key, member.Value);
             else if (member.Value > 0) positiveBalanceMembers.Add(member.Key, member.Value);
@@ -104,10 +104,10 @@ public class ExpenditureController : Controller
         while (positiveBalanceMembers.Any(el => el.Value > 0.01) && negativeBalanceMembers.Any(el => el.Value < 0.01))
         {
             //Match the member who has the highest balance to the member who has the lowest balance
-            KeyValuePair<string, double> positiveBalanceMember = positiveBalanceMembers.OrderByDescending(el => el.Value).First();
-            ApplicationUser positiveBalanceUser = group.ApplicationUsers.Find(el => el.Id == positiveBalanceMember.Key);
-            KeyValuePair<string, double> negativeBalanceMember = negativeBalanceMembers.OrderBy(el => el.Value).First();
-            ApplicationUser negativeBalanceUser = group.ApplicationUsers.Find(el => el.Id == negativeBalanceMember.Key);
+            KeyValuePair<ApplicationUser, double> positiveBalanceMember = positiveBalanceMembers.OrderByDescending(el => el.Value).First();
+            ApplicationUser positiveBalanceUser = group.ApplicationUsers.Find(el => el.Id == positiveBalanceMember.Key.Id);
+            KeyValuePair<ApplicationUser, double> negativeBalanceMember = negativeBalanceMembers.OrderBy(el => el.Value).First();
+            ApplicationUser negativeBalanceUser = group.ApplicationUsers.Find(el => el.Id == negativeBalanceMember.Key.Id);
 
             double amount = 0;
 
@@ -116,7 +116,7 @@ public class ExpenditureController : Controller
             {
                 amount = -negativeBalanceMember.Value;
                 positiveBalanceMembers[positiveBalanceMember.Key] = positiveBalanceMember.Value + negativeBalanceMember.Value;
-                negativeBalanceMembers[negativeBalanceMember.Key] = negativeBalanceMember.Value + negativeBalanceMember.Value;
+                negativeBalanceMembers[negativeBalanceMember.Key] = negativeBalanceMember.Value - negativeBalanceMember.Value;
             }
             else if (positiveBalanceMember.Value < negativeBalanceMember.Value)
             {

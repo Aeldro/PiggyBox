@@ -25,10 +25,10 @@
                 </h3>
                 <div class="card">
                     <h5 class="card-header">Soldes :</h5>
-                    @foreach (KeyValuePair<string, double> member in Model.UsersBalance)
+                    @foreach (KeyValuePair<ApplicationUser, double> member in Model.UsersBalance)
                     {
                         <div class="card-body border-success">
-                            <h5 class="card-text">@member.Key @member.Key</h5>
+                            <h5 class="card-text">@member.Key.Firstname @member.Key.Lastname</h5>
                             <h5 class="card-title">@member.Value€</h5>
                             <div class="progress">
                                 @if (member.Value >= 0)

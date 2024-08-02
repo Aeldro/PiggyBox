@@ -17,6 +17,7 @@
                     <div class="card">
                         <h5 class="card-header">Votre groupe :</h5>
                         <div class="card-body">
+
                             @if (Model.ApplicationUsers is not null && Model.ApplicationUsers.Count != 0)
                             {
                                 foreach (ApplicationUser user in Model.ApplicationUsers)
