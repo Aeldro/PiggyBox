@@ -23,7 +23,7 @@ public class ExpenditureController : Controller
     }
 
     // READ
-    async public Task<IActionResult> GroupBalances(int Id)
+    async public Task<IActionResult> ListGroupBalances(int Id)
     {
         //Get the group
         Group? group = await _groupRepository.GetGroupByIdAsync(Id);
@@ -46,12 +46,12 @@ public class ExpenditureController : Controller
 
         if (group.Expenditures.Any(el => el.PayerId is null) || group.Expenditures.Any(el => el.Payer is null)) groupBalance.Message = "Attention ! Les dépenses qui n'ont pas de payeur n'ont pas été prises en compte. Vérifiez les dépenses du groupe et ajoutez-y un payeur si vous voulez les inclure au calcul.";
         else if (groupBalance.Debts.Count > 0 && groupBalance.Message == "") groupBalance.Message = "Calcul effectué avec succès.";
-        else if (groupBalance.Debts.Count == 0 && groupBalance.Message == "") groupBalance.Message = "Aucun paiement à effectuer.";
+        else if (groupBalance.Debts.Count == 0 && groupBalance.Message == "") groupBalance.Message = "Aucun remboursement à effectuer.";
 
         return View(groupBalance);
     }
 
-    async public Task<IActionResult> GroupExpenditures(int Id)
+    async public Task<IActionResult> ListGroupExpenditures(int Id)
     {
         //Get the group
         Group? group = await _groupRepository.GetGroupByIdAsync(Id);
@@ -63,48 +63,6 @@ public class ExpenditureController : Controller
         if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }
 
         return View(group);
-    }
-
-    // UPDATE
-    [HttpGet]
-    public IActionResult Edit()
-    {
-        return View();
-    }
-
-    // UPDATE
-    [HttpPost]
-    public IActionResult Edit(Expenditure expenditure)
-    {
-        return RedirectToAction(actionName: "List", controllerName: "Expenditure");
-    }
-
-    // CREATE
-    [HttpGet]
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // CREATE
-    [HttpPost]
-    public IActionResult Create(Expenditure expenditure)
-    {
-        return RedirectToAction(actionName: "List", controllerName: "Expenditure");
-    }
-
-    // DELETE
-    [HttpGet]
-    public IActionResult Delete()
-    {
-        return View();
-    }
-
-    // DELETE
-    [HttpPost]
-    public IActionResult Delete(Expenditure expenditure)
-    {
-        return RedirectToAction(actionName: "List", controllerName: "Expenditure");
     }
 
     //Used in the GroupBalances method to calculate the balance of each member
@@ -143,7 +101,7 @@ public class ExpenditureController : Controller
         }
 
         //Looping until everyone gets refunded
-        while (positiveBalanceMembers.Any(el => el.Value != 0) && negativeBalanceMembers.Any(el => el.Value != 0))
+        while (positiveBalanceMembers.Any(el => el.Value > 0.01) && negativeBalanceMembers.Any(el => el.Value < 0.01))
         {
             //Match the member who has the highest balance to the member who has the lowest balance
             KeyValuePair<ApplicationUser, double> positiveBalanceMember = positiveBalanceMembers.OrderByDescending(el => el.Value).First();
