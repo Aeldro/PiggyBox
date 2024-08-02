@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WildPay.Interfaces;
 using WildPay.Models.Entities;
-using WildPay.Models.ViewModel;
 using WildPay.Models.ViewModels;
 
 namespace WildPay.Controllers;
@@ -58,6 +57,8 @@ public class GroupController : Controller
     [HttpPost]
     public async Task<IActionResult> Add(Group group)
     {
+        if (!ModelState.IsValid) return View(group);
+
         string? userId = _userManager.GetUserId(User);
         if (userId is null) return NotFound();
 
@@ -79,7 +80,7 @@ public class GroupController : Controller
         UpdateGroupModel updateGroupModel = new UpdateGroupModel
         {
             GroupToUpdate = group,
-            NewMember = new Models.ViewModel.MemberAdded()
+            NewMember = new MemberAdded()
             {
                 GroupId = Id,
                 Email = ""
@@ -93,6 +94,8 @@ public class GroupController : Controller
     [HttpPost]
     public async Task<IActionResult> Update(UpdateGroupModel modelUpdated)
     {
+        if (ModelState.IsValid) return View(modelUpdated);
+
         Group? groupUpdated = modelUpdated.GroupToUpdate;
 
         if (groupUpdated is null) return NotFound();
@@ -103,7 +106,7 @@ public class GroupController : Controller
         }
 
         await _groupRepository.EditGroupAsync(groupUpdated);
-        return RedirectToAction(actionName: "List", controllerName: "Group");
+        return RedirectToAction(actionName: "Index", controllerName: "Group", new { groupUpdated.Id });
     }
 
     // Add a member to a group using a form

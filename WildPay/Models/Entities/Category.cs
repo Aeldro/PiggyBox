@@ -7,6 +7,7 @@ namespace WildPay.Models.Entities
         public int Id { get; set; }
 
         [Required]
+        [MaxLength(30)]
         public string Name { get; set; } = string.Empty;
         public int GroupId { get; set; }
         public Group? Group { get; set; }
