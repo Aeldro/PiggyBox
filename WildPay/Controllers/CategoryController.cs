@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using WildPay.Interfaces;
 using WildPay.Models.Entities;
 
@@ -19,7 +18,7 @@ namespace WildPay.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ListGroupCategories(int Id)
+        public async Task<IActionResult> GroupCategories(int Id)
         {
             //Get the group
             Group? group = await _groupRepository.GetGroupByIdAsync(Id);
@@ -56,8 +55,7 @@ namespace WildPay.Controllers
 
             await _categoryRepository.AddCategoryAsync(category);
 
-            return RedirectToAction(actionName: "ListGroupCategories", controllerName: "Category", new {Id = category.GroupId});
-
+            return RedirectToAction(actionName: "ListGroupCategories", controllerName: "Category", new { Id = category.GroupId });
         }
     }
 }
