@@ -17,7 +17,7 @@ namespace WildPay.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ListGroupCategories(int Id)
+        public async Task<IActionResult> GroupCategories(int Id)
         {
             //Get the group
             Group? group = await _groupRepository.GetGroupByIdAsync(Id);
@@ -30,16 +30,23 @@ namespace WildPay.Controllers
 
             return View(group);
         }
-        
-        [HttpPost]
-        public async Task<IActionResult> AddCategoryToGroup(Category category)
+
+
+        public IActionResult List()
         {
-            string ? userId = _userManager.GetUserId(User);
-            if (category == null)  return NotFound(); 
-
-            await _groupRepository.AddCate
-            
-
+            return View();
         }
+
+        [HttpGet]
+        public IActionResult Edit()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult Edit(Category category)
+        {
+            return RedirectToAction(actionName: "List", controllerName: "Category");
+        }
+
     }
 }
