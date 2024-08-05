@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using NuGet.Protocol.Core.Types;
 using WildPay.Interfaces;
 using WildPay.Models;
 using WildPay.Models.Entities;
@@ -17,7 +16,7 @@ public class ExpenditureController : Controller
     private readonly IGroupRepository _groupRepository;
     private readonly IBalanceService _balanceService;
 
-    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository)
+    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService)
     {
         _userManager = userManager;
         _expenditureRepository = expenditureRepository;
@@ -56,16 +55,41 @@ public class ExpenditureController : Controller
         groupBalance.Group = group;
         groupBalance.TotalAmount = group.Expenditures.Sum(el => el.Amount);
 
-        Dictionary<ApplicationUser, double> membersBalance = await CalculateMembersBalance(group); //Calculate the balance of each member
+        Dictionary<ApplicationUser, double> membersBalance = await _balanceService.CalculateMembersBalance(group); //Calculate the balance of each member
         membersBalance = membersBalance.OrderByDescending(el => el.Value).ToDictionary(el => el.Key, el => el.Value);
         groupBalance.UsersBalance = membersBalance;
-        groupBalance = await CalculateDebtsList(groupBalance, group); //Calculate who must pay who
+        groupBalance = await _balanceService.CalculateDebtsList(groupBalance, group); //Calculate who must pay who
 
         if (group.Expenditures.Any(el => el.PayerId is null) || group.Expenditures.Any(el => el.Payer is null)) groupBalance.Message = "Attention ! Les d�penses qui n'ont pas de payeur n'ont pas �t� prises en compte. V�rifiez les d�penses du groupe et ajoutez-y un payeur si vous voulez les inclure au calcul.";
         else if (groupBalance.Debts.Count > 0 && groupBalance.Message == "") groupBalance.Message = "Calcul effectu� avec succ�s.";
         else if (groupBalance.Debts.Count == 0 && groupBalance.Message == "") groupBalance.Message = "Aucun remboursement � effectuer.";
 
         return View(groupBalance);
+    }
+    
+    // CREATE
+    [HttpGet]
+    public async Task<IActionResult> AddExpenditure(int Id)
+    {
+        ViewBag.idGroup = Id;
+        Group group = await _groupRepository.GetGroupByIdAsync(Id);
+        List<ApplicationUser> users = group.ApplicationUsers;
+        ViewBag.Users = users;
+        
+        return View();
+    }
+
+    // CREATE
+    [HttpPost]
+    public async Task<IActionResult> AddExpenditure(Expenditure expenditure)
+    {
+        if (ModelState.IsValid)
+        {
+            string applicationUserId = _userManager.GetUserId(User); // get the id of the connected user
+            await _expenditureRepository.AddExpenditureAsync(expenditure);
+            return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new {id = expenditure.GroupId});
+        }
+        return View();
     }
 
 

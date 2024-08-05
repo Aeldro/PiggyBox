@@ -47,7 +47,7 @@ namespace WildPay.Repositories
         // method to create a new expenditure in a given group
         public async Task AddExpenditureAsync(Expenditure expenditure)
         {
-            Expenditure newExpenditure = new Expenditure() { // create the new object expenditure to save in database
+            Expenditure newExpenditure = new Expenditure() { // creates the new object expenditure to save in database
             
                 Name = expenditure.Name,
                 Amount = expenditure.Amount,
@@ -60,7 +60,7 @@ namespace WildPay.Repositories
                 GroupId = expenditure.GroupId,
                 RefundContributors = expenditure.RefundContributors
             };
-            await _context.Expenditures.AddAsync(expenditure); // calls the method from Entity Framework to add the new expenditure to database
+            await _context.Expenditures.AddAsync(newExpenditure); // calls the method from Entity Framework to add the new expenditure to database
             await _context.SaveChangesAsync(); // commit the new change to the database
         }
         
