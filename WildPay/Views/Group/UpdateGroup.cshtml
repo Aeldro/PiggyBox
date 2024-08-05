@@ -26,7 +26,7 @@
                     <input class="form-control" type="text" asp-for="GroupToUpdate.Image" />
                 </div>
 
-                <button asp-action="Update" asp-controller="Group">Enregistrer</button>
+                <button asp-action="UpdateGroup" asp-controller="Group">Enregistrer</button>
             </form>
 
             <h3>Supprimer un participant</h3>
@@ -36,7 +36,7 @@
                     {
                         <td>@user.Firstname</td>
                         <td>@user.Lastname</td>
-                        <td><a href="@Url.ActionLink("DeleteMember", "Group", new {userId = user.Id, groupId = Model.GroupToUpdate.Id})"><span class="material-symbols-outlined">delete</span></a></td> <!--bin icon-->
+                        <td><a href="@Url.ActionLink("DeleteMemberFromGroup", "Group", new {userId = user.Id, groupId = Model.GroupToUpdate.Id})"><span class="material-symbols-outlined">delete</span></a></td> <!--bin icon-->
                     }
                 </tr>
             </table>
@@ -54,11 +54,11 @@
                     <input class="form-control" type="email" asp-for="@Model.NewMember.Email" required />
                     <span asp-validation-for="@Model.NewMember.Email"></span>
 
-                    <button asp-action="AddMember" asp-controller="Group">Ajouter</button>
+                    <button asp-action="AddMemberToGroup" asp-controller="Group">Ajouter</button>
                 </div>
             </form>
 
-            <a class="btn btn-danger d-flex justify-content-center align-items-center w-25" asp-action="Delete" asp-controller="Group" asp-route-Id="@Model.GroupToUpdate.Id"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
+            <a class="btn btn-danger d-flex justify-content-center align-items-center w-25" asp-action="DeleteGroup" asp-controller="Group" asp-route-Id="@Model.GroupToUpdate.Id"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
         </div>
     </div>
 </div>
