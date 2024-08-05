@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using WildPay.Interfaces;
 using WildPay.Models.Entities;
 
@@ -9,11 +10,12 @@ namespace WildPay.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IGroupRepository _groupRepository;
-
-        public CategoryController(UserManager<ApplicationUser> userManager, IGroupRepository groupRepository)
+        private readonly ICategoryRepository _categoryRepository;
+        public CategoryController(UserManager<ApplicationUser> userManager, IGroupRepository groupRepository, ICategoryRepository categoryRepository)
         {
             _userManager = userManager;
             _groupRepository = groupRepository;
+            _categoryRepository = categoryRepository;
         }
 
         [HttpGet]
@@ -30,15 +32,31 @@ namespace WildPay.Controllers
 
             return View(group);
         }
+        [HttpGet]
         
-        [HttpPost]
-        public async Task<IActionResult> AddCategoryToGroup(Category category)
+        public IActionResult AddCategory(int Id)
         {
-            string ? userId = _userManager.GetUserId(User);
-            if (category == null)  return NotFound(); 
+            Category category = new Category
+            {
+                GroupId = Id
+            };
 
-            await _groupRepository.AddCate
-            
+            return View(category);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddCategory(Category category)
+        {
+            string? userId = _userManager.GetUserId(User);
+            if (category == null) return NotFound();
+
+            Group? group = await _groupRepository.GetGroupByIdAsync(category.GroupId);
+
+            category.Group = group;
+
+            await _categoryRepository.AddCategoryAsync(category);
+
+            return RedirectToAction(actionName: "ListGroupCategories", controllerName: "Category", new {Id = category.GroupId});
 
         }
     }

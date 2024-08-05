@@ -26,6 +26,8 @@ namespace WildPay
             builder.Services.AddScoped<IGroupRepository, GroupRepository>();
             builder.Services.AddScoped<IExpenditureRepository, ExpenditureRepository>();
             builder.Services.AddScoped<IBalanceService, BalanceService>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+
             // to add Expenditure Repository
 
             var app = builder.Build();
