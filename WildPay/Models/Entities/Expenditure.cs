@@ -19,11 +19,11 @@ namespace WildPay.Models.Entities
         public DateTime Date { get; set; }
 
         [Required]
-        public string? PayerId { get; set; } = null;
+        public string PayerId { get; set; } = string.Empty;
         public ApplicationUser? Payer { get; set; }
         public int? CategoryId { get; set; }
         public Category? Category { get; set; }
-        public int? GroupId { get; set; }
+        public int GroupId { get; set; }
         public Group? Group { get; set; }
         public List<ApplicationUser> RefundContributors { get; set; } = new List<ApplicationUser>();
     }
