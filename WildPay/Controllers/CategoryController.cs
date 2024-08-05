@@ -30,5 +30,16 @@ namespace WildPay.Controllers
 
             return View(group);
         }
+        
+        [HttpPost]
+        public async Task<IActionResult> AddCategoryToGroup(Category category)
+        {
+            string ? userId = _userManager.GetUserId(User);
+            if (category == null)  return NotFound(); 
+
+            await _groupRepository.AddCate
+            
+
+        }
     }
 }
