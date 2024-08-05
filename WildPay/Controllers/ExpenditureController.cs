@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using WildPay.Interfaces;
 using WildPay.Models;
 using WildPay.Models.Entities;
+using WildPay.Models.ViewModels;
 using WildPay.Services;
 
 namespace WildPay.Controllers;
@@ -14,6 +15,7 @@ public class ExpenditureController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IExpenditureRepository _expenditureRepository;
     private readonly IGroupRepository _groupRepository;
+    private readonly ICategoryRepository _categoryRepository;
     private readonly IBalanceService _balanceService;
 
     public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService)
@@ -71,26 +73,30 @@ public class ExpenditureController : Controller
     [HttpGet]
     public async Task<IActionResult> AddExpenditure(int Id)
     {
-        ViewBag.idGroup = Id;
-        Group group = await _groupRepository.GetGroupByIdAsync(Id);
-        List<ApplicationUser> users = group.ApplicationUsers;
-        ViewBag.Users = users;
+        Group? group = await _groupRepository.GetGroupByIdAsync(Id); // Get the Id of the group associated to the new expenditure
+        List<ApplicationUser> users = group.ApplicationUsers.ToList();
+        AddExpenditureInGroup model = new AddExpenditureInGroup // creates a new instance of modelView 
+        {
+            Users = users
+        };
         
-        return View();
+        return View(model);
     }
 
     // CREATE
     [HttpPost]
-    public async Task<IActionResult> AddExpenditure(Expenditure expenditure)
+    public async Task<IActionResult> AddExpenditure(AddExpenditureInGroup model)
     {
         if (ModelState.IsValid)
         {
-            string applicationUserId = _userManager.GetUserId(User); // get the id of the connected user
-            await _expenditureRepository.AddExpenditureAsync(expenditure);
-            return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new {id = expenditure.GroupId});
+            Group group = await _groupRepository.GetGroupByIdAsync(model.GroupId);
+            ApplicationUser payer = group.ApplicationUsers.FirstOrDefault(u => u.Id == model.ExpenditureToCreate.PayerId);
+            var category = _categoryRepository.AddCategoryAsync(model.ExpenditureToCreate.Category);
+            model.ExpenditureToCreate.CategoryId = category.Id;
+            
+            await _expenditureRepository.AddExpenditureAsync(model.ExpenditureToCreate);
+            return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new {id = model.GroupId});
         }
-        return View();
+        return View(model);
     }
-
-
 }

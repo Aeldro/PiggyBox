@@ -40,12 +40,12 @@ namespace WildPay.Repositories
             }
         }
 
-        public async Task AddCategoryAsync(string name, int groupId)
+        public async Task AddCategoryAsync(Category category)
         {
             Category newCategory = new Category
             {
-                Name = name,
-                GroupId = groupId
+                Name = category.Name,
+                GroupId = category.GroupId
             };
 
             await _context.Categories.AddAsync(newCategory);

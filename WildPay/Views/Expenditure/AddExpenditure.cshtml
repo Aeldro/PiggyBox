@@ -1,28 +1,24 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@using WildPay.Models.Entities
-@model WildPay.Models.Entities.Expenditure
+@model WildPay.Models.ViewModels.AddExpenditureInGroup
 @{ 
-    int idGroup = ViewBag.idGroup;
-    var users = ViewBag.users as List<ApplicationUser>;
 }
 
 <div>
     <form method="post">
-        <input type="hidden" asp-for="GroupId" value="@idGroup"/>
+        <input type="hidden" asp-for="@Model.GroupId" value="@Model.GroupId"/>
         
-        <label asp-for="Name">nom de la dépense</label>
-        <input type="text" asp-for="Name" placeholder="ex.: piquenique"/>
-        <label asp-for="Amount">valeur de la dépense</label>
-        <input type="number" step="0.01" asp-for="Amount" placeholder="ex.: 40.99"/>
-        <label asp-for="Date">Date</label>
-        <input asp-for="Date" type="date"/>
+        <label asp-for="@Model.ExpenditureToCreate.Name">nom de la dépense</label>
+        <input type="text" asp-for="@Model.ExpenditureToCreate.Name" placeholder="ex.: piquenique"/>
+        <label asp-for="@Model.ExpenditureToCreate.Amount">valeur de la dépense</label>
+        <input type="number" step="0.01" asp-for="@Model.ExpenditureToCreate.Amount" placeholder="ex.: 40.99"/>
+        <label asp-for="@Model.ExpenditureToCreate.Date">Model.ExpenditureToCreate.Date</label>
+        <input asp-for="@Model.ExpenditureToCreate.Date" type="date"/>
 
-        <label asp-for="Category">catégorie</label>
-        <input asp-for="Category" type="text" placeholder="ex.: voyage"/>
+        <label asp-for="@Model.ExpenditureToCreate.Category">catégorie</label>
+        <input asp-for="@Model.ExpenditureToCreate.Category" type="text" placeholder="ex.: voyage"/>
 
-        <label asp-for="Payer">Payé par</label>
-        <select asp-for="PayerId" asp-items="@(new SelectList(users, "Id", "Firstname"))">
-        </select>
+        <label asp-for="@Model.ExpenditureToCreate.Payer">Payé par</label>
+        <select asp-for="@Model.ExpenditureToCreate.PayerId" asp-items="@(new SelectList(Model.Users, "Id", "Firstname"))"></select>
         
         
         <button asp-action="AddExpenditure" asp-controller="Expenditure">Enregistrer</button>
