@@ -4,6 +4,7 @@ using WildPay.Data;
 using WildPay.Interfaces;
 using WildPay.Repositories;
 using WildPay.Services;
+using WildPay.Services.Interfaces;
 
 namespace WildPay
 {

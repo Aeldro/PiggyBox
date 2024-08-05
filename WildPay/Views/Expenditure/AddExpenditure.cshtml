@@ -19,8 +19,15 @@
 
         <label asp-for="@Model.ExpenditureToCreate.Payer">Payé par</label>
         <select asp-for="@Model.ExpenditureToCreate.PayerId" asp-items="@(new SelectList(Model.Users, "Id", "Firstname"))"></select>
-        
-        
+
+        <label>Participants</label>
+        <div>
+            @foreach (var user in Model.Users)
+            {
+            <input type="checkbox" name="SelectedUsersIds" value="@user.Id" />
+            <label>@user.Firstname</label>
+            }
+        </div>
         <button asp-action="AddExpenditure" asp-controller="Expenditure">Enregistrer</button>
     </form>
 </div>

@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WildPay.Interfaces;
 using WildPay.Models;
 using WildPay.Models.Entities;
 using WildPay.Models.ViewModels;
-using WildPay.Services;
+using WildPay.Services.Interfaces;
 
 namespace WildPay.Controllers;
 
@@ -77,6 +78,7 @@ public class ExpenditureController : Controller
         List<ApplicationUser> users = group.ApplicationUsers.ToList();
         AddExpenditureInGroup model = new AddExpenditureInGroup // creates a new instance of modelView 
         {
+            GroupId = group.Id,
             Users = users
         };
         
@@ -90,10 +92,17 @@ public class ExpenditureController : Controller
         if (ModelState.IsValid)
         {
             Group group = await _groupRepository.GetGroupByIdAsync(model.GroupId);
-            ApplicationUser payer = group.ApplicationUsers.FirstOrDefault(u => u.Id == model.ExpenditureToCreate.PayerId);
-            var category = _categoryRepository.AddCategoryAsync(model.ExpenditureToCreate.Category);
-            model.ExpenditureToCreate.CategoryId = category.Id;
+            model.ExpenditureToCreate.Group = group;
             
+            ApplicationUser payer = group.ApplicationUsers.FirstOrDefault(u => u.Id == model.ExpenditureToCreate.PayerId);
+            model.ExpenditureToCreate.Payer = payer;
+
+            var selectedUsers = await _userManager.Users
+                .Where(u => model.SelectedUsersIds.Contains(u.Id))
+                .ToListAsync();
+            
+            model.ExpenditureToCreate.RefundContributors = selectedUsers;
+
             await _expenditureRepository.AddExpenditureAsync(model.ExpenditureToCreate);
             return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new {id = model.GroupId});
         }

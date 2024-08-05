@@ -1,7 +1,7 @@
 ﻿using WildPay.Models.Entities;
 using WildPay.Models;
 using WildPay.Interfaces;
-using WildPay.Repositories;
+using WildPay.Services.Interfaces;
 
 namespace WildPay.Services
 {
