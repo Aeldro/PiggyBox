@@ -14,5 +14,20 @@ namespace WildPay.Repositories
             _context = context;
         }
 
+        public async Task<Expenditure?> GetExpenditureByIdAsync(int expenditureId)
+        {
+            Expenditure? expenditure = await _context.Expenditures
+                .Include(g => g.RefundContributors)
+                .FirstOrDefaultAsync(g => g.Id == expenditureId);
+            return expenditure;
+        }
+
+        public async Task<int> GetContributorsCount(int expenditureId)
+        {
+            Expenditure expenditure = await GetExpenditureByIdAsync(expenditureId);
+            int contributorsCount = expenditure.RefundContributors.Count;
+            return contributorsCount;
+        }
+
     }
 }

@@ -3,6 +3,7 @@ using WildPay.Models.Entities;
 using WildPay.Data;
 using WildPay.Interfaces;
 using WildPay.Repositories;
+using WildPay.Services;
 
 namespace WildPay
 {
@@ -24,6 +25,7 @@ namespace WildPay
 
             builder.Services.AddScoped<IGroupRepository, GroupRepository>();
             builder.Services.AddScoped<IExpenditureRepository, ExpenditureRepository>();
+            builder.Services.AddScoped<IBalanceService, BalanceService>();
             // to add Expenditure Repository
 
             var app = builder.Build();
