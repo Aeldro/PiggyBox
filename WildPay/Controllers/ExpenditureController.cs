@@ -139,8 +139,8 @@ public class ExpenditureController : Controller
     public async Task<IActionResult> AddExpenditure(int Id)
     {
         ViewBag.idGroup = Id;
-        var group = _groupRepository.GetGroupByIdAsync(Id);
-        //List<ApplicationUser> users = await _groupRepository.
+        Group group = await _groupRepository.GetGroupByIdAsync(Id);
+        List<ApplicationUser> users = group.ApplicationUsers;
         //ViewBag.Users = new SelectList(users, "Id", "Firstname");
         
         return View();
