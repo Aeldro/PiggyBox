@@ -6,6 +6,7 @@ namespace WildPay.Interfaces
     {
         Task<Expenditure?> GetExpenditureByIdAsync(int expenditureId);
         Task<int> GetContributorsCount(int expenditureId);
+        Task EditExpenditureAsync(Expenditure expenditure);
 
     }
 }

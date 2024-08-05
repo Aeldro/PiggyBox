@@ -29,5 +29,18 @@ namespace WildPay.Repositories
             return contributorsCount;
         }
 
+        public async Task EditExpenditureAsync(Expenditure expenditure)
+        {
+            Expenditure expenditureToUpdate = await GetExpenditureByIdAsync(expenditure.Id);
+            expenditureToUpdate.Name = expenditure.Name;
+            expenditureToUpdate.Amount = expenditure.Amount;
+            expenditureToUpdate.Date = expenditure.Date;
+            expenditureToUpdate.Payer = expenditure.Payer;
+            expenditureToUpdate.Category = expenditure.Category;
+            expenditureToUpdate.RefundContributors = expenditure.RefundContributors;
+            await _context.SaveChangesAsync();
+
+        }
+
     }
 }

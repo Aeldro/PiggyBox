@@ -5,6 +5,7 @@ using NuGet.Protocol.Core.Types;
 using WildPay.Interfaces;
 using WildPay.Models;
 using WildPay.Models.Entities;
+using WildPay.Models.ViewModels;
 using WildPay.Services;
 
 namespace WildPay.Controllers;
@@ -68,5 +69,41 @@ public class ExpenditureController : Controller
         return View(groupBalance);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> UpdateExpenditure(int groupId, int expenditureId)
+    {
+        //Get the group
+        Group? group = await _groupRepository.GetGroupByIdAsync(groupId);
+        ViewBag.Group = group;
 
+        //Return not found if no group is found
+        if (group == null) { return NotFound(); }
+
+        //Verify if the User belongs to the group, else we block the access
+        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }
+
+        //Get the expenditure
+        Expenditure? expenditure = await _expenditureRepository.GetExpenditureByIdAsync(expenditureId);
+
+        //Return not found if no expenditure is found
+        if (expenditure == null) { return NotFound(); }
+
+        GroupExpenditure groupExpenditure = new GroupExpenditure
+        {
+            Group = group,
+            Expenditure = expenditure
+        };
+
+        return View(groupExpenditure);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateExpenditure(GroupExpenditure model)
+    {
+        //if (!ModelState.IsValid) return View(model);
+        Expenditure expenditure = model.Expenditure;
+        await _expenditureRepository.EditExpenditureAsync(expenditure);
+        return RedirectToAction(actionName: "UpdateExpenditure", controllerName: "Expenditure");
+
+    }
 }
