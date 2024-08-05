@@ -1,6 +1,9 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using WildPay.Models.Entities
 @model WildPay.Models.Entities.Expenditure
 @{ 
     int idGroup = (int)ViewBag.idGroup;
+    var users = ViewBag.users as List<ApplicationUser>;
 }
 
 <div>
@@ -16,9 +19,12 @@
 
         <label asp-for="Category">catégorie</label>
         <input asp-for="Category" type="text" placeholder="ex.: voyage"/>
+
+        <label asp-for="Payer">Payé par</label>
+        <select asp-for="PayerId" asp-items="@(new SelectList(users, "Id", "Firstname"))">
+        </select>
         
         
-        
-        <button asp-action="Add" asp-controller="Expenditure">Enregistrer</button>
+        <button asp-action="AddExpenditure" asp-controller="Expenditure">Enregistrer</button>
     </form>
 </div>

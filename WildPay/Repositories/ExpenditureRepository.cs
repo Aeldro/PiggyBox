@@ -22,6 +22,21 @@ namespace WildPay.Repositories
             return expenditure;
         }
 
+        public async Task<List<Expenditure>> GetExpendituresAsync(string groupId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task EditExpenditureAsync(Expenditure expenditure)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> DeleteExpenditureAsync(int expenditureId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<int> GetContributorsCount(int expenditureId)
         {
             Expenditure expenditure = await GetExpenditureByIdAsync(expenditureId);
@@ -30,16 +45,20 @@ namespace WildPay.Repositories
         }
 
         // method to create a new expenditure in a given group
-        public async Task AddExpenditureAsync(string name, double amount, DateTime date, string? payerId, int? categoryId, int? groupId)
+        public async Task AddExpenditureAsync(Expenditure expenditure)
         {
-            Expenditure expenditure = new Expenditure() // create the new object expenditure to save in database
-            {
-                Name = name,
-                Amount = amount,
-                Date = date,
-                PayerId = payerId,
-                CategoryId = categoryId,
-                GroupId = groupId
+            Expenditure newExpenditure = new Expenditure() { // create the new object expenditure to save in database
+            
+                Name = expenditure.Name,
+                Amount = expenditure.Amount,
+                Date = expenditure.Date,
+                Payer = expenditure.Payer,
+                PayerId = expenditure.PayerId,
+                Category = expenditure.Category,
+                CategoryId = expenditure.CategoryId,
+                Group = expenditure.Group,
+                GroupId = expenditure.GroupId,
+                RefundContributors = expenditure.RefundContributors
             };
             await _context.Expenditures.AddAsync(expenditure); // calls the method from Entity Framework to add the new expenditure to database
             await _context.SaveChangesAsync(); // commit the new change to the database

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using NuGet.Protocol.Core.Types;
 using WildPay.Interfaces;
 using WildPay.Models;
@@ -64,7 +65,7 @@ public class ExpenditureController : Controller
 
         return View(groupBalance);
     }
-
+    
     //Used in the GroupBalances method to calculate the balance of each member
     public async Task<Dictionary<ApplicationUser, double>> CalculateMembersBalance(Group group)
     {
@@ -100,33 +101,6 @@ public class ExpenditureController : Controller
             else if (member.Value > 0) positiveBalanceMembers.Add(member.Key, member.Value);
         }
 
-    // CREATE
-    [HttpGet]
-    public async Task<IActionResult> Add(int Id)
-    {
-        ViewBag.idGroup = Id;
-        return View();
-    }
-
-    // CREATE
-    [HttpPost]
-    public async Task<IActionResult> Add(Expenditure expenditure)
-    {
-        if (ModelState.IsValid)
-        {
-            string applicationUserId = _userManager.GetUserId(User); // get the id of the connected user
-            await _expenditureRepository.AddExpenditureAsync( // add expediture to the repository
-                expenditure.Name, 
-                (double)expenditure.Amount, 
-                expenditure.Date, 
-                applicationUserId, 
-                expenditure.CategoryId, 
-                expenditure.GroupId);
-            return RedirectToAction(actionName: "GroupExpenditures", controllerName: "Expenditure", new {id = expenditure.GroupId});
-        }
-        return View();
-    }
-
         //Looping until everyone gets refunded
         while (positiveBalanceMembers.Any(el => el.Value > 0.01) && negativeBalanceMembers.Any(el => el.Value < 0.01))
         {
@@ -158,5 +132,30 @@ public class ExpenditureController : Controller
         }
 
         return groupBalance;
+    }
+
+    // CREATE
+    [HttpGet]
+    public async Task<IActionResult> AddExpenditure(int Id)
+    {
+        ViewBag.idGroup = Id;
+        var group = _groupRepository.GetGroupByIdAsync(Id);
+        //List<ApplicationUser> users = await _groupRepository.
+        //ViewBag.Users = new SelectList(users, "Id", "Firstname");
+        
+        return View();
+    }
+
+    // CREATE
+    [HttpPost]
+    public async Task<IActionResult> AddExpenditure(Expenditure expenditure)
+    {
+        if (ModelState.IsValid)
+        {
+            string applicationUserId = _userManager.GetUserId(User); // get the id of the connected user
+            await _expenditureRepository.AddExpenditureAsync(expenditure);
+            return RedirectToAction(actionName: "GroupExpenditures", controllerName: "Expenditure", new {id = expenditure.GroupId});
+        }
+        return View();
     }
 }

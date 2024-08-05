@@ -8,7 +8,7 @@ namespace WildPay.Interfaces
         Task<int> GetContributorsCount(int expenditureId);
         Task<List<Expenditure>> GetExpendituresAsync(string groupId);
         Task EditExpenditureAsync(Expenditure expenditure);
-        Task AddExpenditureAsync(string name, double amount, DateTime date, string? payerId, int? categoryId, int? groupId);
+        Task AddExpenditureAsync(Expenditure expenditure);
         Task<bool> DeleteExpenditureAsync(int expenditureId);
     }
 }
