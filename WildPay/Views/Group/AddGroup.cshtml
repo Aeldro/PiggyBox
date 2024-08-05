@@ -4,8 +4,11 @@
     <h3>Nouveau groupe</h3>
     
     <form method="post">
-        <label asp-for="Name">Nom</label>
-        <input type="text" asp-for="Name"/>
+        <div class="mt-3 form-group">
+            <label class="control-label" asp-for="Name">Nom</label>
+            <input class="form-control" type="text" asp-for="Name"/>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
         
         <button asp-action="AddGroup" asp-controller="Group">Enregistrer</button>
     </form>
