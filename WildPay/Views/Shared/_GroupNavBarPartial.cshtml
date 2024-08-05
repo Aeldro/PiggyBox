@@ -4,40 +4,40 @@
 <div class="col-md-3 responsive-container">
 
     <ul class="nav nav-pills flex-column">
-        @if (Html.ViewContext.RouteData.Values["action"].ToString() == "Index" && Html.ViewContext.RouteData.Values["controller"].ToString() == "Group")
+        @if (Html.ViewContext.RouteData.Values["action"].ToString() == "GetGroup" && Html.ViewContext.RouteData.Values["controller"].ToString() == "Group")
         {
-            <li id="group" class="nav-item"><a class="nav-link active" asp-action="Index" asp-controller="Group" asp-route-id=@Model.Id>Groupe</a></li>
+            <li id="group" class="nav-item"><a class="nav-link active" asp-action="GetGroup" asp-controller="Group" asp-route-id=@Model.Id>Groupe</a></li>
         }
         else
         {
-            <li id="group" class="nav-item"><a class="nav-link" asp-action="Index" asp-controller="Group" asp-route-id=@Model.Id>Groupe</a></li>
+            <li id="group" class="nav-item"><a class="nav-link" asp-action="GetGroup" asp-controller="Group" asp-route-id=@Model.Id>Groupe</a></li>
         }
 
-        @if (Html.ViewContext.RouteData.Values["action"].ToString() == "GroupExpenditures" && Html.ViewContext.RouteData.Values["controller"].ToString() == "Expenditure")
+        @if (Html.ViewContext.RouteData.Values["action"].ToString() == "ListGroupExpenditures" && Html.ViewContext.RouteData.Values["controller"].ToString() == "Expenditure")
         {
-            <li id="expenditures" class="nav-item"><a class="nav-link active" asp-action="GroupExpenditures" asp-controller="Expenditure" asp-route-id=@Model.Id>Dépenses</a></li>
+            <li id="expenditures" class="nav-item"><a class="nav-link active" asp-action="ListGroupExpenditures" asp-controller="Expenditure" asp-route-id=@Model.Id>Dépenses</a></li>
         }
         else
         {
-            <li id="expenditures" class="nav-item"><a class="nav-link" asp-action="GroupExpenditures" asp-controller="Expenditure" asp-route-id=@Model.Id>Dépenses</a></li>
+            <li id="expenditures" class="nav-item"><a class="nav-link" asp-action="ListGroupExpenditures" asp-controller="Expenditure" asp-route-id=@Model.Id>Dépenses</a></li>
         }
 
-        @if (Html.ViewContext.RouteData.Values["action"].ToString() == "GroupBalances" && Html.ViewContext.RouteData.Values["controller"].ToString() == "Expenditure")
+        @if (Html.ViewContext.RouteData.Values["action"].ToString() == "ListGroupBalances" && Html.ViewContext.RouteData.Values["controller"].ToString() == "Expenditure")
         {
-            <li id="balances" class="nav-item"><a class="nav-link active" asp-action="GroupBalances" asp-controller="Expenditure" asp-route-id=@Model.Id>Soldes</a></li>
+            <li id="balances" class="nav-item"><a class="nav-link active" asp-action="ListGroupBalances" asp-controller="Expenditure" asp-route-id=@Model.Id>Soldes</a></li>
         }
         else
         {
-            <li id="balances" class="nav-item"><a class="nav-link" asp-action="GroupBalances" asp-controller="Expenditure" asp-route-id=@Model.Id>Soldes</a></li>
+            <li id="balances" class="nav-item"><a class="nav-link" asp-action="ListGroupBalances" asp-controller="Expenditure" asp-route-id=@Model.Id>Soldes</a></li>
         }
 
-        @if (Html.ViewContext.RouteData.Values["action"].ToString() == "GroupCategories" && Html.ViewContext.RouteData.Values["controller"].ToString() == "Category")
+        @if (Html.ViewContext.RouteData.Values["action"].ToString() == "ListGroupCategories" && Html.ViewContext.RouteData.Values["controller"].ToString() == "Category")
         {
-            <li id="balances" class="nav-item"><a class="nav-link active" asp-action="GroupCategories" asp-controller="Category" asp-route-id=@Model.Id>Catégories</a></li>
+            <li id="balances" class="nav-item"><a class="nav-link active" asp-action="ListGroupCategories" asp-controller="Category" asp-route-id=@Model.Id>Catégories</a></li>
         }
         else
         {
-            <li id="balances" class="nav-item"><a class="nav-link" asp-action="GroupCategories" asp-controller="Category" asp-route-id=@Model.Id>Catégories</a></li>
+            <li id="balances" class="nav-item"><a class="nav-link" asp-action="ListGroupCategories" asp-controller="Category" asp-route-id=@Model.Id>Catégories</a></li>
         }
     </ul>
 </div>
