@@ -1,0 +1,69 @@
+﻿@using WildPay.Models
+@using WildPay.Models.Entities
+@model GroupBalance
+
+@{
+    ViewData["Title"] = "Soldes " + Model.Group.Name;
+    double PercentFillCalculation(double contribution, double totalContribution)
+    {
+        if (totalContribution == 0) return 0;
+        if (contribution < 0) contribution = Math.Abs(contribution);
+        return Math.Round(contribution / totalContribution * 100, 2);
+    }
+}
+
+<div>
+    <partial name="_GroupTitlePartial" model="Model.Group" />
+    <hr />
+    <div class="row">
+        <partial name="_GroupNavBarPartial" model="Model.Group" />
+        <div class="col-md-9">
+            <section>
+                <h3>
+                    Total des dépenses :
+                    <b class="text-warning">@Model.TotalAmount€</b>
+                </h3>
+                <div class="card">
+                    <h5 class="card-header">Soldes :</h5>
+                    @foreach (KeyValuePair<ApplicationUser, double> member in Model.UsersBalance)
+                    {
+                        <div class="card-body border-success">
+                            <h5 class="card-text">@member.Key.Firstname @member.Key.Lastname</h5>
+                            <h5 class="card-title">@member.Value€</h5>
+                            <div class="progress">
+                                @if (member.Value >= 0)
+                                {
+                                    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: @PercentFillCalculation(member.Value, Model.TotalAmount).ToString().Replace(',','.')%" aria-valuemin="0" aria-valuemax="100"></div>
+                                }
+                                else
+                                {
+                                    <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: @PercentFillCalculation(member.Value, Model.TotalAmount).ToString().Replace(',','.')%" aria-valuemin="0" aria-valuemax="100"></div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <div class="card">
+                        <h5 class="card-header">Remboursements à effectuer :</h5>
+                        <div class="card-body">
+                            <p class="card-text">@Model.Message</p>
+                        </div>
+                        @foreach (Debt debt in Model.Debts)
+                        {
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <span class="text-danger">@debt.Debtor.Firstname @debt.Debtor.Lastname</span>
+                                    doit
+                                    <span class="text-info">@debt.Amount€</span>
+                                    à
+                                    <span class="text-success">@debt.Creditor.Firstname @debt.Creditor.Lastname</span>
+                                </h5>
+                                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                            </div>
+                        }
+                    </div>
+
+            </section>
+        </div>
+    </div>
+</div>
