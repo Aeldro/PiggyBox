@@ -1,12 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace WildPay.Models.ViewModels
+﻿namespace WildPay.Models.ViewModel
 {
     public class MemberAdded
     {
         public int GroupId { get; set; }
-
-        [EmailAddress]
         public string Email { get; set; } = string.Empty;
     }
 }
