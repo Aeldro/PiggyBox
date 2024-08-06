@@ -1,13 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Elfie.Serialization;
-using Microsoft.EntityFrameworkCore;
 using WildPay.Interfaces;
 using WildPay.Models;
 using WildPay.Models.Entities;
 using WildPay.Models.ViewModels;
-using WildPay.Services;
 using WildPay.Services.Interfaces;
 
 namespace WildPay.Controllers;
@@ -58,18 +55,30 @@ public class ExpenditureController : Controller
 
         //Init GroupBalance instance
         GroupBalance groupBalance = new GroupBalance();
+
         groupBalance.Group = group;
         groupBalance.TotalAmount = group.Expenditures.Sum(el => el.Amount);
 
+        // Calculate the amount paied or due by each members of the group
         Dictionary<ApplicationUser, double> membersBalance = await _balanceService.CalculateMembersBalance(group);
 
         membersBalance = membersBalance.OrderByDescending(el => el.Value).ToDictionary(el => el.Key, el => el.Value);
         groupBalance.UsersBalance = membersBalance;
 
-        groupBalance = await _balanceService.CalculateDebtsList(groupBalance, group); //Calculate who must pay who
+        // Calculate the debts: creditor-debitor for each due amount
+        groupBalance = _balanceService.CalculateDebtsList(groupBalance, group);
 
-        if (group.Expenditures.Any(el => el.PayerId is null) || group.Expenditures.Any(el => el.Payer is null)) groupBalance.Message = "Attention ! Les dépenses qui n'ont pas de payeur n'ont pas été prises en compte. Vérifiez les dépenses du groupe et ajoutez-y un payeur si vous voulez les inclure au calcul.";
-        else if (groupBalance.Debts.Count > 0 && groupBalance.Message == "") groupBalance.Message = "Calcul effectué avec succ�s.";
+        if (group.Expenditures.Any(el => el.PayerId is null) || group.Expenditures.Any(el => el.Payer is null))
+        {
+            groupBalance.Message = "Attention ! Les dépenses qui n'ont pas de payeur n'ont pas été prises en compte.\nVérifiez les dépenses du groupe et ajoutez-y un payeur si vous voulez les inclure au calcul.\n";
+        }
+
+        if (group.Expenditures.Any(el => el.RefundContributors == null) || group.Expenditures.Any(el => el.RefundContributors.Count() == 0))
+        {
+            groupBalance.Message += "Attention ! Les dépenses qui n'ont pas de contributeurs n'ont pas été prises en compte.\nVérifiez les dépenses du groupe et ajoutez-y des contributeurs si vous voulez les inclure au calcul.";
+        }
+
+        if (groupBalance.Debts.Count > 0 && groupBalance.Message == "") groupBalance.Message = "Toutes les dépenses ont été prises en compte.";
         else if (groupBalance.Debts.Count == 0 && groupBalance.Message == "") groupBalance.Message = "Aucun remboursement à effectuer.";
 
         return View(groupBalance);

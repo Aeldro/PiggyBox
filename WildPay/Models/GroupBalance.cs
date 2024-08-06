@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using WildPay.Models.Entities;
+﻿using WildPay.Models.Entities;
 
 namespace WildPay.Models
 {

@@ -31,8 +31,7 @@ namespace WildPay.Services
                 {
                     int numberOfContributors = await _expenditureRepository.GetContributorsCountAsync(expenditure.Id);
 
-                    // we don't take into account in our balances the expenditures
-                    // that has no contributors
+                    // we don't take into account in our balances the expenditures that has no contributors
                     if (numberOfContributors == 0) continue;
 
                     double expenditureContributionPerPerson = expenditure.Amount / numberOfContributors;
@@ -50,45 +49,63 @@ namespace WildPay.Services
         }
 
         /// <summary>
-        /// 
+        /// Calculate the debts from the balance dictionary
         /// </summary>
-        /// <param name="groupBalance">customed object with the informations for the View Balance</param>
-        /// <param name="group"></param>
+        /// <param name="groupBalance">customed object with the informations for the View ListGroupBalances</param>
+        /// <param name="group">the group in which the user is</param>
         /// <returns></returns>
-        public async Task<GroupBalance> CalculateDebtsList(GroupBalance groupBalance, Group group)
+        public GroupBalance CalculateDebtsList(GroupBalance groupBalance, Group group)
         {
-            //Looping until everyone gets refunded
-            while (groupBalance.UsersBalance.Any(user => user.Value > 0.01) && groupBalance.UsersBalance.Any(user => user.Value < 0.01))
+            // must create a new dictionary to modify the dictionary without modifying groupBalance.UsersBalance (values useful into the View)
+            // otherwise it makes a reference copy, not a value copy
+            var membersBalances = new Dictionary<ApplicationUser, double>(groupBalance.UsersBalance);
+
+            // Looping until everyone gets refunded
+            while (membersBalances.Any(user => user.Value > 0.01))
             {
-                //Match the member who has the highest balance to the member who has the lowest balance
-                KeyValuePair<ApplicationUser, double> highestCreditor = groupBalance.UsersBalance.OrderByDescending(el => el.Value).First();
-                ApplicationUser positiveBalanceUser = group.ApplicationUsers.Find(el => el.Id == highestCreditor.Key.Id);
+                // Find the user with the highest balance
+                KeyValuePair<ApplicationUser, double> highestCreditor = membersBalances.OrderByDescending(user => user.Value).First();
+                ApplicationUser Creditor = group.ApplicationUsers.Find(user => user.Id == highestCreditor.Key.Id);
 
-                KeyValuePair<ApplicationUser, double> highestDebitor = negativeBalanceMembers.OrderBy(el => el.Value).First();
-                ApplicationUser negativeBalanceUser = group.ApplicationUsers.Find(el => el.Id == highestDebitor.Key.Id);
+                // Find the user with the lowest balance
+                KeyValuePair<ApplicationUser, double> highestDebitor = membersBalances.OrderBy(user => user.Value).First();
+                ApplicationUser Debitor = group.ApplicationUsers.Find(user => user.Id == highestDebitor.Key.Id);
 
+                // will be used in Debt
                 double amount = 0;
 
-                //Update the balance of both members
-                if (highestCreditor.Value >= highestDebitor.Value)
+                if (highestCreditor.Value >= Math.Abs(highestDebitor.Value))
                 {
-                    amount = -highestDebitor.Value;
+                    // Update the balance of both members
+                    amount = Math.Abs(highestDebitor.Value);
 
-                    positiveBalanceMembers[highestCreditor.Key] = highestCreditor.Value + highestDebitor.Value;
+                    // the new balance of the highest creditor:
+                    // its actual value - the value of the highest debitor
+                    membersBalances[highestCreditor.Key] = highestCreditor.Value - Math.Abs(highestDebitor.Value);
 
-                    negativeBalanceMembers[highestDebitor.Key] = highestDebitor.Value - highestDebitor.Value;
+                    // the new balance of the highest debitor: 0
+                    // he pays the totality of its debt to the current creditor
+                    membersBalances[highestDebitor.Key] = 0;
                 }
-                else if (highestCreditor.Value < highestDebitor.Value)
+                else
                 {
+                    // the amount for the creditor to pay back is the total
+                    // amount due to the current highest creditor
                     amount = highestCreditor.Value;
 
-                    negativeBalanceMembers[highestDebitor.Key] = highestDebitor.Value + highestCreditor.Value;
-
-                    positiveBalanceMembers[highestCreditor.Key] = highestCreditor.Value - highestCreditor.Value;
+                    membersBalances[highestCreditor.Key] = 0;
+                    membersBalances[highestDebitor.Key] = highestDebitor.Value + Math.Abs(amount);
                 }
 
-                //Make the debt
-                Debt debt = new Debt(negativeBalanceUser, positiveBalanceUser, amount);
+                // Debt is used to store informations about every
+                // creditor-debitor-amount for the View
+                Debt debt = new Debt
+                {
+                    Amount = amount,
+                    Debtor = Debitor,
+                    Creditor = Creditor
+                };
+
                 groupBalance.Debts.Add(debt);
             }
 
