@@ -61,14 +61,16 @@ public class ExpenditureController : Controller
         groupBalance.Group = group;
         groupBalance.TotalAmount = group.Expenditures.Sum(el => el.Amount);
 
-        Dictionary<ApplicationUser, double> membersBalance = await _balanceService.CalculateMembersBalance(group); //Calculate the balance of each member
+        Dictionary<ApplicationUser, double> membersBalance = await _balanceService.CalculateMembersBalance(group);
+
         membersBalance = membersBalance.OrderByDescending(el => el.Value).ToDictionary(el => el.Key, el => el.Value);
         groupBalance.UsersBalance = membersBalance;
+
         groupBalance = await _balanceService.CalculateDebtsList(groupBalance, group); //Calculate who must pay who
 
-        if (group.Expenditures.Any(el => el.PayerId is null) || group.Expenditures.Any(el => el.Payer is null)) groupBalance.Message = "Attention ! Les d�penses qui n'ont pas de payeur n'ont pas �t� prises en compte. V�rifiez les d�penses du groupe et ajoutez-y un payeur si vous voulez les inclure au calcul.";
-        else if (groupBalance.Debts.Count > 0 && groupBalance.Message == "") groupBalance.Message = "Calcul effectu� avec succ�s.";
-        else if (groupBalance.Debts.Count == 0 && groupBalance.Message == "") groupBalance.Message = "Aucun remboursement � effectuer.";
+        if (group.Expenditures.Any(el => el.PayerId is null) || group.Expenditures.Any(el => el.Payer is null)) groupBalance.Message = "Attention ! Les dépenses qui n'ont pas de payeur n'ont pas été prises en compte. Vérifiez les dépenses du groupe et ajoutez-y un payeur si vous voulez les inclure au calcul.";
+        else if (groupBalance.Debts.Count > 0 && groupBalance.Message == "") groupBalance.Message = "Calcul effectué avec succ�s.";
+        else if (groupBalance.Debts.Count == 0 && groupBalance.Message == "") groupBalance.Message = "Aucun remboursement à effectuer.";
 
         return View(groupBalance);
     }
