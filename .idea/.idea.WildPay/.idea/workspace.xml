@@ -8,11 +8,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a8a3c22f-04f9-4956-9a53-7dbeba0572cb" name="Changes" comment="removed unused">
+    <list default="true" id="a8a3c22f-04f9-4956-9a53-7dbeba0572cb" name="Changes" comment="added add Category in new expenditiure page">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.WildPay/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.WildPay/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WildPay/Controllers/ExpenditureController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WildPay/Controllers/ExpenditureController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WildPay/Models/ViewModels/AddExpenditureInGroup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WildPay/Models/ViewModels/AddExpenditureInGroup.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WildPay/Services/ExpenditureService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WildPay/Services/ExpenditureService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WildPay/Views/Expenditure/AddExpenditure.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/WildPay/Views/Expenditure/AddExpenditure.cshtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -399,7 +396,15 @@
       <option name="project" value="LOCAL" />
       <updated>1722946666377</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="added add Category in new expenditiure page">
+      <option name="closed" value="true" />
+      <created>1722957306461</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1722957306461</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -452,7 +457,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="Added Edit method in ExpenditureController.cs" />
     <MESSAGE value="fix firstName" />
     <MESSAGE value="update context" />
     <MESSAGE value="added methods CRUD to ExpenditureController.cs" />
@@ -477,7 +481,8 @@
     <MESSAGE value="added ExpenditureService.cs" />
     <MESSAGE value="created ExpenditureService.cs and its interface, added methods to service" />
     <MESSAGE value="removed unused" />
-    <option name="LAST_COMMIT_MESSAGE" value="removed unused" />
+    <MESSAGE value="added add Category in new expenditiure page" />
+    <option name="LAST_COMMIT_MESSAGE" value="added add Category in new expenditiure page" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

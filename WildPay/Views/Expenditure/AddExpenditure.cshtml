@@ -22,7 +22,9 @@
 
         <!-- form to choose Category -->
         <label asp-for="@Model.CategoryId">Catégorie</label>
-        <select asp-for="@Model.CategoryId" asp-items="@(new SelectList(Model.CategoriesInGroup, "Id", "Name"))"></select>
+        <select asp-for="@Model.CategoryId" asp-items="@(new SelectList(Model.CategoriesInGroup, "Id", "Name"))">
+            <option value="">- Sélectionnez un item -</option> <!-- Placeholder -->
+        </select>
 
         <!-- form to add Payer using a select list -->
         <label asp-for="@Model.ExpenditureToCreate.Payer">Payé par</label>
