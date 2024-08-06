@@ -73,9 +73,10 @@ public class ExpenditureController : Controller
             groupBalance.Message = "Attention ! Les dépenses qui n'ont pas de payeur n'ont pas été prises en compte.\nVérifiez les dépenses du groupe et ajoutez-y un payeur si vous voulez les inclure au calcul.\n";
         }
 
+        // n'arrive pas à retrouver les refundcontributors de expenditures
         if (group.Expenditures.Any(el => el.RefundContributors == null) || group.Expenditures.Any(el => el.RefundContributors.Count() == 0))
         {
-            groupBalance.Message += "Attention ! Les dépenses qui n'ont pas de contributeurs n'ont pas été prises en compte.\nVérifiez les dépenses du groupe et ajoutez-y des contributeurs si vous voulez les inclure au calcul.";
+            groupBalance.Message = groupBalance.Message + "Attention ! Les dépenses qui n'ont pas de contributeurs n'ont pas été prises en compte.\nVérifiez les dépenses du groupe et ajoutez-y des contributeurs si vous voulez les inclure au calcul.";
         }
 
         if (groupBalance.Debts.Count > 0 && groupBalance.Message == "") groupBalance.Message = "Toutes les dépenses ont été prises en compte.";

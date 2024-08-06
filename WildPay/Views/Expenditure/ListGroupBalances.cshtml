@@ -35,7 +35,7 @@
                     {
                         <div class="card-body border-success">
                             <h5 class="card-text">@member.Key.Firstname @member.Key.Lastname</h5>
-                            <h5 class="card-title">@member.Value€</h5>
+                            <h5 class="card-title">@Math.Round(member.Value, 2)€</h5>
 
                             <div class="progress">
                                 @if (member.Value >= 0)
@@ -62,7 +62,7 @@
                                 <h5 class="card-title">
                                     <span class="text-danger">@debt.Debtor.Firstname @debt.Debtor.Lastname</span>
                                     doit
-                                    <span class="text-info">@debt.Amount€</span>
+                                    <span class="text-info">@Math.Round(debt.Amount, 2)€</span>
                                     à
                                     <span class="text-success">@debt.Creditor.Firstname @debt.Creditor.Lastname</span>
                                 </h5>
