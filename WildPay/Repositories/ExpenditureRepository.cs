@@ -37,6 +37,8 @@ namespace WildPay.Repositories
             expenditureToUpdate.Date = expenditure.Date;
             expenditureToUpdate.Payer = expenditure.Payer;
             expenditureToUpdate.Category = expenditure.Category;
+            expenditureToUpdate.CategoryId = expenditure.CategoryId;
+
             expenditureToUpdate.RefundContributors = expenditure.RefundContributors;
             await _context.SaveChangesAsync();
 

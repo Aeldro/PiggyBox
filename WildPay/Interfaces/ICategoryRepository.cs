@@ -7,7 +7,7 @@ namespace WildPay.Interfaces
         Task<List<Category>> GetCategoriesAsync(int groupId);
         Task<Category?> GetCategoryByIdAsync(int categoryId);
         Task EditCategoryAsync(Category category);
-        Task AddCategoryAsync(string name, int groupId);
+        Task AddCategoryAsync(Category category);
         Task<bool> DeleteCategoryAsync(int categoryId);
     }
 }

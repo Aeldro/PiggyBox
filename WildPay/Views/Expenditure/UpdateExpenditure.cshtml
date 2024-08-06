@@ -1,71 +1,44 @@
 ﻿@using WildPay.Models.Entities
-@model WildPay.Models.ViewModels.GroupExpenditure
+@model Expenditure
 @{
+    string categoryId;
+    string payerId;
 }
 
 <h3>Modifier la dépense</h3>
-<form method="post">
-    <input type="text" asp-for="@Model.Expenditure.Id" hidden="hidden" readonly />
-    <input type="text" asp-for="@Model.Group.Id" hidden="hidden" readonly />
+<form action='@Url.Action("UpdateExpenditure", "Expenditure", new { groupId = ViewBag.Group.Id })' method="post">
 
-    <label class="control-label" asp-for="@Model.Expenditure.Name">Nom</label>
-    <input class="form-control" type="text" asp-for="@Model.Expenditure.Name" />
-    <span asp-validation-for="@Model.Expenditure.Name" class="text-danger"></span>
+    <input type="text" asp-for="@Model.Id" hidden="hidden" readonly />
 
-    <label class="control-label" asp-for="@Model.Expenditure.Amount">Montant</label>
-    <input class="form-control" type="number" asp-for="@Model.Expenditure.Amount" />
-    <span asp-validation-for="@Model.Expenditure.Amount" class="text-danger"></span>
+    <label class="control-label" asp-for="@Model.Name">Nom</label>
+    <input class="form-control" type="text" asp-for="@Model.Name" />
+    <span asp-validation-for="@Model.Name" class="text-danger"></span>
 
-    <label class="control-label" asp-for="@Model.Expenditure.Date">Date</label>
-    <input class="form-control" type="date" asp-for="@Model.Expenditure.Date" />
-    <span asp-validation-for="@Model.Expenditure.Date" class="text-danger"></span>
+    <label class="control-label" asp-for="@Model.Amount">Montant</label>
+    <input class="form-control" type="number" asp-for="@Model.Amount" />
+    <span asp-validation-for="@Model.Amount" class="text-danger"></span>
 
-    <label class="control-label" asp-for="@Model.Expenditure.Category">Catégorie</label>
-    <select asp-for="@Model.Expenditure.Category">
-        @foreach (var category in Model.Group.Categories)
-        {
-            if (Model.Expenditure.Category is not null && category.Id == Model.Expenditure.Category.Id)
-            {
-                <option value="@category" selected>@category.Name</option>
-            }
-            else
-            {
-                <option value="@category">@category.Name</option>
-            }
-        }
-    </select>
-    <span asp-validation-for="@Model.Expenditure.Category" class="text-danger"></span>
+    <label class="control-label" asp-for="@Model.Date">Date</label>
+    <input class="form-control" type="date" asp-for="@Model.Date" />
+    <span asp-validation-for="@Model.Date" class="text-danger"></span>
 
+    @Html.DropDownListFor(m => m.CategoryId, new SelectList(ViewBag.GroupCategoriesSelects, "Value", "Text"), "Selectionnez une catégorie")
 
-    <label class="control-label" asp-for="@Model.Expenditure.Payer">Payeur</label>
-    <select asp-for="@Model.Expenditure.Payer">
-        @foreach (var member in Model.Group.ApplicationUsers)
-        {
-            if (member.Id == Model.Expenditure.PayerId)
-            {
-                <option value="@member" selected>@member.Firstname @member.Lastname</option>
-            }
-            else
-            {
-                <option value="@member">@member.Firstname @member.Lastname</option>
-            }
-        }
-    </select>
-    <span asp-validation-for="@Model.Expenditure.Payer" class="text-danger"></span>
+    @Html.DropDownListFor(m => m.PayerId, new SelectList(ViewBag.GroupUsersSelects, "Value", "Text"), "Selectionnez un payeur")
 
-@*     @foreach (var member in Model.Group.ApplicationUsers)
+    @foreach (var member in ViewBag.Group.ApplicationUsers)
     {
-        if (Model.Expenditure.RefundContributors.Any(el => el.Id == member.Id))
+        if (Model.RefundContributors.Any(el => el.Id == member.Id))
         {
-            <input type="checkbox" id="@member.Id" value="@member" checked />
+            <input type="checkbox" id="@member.Id" name="RefundContributors" value="@member.Id" checked />
             <label for="@member.Id">@member.Firstname @member.Lastname</label>
         }
         else
         {
-            <input type="checkbox" id="@member.Id" value="@member" />
+            <input type="checkbox" id="@member.Id" name="RefundContributors" value="@member.Id" />
             <label for="@member.Id">@member.Firstname @member.Lastname</label>
         }
-    } *@
+    }
 
-    <button type="submit" asp-action="UpdateExpenditure" asp-controller="Expenditure">Sauvegarder</button>
+    <button type="submit">Sauvegarder</button>
 </form>

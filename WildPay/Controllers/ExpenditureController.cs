@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using NuGet.Protocol.Core.Types;
 using WildPay.Interfaces;
 using WildPay.Models;
@@ -16,13 +17,15 @@ public class ExpenditureController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IExpenditureRepository _expenditureRepository;
     private readonly IGroupRepository _groupRepository;
+    private readonly ICategoryRepository _categoryRepository;
     private readonly IBalanceService _balanceService;
 
-    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService)
+    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService, ICategoryRepository categoryRepository)
     {
         _userManager = userManager;
         _expenditureRepository = expenditureRepository;
         _groupRepository = groupRepository;
+        _categoryRepository = categoryRepository;
         _balanceService = balanceService;
     }
 
@@ -88,22 +91,42 @@ public class ExpenditureController : Controller
         //Return not found if no expenditure is found
         if (expenditure == null) { return NotFound(); }
 
-        GroupExpenditure groupExpenditure = new GroupExpenditure
+        var groupUsers = new List<SelectListItem>();
+        foreach (ApplicationUser member in group.ApplicationUsers)
         {
-            Group = group,
-            Expenditure = expenditure
-        };
+            groupUsers.Add(new SelectListItem { Value = member.Id, Text = $"{member.Firstname} {member.Lastname}" });
+        }
 
-        return View(groupExpenditure);
+        var groupCategories = new List<SelectListItem>();
+        foreach (Category category in group.Categories)
+        {
+            groupCategories.Add(new SelectListItem { Value = category.Id.ToString(), Text = category.Name });
+        }
+
+        ViewBag.Group = group;
+        ViewBag.GroupUsersSelects = groupUsers;
+        ViewBag.GroupCategoriesSelects = groupCategories;
+
+        return View(expenditure);
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpdateExpenditure(GroupExpenditure model)
+    public async Task<IActionResult> UpdateExpenditure(Expenditure expenditure, int groupId, string[] RefundContributors)
     {
         //if (!ModelState.IsValid) return View(model);
-        Expenditure expenditure = model.Expenditure;
-        await _expenditureRepository.EditExpenditureAsync(expenditure);
-        return RedirectToAction(actionName: "UpdateExpenditure", controllerName: "Expenditure");
 
+        if (expenditure.PayerId is not null) expenditure.Payer = await _userManager.FindByIdAsync(expenditure.PayerId);
+        else expenditure.Payer = null;
+        if (expenditure.CategoryId is not null) expenditure.Category = await _categoryRepository.GetCategoryByIdAsync(Convert.ToInt32(expenditure.CategoryId));
+        else expenditure.Category = null;
+
+        expenditure.RefundContributors.Clear();
+        foreach (string memberId in RefundContributors)
+        {
+            expenditure.RefundContributors.Add(await _userManager.FindByIdAsync(memberId));
+        }
+
+        await _expenditureRepository.EditExpenditureAsync(expenditure);
+        return RedirectToAction(actionName: "UpdateExpenditure", controllerName: "Expenditure", new { groupId = groupId, expenditureId = expenditure.Id });
     }
 }
