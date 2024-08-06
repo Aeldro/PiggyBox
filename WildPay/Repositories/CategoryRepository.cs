@@ -45,7 +45,8 @@ namespace WildPay.Repositories
             Category newCategory = new Category
             {
                 Name = category.Name,
-                GroupId = category.GroupId
+                GroupId = category.GroupId,
+                Group = category.Group,
             };
 
             await _context.Categories.AddAsync(newCategory);
