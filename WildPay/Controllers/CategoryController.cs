@@ -57,5 +57,25 @@ namespace WildPay.Controllers
 
             return RedirectToAction(actionName: "ListGroupCategories", controllerName: "Category", new { Id = category.GroupId });
         }
+        [HttpGet]
+        public async Task<IActionResult> DeleteCategory(int id)
+        {
+            var category = await _categoryRepository.GetCategoryByIdAsync(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+                return View(category);
+            
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCategory(int id, Category category)
+        {
+
+            await _categoryRepository.DeleteCategoryAsync(id);
+
+            return RedirectToAction(actionName:"ListGroupCategories", controllerName:"Category");
+        }
     }
 }
