@@ -1,7 +1,7 @@
 ﻿using WildPay.Models;
 using WildPay.Models.Entities;
 
-namespace WildPay.Services
+namespace WildPay.Services.Interfaces
 {
     public interface IBalanceService
     {

@@ -26,4 +26,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Views\Expenditure\Add.cshtml.cs" />
+  </ItemGroup>
+
 </Project>
