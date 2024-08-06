@@ -8,37 +8,47 @@ using WildPay.Services.Interfaces;
 
 namespace WildPay.Services;
 
-public class ExpenditureService
+public class ExpenditureService : IExpenditureService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IExpenditureRepository _expenditureRepository;
     private readonly IGroupRepository _groupRepository;
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly IBalanceService _balanceService;
-
-    public ExpenditureService(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, ICategoryRepository categoryRepository, IBalanceService balanceService)
+    
+    public ExpenditureService(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository)
     {
         _userManager = userManager;
         _expenditureRepository = expenditureRepository;
         _groupRepository = groupRepository;
-        _categoryRepository = categoryRepository;
-        _balanceService = balanceService;
     }
-    public async Task<IActionResult> AddExpenditure(AddExpenditureInGroup model)
+
+    public async Task<AddExpenditureInGroup> AddExpenditure(int Id)
     {
-        Group group = await _groupRepository.GetGroupByIdAsync(model.GroupId);
-        model.ExpenditureToCreate.Group = group;
+        Group? group = await _groupRepository.GetGroupByIdAsync(Id); // Get the Id of the group associated to the new expenditure
+        List<ApplicationUser> users = group.ApplicationUsers.ToList();
+        AddExpenditureInGroup model = new AddExpenditureInGroup // creates a new instance of modelView 
+        {
+            GroupId = group.Id,
+            Users = users
+        };
+        return model;
+    }
+    
+    // method to create a new Expenditure that calls ExpenditureRepository
+    public async Task<bool> AddExpenditure(AddExpenditureInGroup model)
+    {
+        Group? group = await _groupRepository.GetGroupByIdAsync(model.GroupId); // find the group of the model.Expenditure
+        model.ExpenditureToCreate.Group = group; // link group to model.Expenditure
         
         ApplicationUser payer = group.ApplicationUsers.FirstOrDefault(u => u.Id == model.ExpenditureToCreate.PayerId);
-        model.ExpenditureToCreate.Payer = payer;
+        model.ExpenditureToCreate.Payer = payer; // add Payer to model.Expenditure
 
-        var selectedUsers = await _userManager.Users
+        var selectedUsers = await _userManager.Users // find the selected users in the view and convert it to a list
             .Where(u => model.SelectedUsersIds.Contains(u.Id))
             .ToListAsync();
         
-        model.ExpenditureToCreate.RefundContributors = selectedUsers;
+        model.ExpenditureToCreate.RefundContributors = selectedUsers; // add participants to the model.expenditure
 
-        await _expenditureRepository.AddExpenditureAsync(model.ExpenditureToCreate);
-        return null;
+        await _expenditureRepository.AddExpenditureAsync(model.ExpenditureToCreate); // add expenditure to databse
+        return true;
     }
 }

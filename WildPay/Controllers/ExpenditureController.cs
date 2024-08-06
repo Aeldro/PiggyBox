@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Elfie.Serialization;
 using Microsoft.EntityFrameworkCore;
 using WildPay.Interfaces;
 using WildPay.Models;
 using WildPay.Models.Entities;
 using WildPay.Models.ViewModels;
+using WildPay.Services;
 using WildPay.Services.Interfaces;
 
 namespace WildPay.Controllers;
@@ -16,15 +18,16 @@ public class ExpenditureController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IExpenditureRepository _expenditureRepository;
     private readonly IGroupRepository _groupRepository;
-    private readonly ICategoryRepository _categoryRepository;
     private readonly IBalanceService _balanceService;
+    private readonly IExpenditureService _expenditureService;
 
-    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService)
+    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService, IExpenditureService expenditureService)
     {
         _userManager = userManager;
         _expenditureRepository = expenditureRepository;
         _groupRepository = groupRepository;
         _balanceService = balanceService;
+        _expenditureService = expenditureService;
     }
 
     // READ
@@ -74,36 +77,17 @@ public class ExpenditureController : Controller
     [HttpGet]
     public async Task<IActionResult> AddExpenditure(int Id)
     {
-        Group? group = await _groupRepository.GetGroupByIdAsync(Id); // Get the Id of the group associated to the new expenditure
-        List<ApplicationUser> users = group.ApplicationUsers.ToList();
-        AddExpenditureInGroup model = new AddExpenditureInGroup // creates a new instance of modelView 
-        {
-            GroupId = group.Id,
-            Users = users
-        };
-        
+        AddExpenditureInGroup model = await _expenditureService.AddExpenditure(Id); // returns a model to fetch in the View
         return View(model);
     }
-
+    
     // CREATE
     [HttpPost]
     public async Task<IActionResult> AddExpenditure(AddExpenditureInGroup model)
     {
         if (ModelState.IsValid)
         {
-            Group group = await _groupRepository.GetGroupByIdAsync(model.GroupId);
-            model.ExpenditureToCreate.Group = group;
-            
-            ApplicationUser payer = group.ApplicationUsers.FirstOrDefault(u => u.Id == model.ExpenditureToCreate.PayerId);
-            model.ExpenditureToCreate.Payer = payer;
-
-            var selectedUsers = await _userManager.Users
-                .Where(u => model.SelectedUsersIds.Contains(u.Id))
-                .ToListAsync();
-            
-            model.ExpenditureToCreate.RefundContributors = selectedUsers;
-
-            await _expenditureRepository.AddExpenditureAsync(model.ExpenditureToCreate);
+            await _expenditureService.AddExpenditure(model); // add the new Expenditure calling service
             return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new {id = model.GroupId});
         }
         return View(model);
