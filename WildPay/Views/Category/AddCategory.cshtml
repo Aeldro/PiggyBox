@@ -1,0 +1,22 @@
+﻿@model WildPay.Models.Entities.Category
+
+@{
+    ViewData["Title"] = "Add Category";
+}
+
+
+<div>
+    <h3>Nouvelle catégorie</h3>
+
+    <form method="post">
+        <input class="form-control" type="text" asp-for="GroupId" readonly hidden />
+
+        <div class="mt-3 form-group">
+            <label class="control-label" asp-for="Name">Nom</label>
+            <input class="form-control" type="text" asp-for="Name" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <button asp-action="AddCategory" asp-controller="Category">Enregistrer</button>
+    </form>
+</div>

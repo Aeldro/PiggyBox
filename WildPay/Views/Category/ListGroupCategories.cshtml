@@ -17,7 +17,7 @@
                 <div class="card">
 
                     <div class="card-body">
-                        <h3><a class="btn btn-outline-success material-symbols-outlined" asp-action="AddCategory" asp-controller="Expenditure" asp-route-id=@Model.Id>add</a> Catégories :</h3>
+                        <h3><a class="btn btn-outline-success material-symbols-outlined" asp-action="AddCategory" asp-controller="Category" asp-route-Id=@Model.Id>add</a> Catégories :</h3>
                         @if (Model is not null && Model.Categories.Count != 0)
                         {
                             foreach (Category category in Model.Categories)
