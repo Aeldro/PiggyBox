@@ -8,7 +8,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a8a3c22f-04f9-4956-9a53-7dbeba0572cb" name="Changes" comment="" />
+    <list default="true" id="a8a3c22f-04f9-4956-9a53-7dbeba0572cb" name="Changes" comment="removed unused">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.WildPay/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.WildPay/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WildPay/Controllers/ExpenditureController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WildPay/Controllers/ExpenditureController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WildPay/Models/ViewModels/AddExpenditureInGroup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WildPay/Models/ViewModels/AddExpenditureInGroup.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WildPay/Services/ExpenditureService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WildPay/Services/ExpenditureService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WildPay/Views/Expenditure/AddExpenditure.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/WildPay/Views/Expenditure/AddExpenditure.cshtml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -53,6 +59,7 @@
     <setting file="mock:///Users/helenamiura/Projects/Net/ProjectWildPay/WildPay/WildPay/Program.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///Users/helenamiura/Projects/Net/ProjectWildPay/WildPay/WildPay/Repositories/CategoryRepository.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///Users/helenamiura/Projects/Net/ProjectWildPay/WildPay/WildPay/Repositories/CategoryRepository.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/helenamiura/Projects/Net/ProjectWildPay/WildPay/WildPay/Views/Expenditure/AddExpenditure.cshtml" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
@@ -63,28 +70,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.WildPay: http.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "XThreadsFramesViewSplitterKey": "0.8761905",
-    "git-widget-placeholder": "US12-bis--Add-Category-from-AddExpenditure",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "HotReloadSettingsPage",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.WildPay: http.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;XThreadsFramesViewSplitterKey&quot;: &quot;0.8761905&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;US12-bis--Add-Category-from-AddExpenditure&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;HotReloadSettingsPage&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "rider.external.source.directories": [
-      "/Users/helenamiura/Library/Application Support/JetBrains/Rider2024.1/resharper-host/DecompilerCache",
-      "/Users/helenamiura/Library/Application Support/JetBrains/Rider2024.1/resharper-host/SourcesCache",
-      "/Users/helenamiura/Library/Application Support/Symbols/src"
+  &quot;keyToStringList&quot;: {
+    &quot;rider.external.source.directories&quot;: [
+      &quot;/Users/helenamiura/Library/Application Support/JetBrains/Rider2024.1/resharper-host/DecompilerCache&quot;,
+      &quot;/Users/helenamiura/Library/Application Support/JetBrains/Rider2024.1/resharper-host/SourcesCache&quot;,
+      &quot;/Users/helenamiura/Library/Application Support/Symbols/src&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected=".NET Launch Settings Profile.WildPay: http">
     <configuration name="WildPay: http" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/WildPay/WildPay.csproj" />
@@ -445,7 +452,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="added ExpenditureController.cs and ExpenditureList.cshtml" />
     <MESSAGE value="Added Edit method in ExpenditureController.cs" />
     <MESSAGE value="fix firstName" />
     <MESSAGE value="update context" />
@@ -470,9 +476,40 @@
     <MESSAGE value="added checkboxes to add expendditure" />
     <MESSAGE value="added ExpenditureService.cs" />
     <MESSAGE value="created ExpenditureService.cs and its interface, added methods to service" />
-    <option name="LAST_COMMIT_MESSAGE" value="created ExpenditureService.cs and its interface, added methods to service" />
+    <MESSAGE value="removed unused" />
+    <option name="LAST_COMMIT_MESSAGE" value="removed unused" />
   </component>
   <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/WildPay/Repositories/ExpenditureRepository.cs</url>
+          <line>49</line>
+          <properties documentPath="$PROJECT_DIR$/WildPay/Repositories/ExpenditureRepository.cs" containingFunctionPresentation="Method 'AddExpenditureAsync'">
+            <startOffsets>
+              <option value="1590" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2201" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/WildPay/Services/ExpenditureService.cs</url>
+          <line>26</line>
+          <properties documentPath="$PROJECT_DIR$/WildPay/Services/ExpenditureService.cs" containingFunctionPresentation="Method 'AddExpenditure'">
+            <startOffsets>
+              <option value="1009" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1069" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
     <watches-manager>
       <configuration name="LaunchSettings">
         <watch expression="((Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary.ModelStateNode) new Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary.ModelStateDictionaryDebugView(this.&lt;&gt;4__this.ModelState).Items[1].Value)._isContainerNode" />

@@ -1,28 +1,37 @@
-@using Microsoft.AspNetCore.Mvc.TagHelpers
+
 @model WildPay.Models.ViewModels.AddExpenditureInGroup
-@{ 
+@{
+    ViewData["Title"] = "Nouvelle Dépense";
 }
 
 <div>
     <form method="post">
-        <input type="hidden" asp-for="@Model.GroupId" value="@Model.GroupId"/>
-        
+        <input type="hidden" asp-for="@Model.GroupId" value="@Model.GroupId"/> <!-- form to send the GroupId-->
+
+        <!-- form to add Name of expenditure -->
         <label asp-for="@Model.ExpenditureToCreate.Name">nom de la dépense</label>
-        <input type="text" asp-for="@Model.ExpenditureToCreate.Name" placeholder="ex.: piquenique"/>
+        <input type="text" asp-for="@Model.ExpenditureToCreate.Name" placeholder="ex: piquenique"/>
+
+        <!-- form to add Amount -->
         <label asp-for="@Model.ExpenditureToCreate.Amount">valeur de la dépense</label>
         <input type="number" step="0.01" asp-for="@Model.ExpenditureToCreate.Amount" placeholder="ex.: 40.99"/>
-        <label asp-for="@Model.ExpenditureToCreate.Date">Model.ExpenditureToCreate.Date</label>
+        
+        <!-- form to add Date -->
+        <label asp-for="@Model.ExpenditureToCreate.Date">date</label>
         <input asp-for="@Model.ExpenditureToCreate.Date" type="date"/>
 
-        <label asp-for="@Model.ExpenditureToCreate.Category">catégorie</label>
-        <input asp-for="@Model.ExpenditureToCreate.Category" type="text" placeholder="ex.: voyage"/>
+        <!-- form to choose Category -->
+        <label asp-for="@Model.CategoryId">Catégorie</label>
+        <select asp-for="@Model.CategoryId" asp-items="@(new SelectList(Model.CategoriesInGroup, "Id", "Name"))"></select>
 
+        <!-- form to add Payer using a select list -->
         <label asp-for="@Model.ExpenditureToCreate.Payer">Payé par</label>
-        <select asp-for="@Model.ExpenditureToCreate.PayerId" asp-items="@(new SelectList(Model.Users, "Id", "Firstname"))"></select>
+        <select asp-for="@Model.ExpenditureToCreate.PayerId" asp-items="@(new SelectList(Model.UsersInGroup, "Id", "Firstname"))"></select>
 
+        <!-- form with checkboxes to choose who participate in the expenditure -->
         <label>Participants</label>
         <div>
-            @foreach (var user in Model.Users)
+            @foreach (var user in Model.UsersInGroup)
             {
             <input type="checkbox" name="SelectedUsersIds" value="@user.Id" />
             <label>@user.Firstname</label>
