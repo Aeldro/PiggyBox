@@ -1,0 +1,360 @@
+Index: WildPay/Repositories/ExpenditureRepository.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Microsoft.EntityFrameworkCore;\nusing WildPay.Data;\nusing WildPay.Interfaces;\nusing WildPay.Models.Entities;\n\nnamespace WildPay.Repositories\n{\n    public class ExpenditureRepository : IExpenditureRepository\n    {\n        private readonly WildPayDbContext _context;\n\n        public ExpenditureRepository(WildPayDbContext context)\n        {\n            _context = context;\n        }\n\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Repositories/ExpenditureRepository.cs b/WildPay/Repositories/ExpenditureRepository.cs
+--- a/WildPay/Repositories/ExpenditureRepository.cs	(revision f1dc38bab494c6dd7fad8bef6570b841e13c6d96)
++++ b/WildPay/Repositories/ExpenditureRepository.cs	(date 1722507653199)
+@@ -13,6 +13,53 @@
+         {
+             _context = context;
+         }
++        
++        // method to get a list of expenditures of a given group
++        public Task<List<Expenditure>> GetExpendituresAsync(string userId)
++        {
++            throw new NotImplementedException();
++        }
+ 
++        // method to get an expenditure by its id 
++        public Task<Expenditure?> GetExpenditureByIdAsync(int expenditureId)
++        {
++            throw new NotImplementedException();
++        }
++
++        public Task EditExpenditureAsync(Expenditure expenditure)
++        {
++            throw new NotImplementedException();
++        }
++        
++    // method to create a new expenditure in a given group
++        public async Task AddExpenditureAsync(string name, double amount, DateTime date, string? applicationUserId, int? categoryId, int? groupId)
++        {
++            Expenditure expenditure = new Expenditure()
++            {
++                Name = name,
++                Amount = amount,
++                Date = date,
++                ApplicationUserId = applicationUserId,
++                CategoryId = categoryId,
++                GroupId = groupId
++            };
++            await _context.Expenditures.AddAsync(expenditure);
++            await _context.SaveChangesAsync();
++        }
++
++        public Task<bool> AddMemberToExpenditureAsync(Expenditure expenditure, string email)
++        {
++            throw new NotImplementedException();
++        }
++
++        public Task DeleteMemberFromExpenditureAsync(Expenditure expenditure, string userId)
++        {
++            throw new NotImplementedException();
++        }
++
++        public Task<bool> DeleteExpenditureAsync(int expenditureId)
++        {
++            throw new NotImplementedException();
++        }
+     }
+ }
+Index: WildPay/Interfaces/IExpenditureRepository.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using WildPay.Models.Entities;\n\nnamespace WildPay.Interfaces\n{\n    public interface IExpenditureRepository\n    {\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Interfaces/IExpenditureRepository.cs b/WildPay/Interfaces/IExpenditureRepository.cs
+--- a/WildPay/Interfaces/IExpenditureRepository.cs	(revision f1dc38bab494c6dd7fad8bef6570b841e13c6d96)
++++ b/WildPay/Interfaces/IExpenditureRepository.cs	(date 1722507653194)
+@@ -4,5 +4,12 @@
+ {
+     public interface IExpenditureRepository
+     {
++        Task<List<Expenditure>> GetExpendituresAsync(string groupId);
++        Task<Expenditure?> GetExpenditureByIdAsync(int expenditureId);
++        Task EditExpenditureAsync(Expenditure expenditure);
++        Task AddExpenditureAsync(string name, double amount, DateTime date, string? applicationUserId, int? categoryId, int? groupId);
++        Task<bool> AddMemberToExpenditureAsync(Expenditure expenditure, string email);
++        Task DeleteMemberFromExpenditureAsync(Expenditure expenditure, string userId);
++        Task<bool> DeleteExpenditureAsync(int expenditureId);
+     }
+ }
+Index: WildPay/Controllers/GroupController.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using System.Security.Claims;\nusing Microsoft.AspNetCore.Authorization;\nusing Microsoft.AspNetCore.Identity;\nusing Microsoft.AspNetCore.Mvc;\nusing WildPay.Interfaces;\nusing WildPay.Models.Entities;\n\nnamespace WildPay.Controllers;\n\n// only accessible if the user is connected\n[Authorize]\npublic class GroupController : Controller\n{\n    private readonly UserManager<ApplicationUser> _userManager;\n    private readonly IGroupRepository _groupRepository;\n\n    public GroupController(UserManager<ApplicationUser> userManager, IGroupRepository groupRepository)\n    {\n        _userManager = userManager;\n        _groupRepository = groupRepository;\n    }\n\n    // READ: get all the groups for the connected user\n    [HttpGet]\n    public async Task<IActionResult> List()\n    {\n        var userId = _userManager.GetUserId(User);\n        var groups = await _groupRepository.GetGroupsAsync(userId);\n        return View(groups);\n    }\n\n    [HttpGet]\n    public async Task<IActionResult> Index(int Id)\n    {\n        //Get the group\n        Group? group = await _groupRepository.GetGroupByIdAsync(Id);\n\n        //Return not found if no group is found\n        if (group == null) { return NotFound(); }\n\n        //Verify if the User belongs to the group, else we block the access\n        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }\n\n        return View(group);\n    }\n\n    // CREATE view\n    [HttpGet]\n    public IActionResult Add()\n    {\n        return View();\n    }\n\n    // CREATE group action\n    [HttpPost]\n    public async Task<IActionResult> Add(Group group)\n    {\n        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);\n        await _groupRepository.AddGroupAsync(group.Name, group.Image, userId);\n\n        return RedirectToAction(actionName: \"List\", controllerName: \"Group\");\n    }\n\n    // UPDATE group view\n    [HttpGet]\n    public async Task<IActionResult> Update(int Id)\n    {\n        var group = await _groupRepository.GetGroupByIdAsync(id);\n        return View(group);\n    }\n\n    // UPDATE group action\n    [HttpPost]\n    public async Task<IActionResult> Update(Group group)\n    {\n        if (group.Image is null)\n        {\n            group.Image = string.Empty;\n        }\n\n        await _groupRepository.EditGroupAsync(group);\n        return RedirectToAction(actionName: \"List\", controllerName: \"Group\");\n    }\n\n    // Add a member to a group using a form\n    // Make sure to add a hidden field for the group ID\n    [HttpPost]\n    public async Task<IActionResult> AddMember(int groupId, string email)\n    {\n        Group? group = await _groupRepository.GetGroupByIdAsync(groupId);\n\n        if (group != null)\n        {\n            // Returns false if no match is found;\n            // think about a way to handle the case the email doesn't match a user\n            await _groupRepository.AddMemberToGroupAsync(group, email);\n        }\n        return RedirectToAction(actionName: \"Edit\", controllerName: \"Group\");\n    }\n\n    // Delete a member from a group\n    [HttpGet]\n    public async Task<IActionResult> DeleteMember(int groupId, string userId)\n    {\n        Group? group = await _groupRepository.GetGroupByIdAsync(groupId);\n\n        if (group != null)\n        {\n            // Returns false if no match is found;\n            // think about a way to handle the case the email doesn't match a user\n            await _groupRepository.DeleteMemberFromGroupAsync(group, userId);\n        }\n        return RedirectToAction(actionName: \"Edit\", controllerName: \"Group\");\n    }\n\n    // DELETE group view\n    [HttpGet]\n    public async Task<IActionResult> Delete(int Id)\n    {\n        var group = await _repository.GetGroupByIdAsync(Id);\n        return View(group);\n    }\n\n    // DELETE group action \n    [HttpPost]\n    public async Task<IActionResult> Delete(int Id, Group group)\n    {\n        await _groupRepository.DeleteGroupAsync(id);\n        return RedirectToAction(actionName: \"List\", controllerName: \"Group\");\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Controllers/GroupController.cs b/WildPay/Controllers/GroupController.cs
+--- a/WildPay/Controllers/GroupController.cs	(revision f1dc38bab494c6dd7fad8bef6570b841e13c6d96)
++++ b/WildPay/Controllers/GroupController.cs	(date 1722438180076)
+@@ -65,7 +65,7 @@
+     [HttpGet]
+     public async Task<IActionResult> Update(int Id)
+     {
+-        var group = await _groupRepository.GetGroupByIdAsync(id);
++        var group = await _groupRepository.GetGroupByIdAsync(Id);
+         return View(group);
+     }
+ 
+@@ -117,7 +117,7 @@
+     [HttpGet]
+     public async Task<IActionResult> Delete(int Id)
+     {
+-        var group = await _repository.GetGroupByIdAsync(Id);
++        var group = await _groupRepository.GetGroupByIdAsync(Id);
+         return View(group);
+     }
+ 
+@@ -125,7 +125,7 @@
+     [HttpPost]
+     public async Task<IActionResult> Delete(int Id, Group group)
+     {
+-        await _groupRepository.DeleteGroupAsync(id);
++        await _groupRepository.DeleteGroupAsync(Id);
+         return RedirectToAction(actionName: "List", controllerName: "Group");
+     }
+ }
+\ No newline at end of file
+Index: WildPay/Controllers/ExpenditureController.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Microsoft.AspNetCore.Authorization;\nusing Microsoft.AspNetCore.Identity;\nusing Microsoft.AspNetCore.Mvc;\nusing NuGet.Protocol.Core.Types;\nusing WildPay.Interfaces;\nusing WildPay.Models.Entities;\n\nnamespace WildPay.Controllers;\n\n[Authorize]\npublic class ExpenditureController : Controller\n{\n    private readonly UserManager<ApplicationUser> _userManager;\n    private readonly IExpenditureRepository _expenditureRepository;\n    private readonly IGroupRepository _groupRepository;\n\n    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository)\n    {\n        _userManager = userManager;\n        _expenditureRepository = expenditureRepository;\n        _groupRepository = groupRepository;\n    }\n\n    // READ\n    async public Task<IActionResult> GroupExpenditures(int Id)\n    {\n        //Get the group\n        Group? group = await _groupRepository.GetGroupByIdAsync(Id);\n\n        //Return not found if no group is found\n        if (group == null) { return NotFound(); }\n\n        //Verify if the User belongs to the group, else we block the access\n        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }\n\n        return View(group);\n    }\n\n    async public Task<IActionResult> GroupBalances(int Id)\n    {\n        //Get the group\n        Group? group = await _groupRepository.GetGroupByIdAsync(Id);\n\n        //Return not found if no group is found\n        if (group == null) { return NotFound(); }\n\n        //Verify if the User belongs to the group, else we block the access\n        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }\n\n        return View(group);\n    }\n\n    // UPDATE\n    [HttpGet]\n    public IActionResult Edit()\n    {\n        return View();\n    }\n\n    // UPDATE\n    [HttpPost]\n    public IActionResult Edit(Expenditure expenditure)\n    {\n        return RedirectToAction(actionName: \"List\", controllerName: \"Expenditure\");\n    }\n\n    // CREATE\n    [HttpGet]\n    public IActionResult Create()\n    {\n        return View();\n    }\n\n    // CREATE\n    [HttpPost]\n    public IActionResult Create(Expenditure expenditure)\n    {\n        return RedirectToAction(actionName: \"List\", controllerName: \"Expenditure\");\n    }\n\n    // DELETE\n    [HttpGet]\n    public IActionResult Delete()\n    {\n        return View();\n    }\n\n    // DELETE\n    [HttpPost]\n    public IActionResult Delete(Expenditure expenditure)\n    {\n        return RedirectToAction(actionName: \"List\", controllerName: \"Expenditure\");\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Controllers/ExpenditureController.cs b/WildPay/Controllers/ExpenditureController.cs
+--- a/WildPay/Controllers/ExpenditureController.cs	(revision f1dc38bab494c6dd7fad8bef6570b841e13c6d96)
++++ b/WildPay/Controllers/ExpenditureController.cs	(date 1722514560976)
+@@ -1,4 +1,5 @@
+ using Microsoft.AspNetCore.Authorization;
++using System.Security.Claims;
+ using Microsoft.AspNetCore.Identity;
+ using Microsoft.AspNetCore.Mvc;
+ using NuGet.Protocol.Core.Types;
+@@ -28,7 +29,10 @@
+         Group? group = await _groupRepository.GetGroupByIdAsync(Id);
+ 
+         //Return not found if no group is found
+-        if (group == null) { return NotFound(); }
++        if (group == null)
++        {
++            return NotFound();
++        }
+ 
+         //Verify if the User belongs to the group, else we block the access
+         if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }
+@@ -42,7 +46,10 @@
+         Group? group = await _groupRepository.GetGroupByIdAsync(Id);
+ 
+         //Return not found if no group is found
+-        if (group == null) { return NotFound(); }
++        if (group == null)
++        {
++            return NotFound();
++        }
+ 
+         //Verify if the User belongs to the group, else we block the access
+         if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }
+@@ -66,16 +73,30 @@
+ 
+     // CREATE
+     [HttpGet]
+-    public IActionResult Create()
++    public async Task<IActionResult> Add(int Id)
+     {
++        ViewBag.idGroup = Id;
+         return View();
+     }
+ 
+     // CREATE
+     [HttpPost]
+-    public IActionResult Create(Expenditure expenditure)
++    public async Task<IActionResult> Add(Expenditure expenditure)
+     {
+-        return RedirectToAction(actionName: "List", controllerName: "Expenditure");
++        if (ModelState.IsValid)
++        {
++            string applicationUserId = _userManager.GetUserId(User); // get the id of the connected user
++            await _expenditureRepository.AddExpenditureAsync( // add expediture to the repository
++                expenditure.Name, 
++                (double)expenditure.Amount, 
++                expenditure.Date, 
++                applicationUserId, 
++                expenditure.CategoryId, 
++                expenditure.GroupId);
++            return RedirectToAction(actionName: "GroupExpenditures", controllerName: "Expenditure", new {id = expenditure.GroupId});
++        }
++
++        return View();
+     }
+ 
+     // DELETE
+Index: WildPay/WildPay.csproj
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><Project Sdk=\"Microsoft.NET.Sdk.Web\">\n\n  <PropertyGroup>\n    <TargetFramework>net8.0</TargetFramework>\n    <Nullable>enable</Nullable>\n    <ImplicitUsings>enable</ImplicitUsings>\n  </PropertyGroup>\n\n  <ItemGroup>\n    <PackageReference Include=\"Microsoft.AspNetCore.Identity.EntityFrameworkCore\" Version=\"8.0.7\" />\n    <PackageReference Include=\"Microsoft.AspNetCore.Identity.UI\" Version=\"8.0.7\" />\n    <PackageReference Include=\"Microsoft.EntityFrameworkCore\" Version=\"8.0.7\" />\n    <PackageReference Include=\"Microsoft.EntityFrameworkCore.Design\" Version=\"8.0.7\">\n      <PrivateAssets>all</PrivateAssets>\n      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>\n    </PackageReference>\n    <PackageReference Include=\"Microsoft.EntityFrameworkCore.SqlServer\" Version=\"8.0.7\" />\n    <PackageReference Include=\"Microsoft.EntityFrameworkCore.Tools\" Version=\"8.0.7\">\n      <PrivateAssets>all</PrivateAssets>\n      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>\n    </PackageReference>\n    <PackageReference Include=\"Microsoft.VisualStudio.Web.CodeGeneration.Design\" Version=\"8.0.3\" />\n  </ItemGroup>\n\n</Project>\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/WildPay.csproj b/WildPay/WildPay.csproj
+--- a/WildPay/WildPay.csproj	(revision f1dc38bab494c6dd7fad8bef6570b841e13c6d96)
++++ b/WildPay/WildPay.csproj	(date 1722498539158)
+@@ -22,4 +22,12 @@
+     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.3" />
+   </ItemGroup>
+ 
++  <ItemGroup>
++    <Folder Include="Views\UserApplication\" />
++  </ItemGroup>
++
++  <ItemGroup>
++    <Content Remove="Views\UserApplication\Add.cshtml" />
++  </ItemGroup>
++
+ </Project>
+Index: WildPay/Views/Expenditure/GroupExpenditures.cshtml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>@using WildPay.Models.Entities\n@model WildPay.Models.Entities.Group\n\n@{\n    ViewData[\"Title\"] = \"Dépenses \" + Model.Name;\n}\n\n<div>\n    <partial name=\"_GroupTitlePartial\" model=\"Model\" />\n    <hr />\n    <div class=\"row\">\n        <div class=\"col-md-3\">\n            <partial name=\"_GroupNavBarPartial\" model=\"Model\" />\n        </div>\n        <div class=\"col-md-9\">\n            <section>\n                <div class=\"card\">\n                    <h5 class=\"card-header\">\n                        <a class=\"btn btn-outline-success material-symbols-outlined\" asp-action=\"Add\" asp-controller=\"Expenditure\" asp-route-id=@Model.Id>add</a> Dépenses :\n                    </h5>\n                    @if (Model is not null && Model.Expenditures.Count != 0)\n                    {\n                        foreach (Expenditure expenditure in Model.Expenditures)\n                        {\n                            <div class=\"card-body\">\n                                <h5 class=\"card-title\"><a class=\"group-settings-button material-symbols-outlined\" asp-action=\"Update\" asp-controller=\"Expenditure\" asp-route-id=@Model.Id>edit</a> @expenditure.Name - @expenditure.Amount€</h5>\n                                @if (expenditure.ApplicationUser is not null)\n                                {\n                                    <p class=\"card-text\">@expenditure.Amount€ payé par @expenditure.ApplicationUser.Firstname @expenditure.ApplicationUser.Lastname.</p>\n                                }\n                                else\n                                {\n                                    <p class=\"card-text\">@expenditure.Amount€ payé par un ancien membre.</p>\n                                }\n                                <div class=\"card-footer text-body-secondary\">@expenditure.Date.ToShortDateString()</div>\n                            </div>\n                        }\n                    }\n                    else\n                    {\n                        <p>Ce groupe ne contient aucune dépense.</p>\n                    }\n                </div>\n            </section>\n        </div>\n    </div>\n</div>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Views/Expenditure/GroupExpenditures.cshtml b/WildPay/Views/Expenditure/GroupExpenditures.cshtml
+--- a/WildPay/Views/Expenditure/GroupExpenditures.cshtml	(revision f1dc38bab494c6dd7fad8bef6570b841e13c6d96)
++++ b/WildPay/Views/Expenditure/GroupExpenditures.cshtml	(date 1722499833050)
+@@ -16,7 +16,7 @@
+             <section>
+                 <div class="card">
+                     <h5 class="card-header">
+-                        <a class="btn btn-outline-success material-symbols-outlined" asp-action="Add" asp-controller="Expenditure" asp-route-id=@Model.Id>add</a> Dépenses :
++                        <a class="btn btn-outline-success material-symbols-outlined" asp-action="Add" asp-controller="Expenditure" asp-route-Id=@Model.Id>add</a> Dépenses :
+                     </h5>
+                     @if (Model is not null && Model.Expenditures.Count != 0)
+                     {
+Index: WildPay/Views/Group/Update.cshtml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>@model WildPay.Models.Entities.Group\n\n@{\n    ViewData[\"Title\"] = \"Modifier \" + Model.Name;\n}\n\n<div>\n    <partial name=\"_GroupTitlePartial\" model=\"Model\" />\n    <hr />\n    <div class=\"row\">\n        <div class=\"col-md-3\">\n            <partial name=\"_GroupNavBarPartial\" model=\"Model\" />\n        </div>\n        <div class=\"col-md-9\">\n            <h3>Modifier groupe</h3>\n            <form method=\"post\">\n                <label asp-for=\"Name\">Nom du groupe</label>\n                <input type=\"text\" asp-for=\"Name\" value=@Model.Name />\n\n                <label asp-for=\"Image\">Image du groupe</label>\n                <input type=\"text\" asp-for=\"Image\" value=@Model.Image />\n\n                <h3>Supprimer un participant</h3>\n                <table>\n                    <tr>\n                        @foreach (var user in Model.ApplicationUsers)\n                        {\n                            <td>@user.Firstname</td>\n                            <td>@user.Lastname</td>\n                            <td><a class=\"btn btn-danger material-symbols-outlined\" asp-action=\"DeleteUserFromGroup\" asp-controller=\"Group\" asp-route-id=@Model.Id>delete</a></td> <!--bin icon-->\n                        }\n                    </tr>\n                </table>\n\n\n                <h3>ajouter un participant</h3>\n                <div>\n                    <span class=\"material-symbols-outlined\">person_add</span> <!-- person add icon-->\n                </div>\n                <div>\n                    <label>Email</label>\n                    <input type=\"email\" />\n                </div>\n\n                <button asp-action=\"Update\" asp-controller=\"Group\" asp-route-groupId=@Model.Id>Enregistrer</button>\n            </form>\n\n            <a class=\"btn btn-danger d-flex justify-content-center align-items-center w-25\" asp-action=\"Delete\" asp-controller=\"Group\" asp-route-id=@Model.Id><span class=\"material-symbols-outlined\">delete</span> Supprimer le groupe</a>\n        </div>\n    </div>\n\n</div>\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Views/Group/Update.cshtml b/WildPay/Views/Group/Update.cshtml
+--- a/WildPay/Views/Group/Update.cshtml	(revision f1dc38bab494c6dd7fad8bef6570b841e13c6d96)
++++ b/WildPay/Views/Group/Update.cshtml	(date 1722496856511)
+@@ -39,7 +39,7 @@
+                 </div>
+                 <div>
+                     <label>Email</label>
+-                    <input type="email" />
++                    <input type="email"/>
+                 </div>
+ 
+                 <button asp-action="Update" asp-controller="Group" asp-route-groupId=@Model.Id>Enregistrer</button>
+Index: WildPay/Views/Expenditure/List.cshtml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>@model WildPay.Models.Entities.Group\n@{\n    \n}\n<div>\n    <h2>@Model.Name</h2>\n    <h3>liste de dépenses</h3>\n    <table>\n        \n        @foreach (var expenditure in Model.Expenditures)\n        {\n            <tr>\n                <a asp-action=\"Edit\" asp-controller=\"Expenditure\">\n                    <td>@expenditure.Name <br/>\n                    payé par @expenditure.ApplicationUser.Firstname<td>\n                    <td>@expenditure.Amount</td>\n                </a>\n\n            </tr>\n        }\n    </table>\n\n\n</div>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Views/Expenditure/List.cshtml b/WildPay/Views/Expenditure/List.cshtml
+--- a/WildPay/Views/Expenditure/List.cshtml	(revision f1dc38bab494c6dd7fad8bef6570b841e13c6d96)
++++ b/WildPay/Views/Expenditure/List.cshtml	(date 1722437993148)
+@@ -5,8 +5,8 @@
+ <div>
+     <h2>@Model.Name</h2>
+     <h3>liste de dépenses</h3>
++    
+     <table>
+-        
+         @foreach (var expenditure in Model.Expenditures)
+         {
+             <tr>
+@@ -15,7 +15,6 @@
+                     payé par @expenditure.ApplicationUser.Firstname<td>
+                     <td>@expenditure.Amount</td>
+                 </a>
+-
+             </tr>
+         }
+     </table>
+Index: WildPay/Areas/Identity/Data/WildPayDbContext.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Microsoft.AspNetCore.Identity;\nusing Microsoft.AspNetCore.Identity.EntityFrameworkCore;\nusing Microsoft.EntityFrameworkCore;\nusing WildPay.Models.Entities;\n\nnamespace WildPay.Data;\n\npublic class WildPayDbContext : IdentityDbContext<ApplicationUser>\n{\n    public WildPayDbContext(DbContextOptions<WildPayDbContext> options)\n        : base(options)\n    {\n    }\n    public DbSet<Group> Groups { get; set; }\n    public DbSet<Expenditure> Expenditures { get; set; }\n    public DbSet<Category> Categories { get; set; }\n\n\n    protected override void OnModelCreating(ModelBuilder builder)\n    {\n        base.OnModelCreating(builder);\n\n        // if the group is delete,\n        // all the categories related to this group will be deleted.\n        builder.Entity<Category>()\n            .HasOne(c => c.Group)\n            .WithMany(g => g.Categories)\n            .HasForeignKey(c => c.GroupId)\n            .OnDelete(DeleteBehavior.Cascade);\n\n        // if a user is delete,\n        // the expenditure will not be deleted.\n        // ApplicationUserId will only be set to null.\n        builder.Entity<Expenditure>()\n            .HasOne(e => e.ApplicationUser)\n            .WithMany(g => g.Expenditures)\n            .HasForeignKey(e => e.ApplicationUserId)\n            .OnDelete(DeleteBehavior.SetNull);\n\n        // same, but it is CategoryId that will be set to null.\n        builder.Entity<Expenditure>()\n            .HasOne(e => e.Category)\n            .WithMany(g => g.Expenditures)\n            .HasForeignKey(e => e.CategoryId)\n            .OnDelete(DeleteBehavior.SetNull);\n\n        // Cascade doesn't work so we will have to manage in our code\n        // the deletion of all the expenditures before the delete of the group\n        builder.Entity<Expenditure>()\n            .HasOne(e => e.Group)\n            .WithMany(g => g.Expenditures)\n            .HasForeignKey(e => e.GroupId)\n            .OnDelete(DeleteBehavior.Restrict);\n\n        var hasher = new PasswordHasher<ApplicationUser>();\n\n        builder.Entity<ApplicationUser>().HasData(\n            new ApplicationUser\n            {\n                Id = \"1\",\n                Firstname = \"Helena\",\n                Lastname = \"Yamasaki\",\n                UserName = \"helena@gmail.com\",\n                NormalizedUserName = \"HELENA@GMAIL.COM\",\n                Email = \"helena@gmail.com\",\n                NormalizedEmail = \"HELENA@GMAIL.COM\",\n                EmailConfirmed = true,\n                PasswordHash = hasher.HashPassword(null, \"Helena.123\"),\n                SecurityStamp = Guid.NewGuid().ToString(\"D\")\n            },\n            new ApplicationUser\n            {\n                Id = \"2\",\n                Firstname = \"Pauline\",\n                Lastname = \"Bouyssou\",\n                UserName = \"pauline@gmail.com\",\n                NormalizedUserName = \"PAULINE@GMAIL.COM\",\n                Email = \"pauline@gmail.com\",\n                NormalizedEmail = \"PAULINE@GMAIL.COM\",\n                EmailConfirmed = true,\n                PasswordHash = hasher.HashPassword(null, \"Pauline.123\"),\n                SecurityStamp = Guid.NewGuid().ToString(\"D\")\n            },\n            new ApplicationUser\n            {\n                Id = \"3\",\n                Firstname = \"Nolan\",\n                Lastname = \"De Puydt\",\n                UserName = \"nolan@gmail.com\",\n                NormalizedUserName = \"NOLAN@GMAIL.COM\",\n                Email = \"nolan@gmail.com\",\n                NormalizedEmail = \"NOLAN@GMAIL.COM\",\n                EmailConfirmed = true,\n                PasswordHash = hasher.HashPassword(null, \"Nolan.123\"),\n                SecurityStamp = Guid.NewGuid().ToString(\"D\")\n            },\n            new ApplicationUser\n            {\n                Id = \"4\",\n                Firstname = \"Kevin\",\n                Lastname = \"Osei Yaw\",\n                UserName = \"kevin@gmail.com\",\n                NormalizedUserName = \"KEVIN@GMAIL.COM\",\n                Email = \"kevin@gmail.com\",\n                NormalizedEmail = \"KEVIN@GMAIL.COM\",\n                EmailConfirmed = true,\n                PasswordHash = hasher.HashPassword(null, \"Kevin.123\"),\n                SecurityStamp = Guid.NewGuid().ToString(\"D\")\n            });\n\n        builder.Entity<Group>().HasData(\n            new Group()\n            {\n                Id = 1,\n                Name = \"Coloc\"\n            },\n            new Group()\n            {\n                Id = 2,\n                Name = \"Vacances d'été\"\n            },\n            new Group()\n            {\n                Id = 3,\n                Name = \"Voyage scolaire\"\n            });\n\n        builder.Entity<Category>().HasData(\n            new Category()\n            {\n                Id = 1,\n                Name = \"Courses\",\n                GroupId = 1\n            },\n            new Category()\n            {\n                Id = 2,\n                Name = \"Plaisirs coupables\",\n                GroupId = 1\n            },\n            new Category()\n            {\n                Id = 3,\n                Name = \"Restaurants\",\n                GroupId = 1\n            });\n\n        builder.Entity<Expenditure>().HasData(\n            new Expenditure()\n            {\n                Id = 1,\n                Name = \"Courses Auchan\",\n                Amount = 10.5,\n                Date = new DateTime(2024, 04, 17),\n                ApplicationUserId = \"1\",\n                GroupId = 1\n            },\n            new Expenditure()\n            {\n                Id = 2,\n                Name = \"Restaurant Toulouse\",\n                Amount = 60,\n                Date = new DateTime(2024, 05, 01),\n                ApplicationUserId = \"1\",\n                CategoryId = 3,\n                GroupId = 1\n            },\n            new Expenditure()\n            {\n                Id = 3,\n                Name = \"Café Capitole\",\n                Amount = 16.5,\n                Date = new DateTime(2024, 04, 29),\n                ApplicationUserId = \"2\",\n                GroupId = 2\n            },\n            new Expenditure()\n            {\n                Id = 4,\n                Name = \"Bonbons\",\n                Amount = 6.9,\n                Date = new DateTime(2024, 05, 10),\n                ApplicationUserId = \"3\",\n                CategoryId = 2,\n                GroupId = 1\n            });\n    }\n\n    // manage the deletion of the expenditures when a group is deleted\n    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)\n    {\n        // select all the groups that are to be deleted\n        List<Group> deletedGroups = ChangeTracker.Entries<Group>()\n            .Where(e => e.State == EntityState.Deleted)\n            .Select(e => e.Entity)\n            .ToList();\n\n        // Delete all the records in Expenditures\n        // that depends on the deleted groups\n        foreach (Group group in deletedGroups)\n        {\n            List<Expenditure> expenditures = await Expenditures\n            .Where(e => e.GroupId == group.Id)\n            .ToListAsync(cancellationToken);\n\n            Expenditures.RemoveRange(expenditures);\n        }\n\n        // call the SaveChanges() function from DbContext\n        return await base.SaveChangesAsync(cancellationToken);\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Areas/Identity/Data/WildPayDbContext.cs b/WildPay/Areas/Identity/Data/WildPayDbContext.cs
+--- a/WildPay/Areas/Identity/Data/WildPayDbContext.cs	(revision f1dc38bab494c6dd7fad8bef6570b841e13c6d96)
++++ b/WildPay/Areas/Identity/Data/WildPayDbContext.cs	(date 1722500636730)
+@@ -33,7 +33,7 @@
+         // ApplicationUserId will only be set to null.
+         builder.Entity<Expenditure>()
+             .HasOne(e => e.ApplicationUser)
+-            .WithMany(g => g.Expenditures)
++            .WithMany(g => g.ExpendituresPayer)
+             .HasForeignKey(e => e.ApplicationUserId)
+             .OnDelete(DeleteBehavior.SetNull);
+ 
+Index: WildPay/Views/Expenditure/Add.cshtml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Views/Expenditure/Add.cshtml b/WildPay/Views/Expenditure/Add.cshtml
+new file mode 100644
+--- /dev/null	(date 1722514391430)
++++ b/WildPay/Views/Expenditure/Add.cshtml	(date 1722514391430)
+@@ -0,0 +1,24 @@
++@model WildPay.Models.Entities.Expenditure
++@{ 
++    int idGroup = (int)ViewBag.idGroup;
++}
++
++<div>
++    <form method="post">
++        <input type="hidden" asp-for="GroupId" value="@idGroup"/>
++        
++        <label asp-for="Name">nom de la dépense</label>
++        <input type="text" asp-for="Name" placeholder="ex.: piquenique"/>
++
++        <label asp-for="Amount">valeur de la dépense</label>
++        <input type="number" asp-for="Amount" placeholder="ex.: 40.99"/>
++
++        <label asp-for="Date">Date</label>
++        <input asp-for="Date" type="date"/>
++
++        <label asp-for="Category">catégorie</label>
++        <input asp-for="Category" type="text" placeholder="ex.: voyage"/>
++        
++        <button asp-action="Add" asp-controller="Expenditure">Enregistrer</button>
++    </form>
++</div>
+\ No newline at end of file
+Index: WildPay/Models/Entities/ApplicationUser.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Microsoft.AspNetCore.Identity;\nusing System.ComponentModel.DataAnnotations;\n\nnamespace WildPay.Models.Entities\n{\n    public class ApplicationUser : IdentityUser\n    {\n        [Required]\n        [MaxLength(25)]\n        public string Firstname { get; set; } = string.Empty;\n\n        [Required]\n        [MaxLength(25)]\n        public string Lastname { get; set; } = string.Empty;\n        public string Image { get; set; } = string.Empty;\n        public List<Group> Groups { get; set; } = new List<Group>();\n        public List<Expenditure> Expenditures { get; set; } = new List<Expenditure>();\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Models/Entities/ApplicationUser.cs b/WildPay/Models/Entities/ApplicationUser.cs
+--- a/WildPay/Models/Entities/ApplicationUser.cs	(revision f1dc38bab494c6dd7fad8bef6570b841e13c6d96)
++++ b/WildPay/Models/Entities/ApplicationUser.cs	(date 1722500662143)
+@@ -14,6 +14,6 @@
+         public string Lastname { get; set; } = string.Empty;
+         public string Image { get; set; } = string.Empty;
+         public List<Group> Groups { get; set; } = new List<Group>();
+-        public List<Expenditure> Expenditures { get; set; } = new List<Expenditure>();
++        public List<Expenditure> ExpendituresPayer { get; set; } = new List<Expenditure>();
+     }
+ }

@@ -1,0 +1,23 @@
+Index: WildPay/WildPay.csproj
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><Project Sdk=\"Microsoft.NET.Sdk.Web\">\n\n  <PropertyGroup>\n    <TargetFramework>net8.0</TargetFramework>\n    <Nullable>enable</Nullable>\n    <ImplicitUsings>enable</ImplicitUsings>\n  </PropertyGroup>\n\n  <ItemGroup>\n    <_ContentIncludedByDefault Remove=\"wwwroot\\css\\edit-button.css\" />\n  </ItemGroup>\n\n  <ItemGroup>\n    <PackageReference Include=\"Microsoft.AspNetCore.Identity.EntityFrameworkCore\" Version=\"8.0.7\" />\n    <PackageReference Include=\"Microsoft.AspNetCore.Identity.UI\" Version=\"8.0.7\" />\n    <PackageReference Include=\"Microsoft.EntityFrameworkCore\" Version=\"8.0.7\" />\n    <PackageReference Include=\"Microsoft.EntityFrameworkCore.Design\" Version=\"8.0.7\">\n      <PrivateAssets>all</PrivateAssets>\n      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>\n    </PackageReference>\n    <PackageReference Include=\"Microsoft.EntityFrameworkCore.SqlServer\" Version=\"8.0.7\" />\n    <PackageReference Include=\"Microsoft.EntityFrameworkCore.Tools\" Version=\"8.0.7\">\n      <PrivateAssets>all</PrivateAssets>\n      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>\n    </PackageReference>\n    <PackageReference Include=\"Microsoft.VisualStudio.Web.CodeGeneration.Design\" Version=\"8.0.3\" />\n  </ItemGroup>\n\n</Project>\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/WildPay.csproj b/WildPay/WildPay.csproj
+--- a/WildPay/WildPay.csproj	
++++ b/WildPay/WildPay.csproj	
+@@ -26,4 +26,12 @@
+     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.3" />
+   </ItemGroup>
+ 
++  <ItemGroup>
++    <Folder Include="Views\UserApplication\" />
++  </ItemGroup>
++
++  <ItemGroup>
++    <Content Remove="Views\UserApplication\Add.cshtml" />
++  </ItemGroup>
++
+ </Project>

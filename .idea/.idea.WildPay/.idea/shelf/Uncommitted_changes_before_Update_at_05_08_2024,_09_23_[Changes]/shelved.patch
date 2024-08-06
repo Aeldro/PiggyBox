@@ -1,0 +1,241 @@
+Index: WildPay/Views/Expenditure/Add.cshtml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>@model WildPay.Models.Entities.Expenditure\n@{ \n    int idGroup = (int)ViewBag.idGroup;\n}\n\n<div>\n    <form method=\"post\">\n        <input type=\"hidden\" asp-for=\"GroupId\" value=\"@idGroup\"/>\n        \n        <label asp-for=\"Name\">nom de la dépense</label>\n        <input type=\"text\" asp-for=\"Name\" placeholder=\"ex.: piquenique\"/>\n        <label asp-for=\"Amount\">valeur de la dépense</label>\n        <input type=\"number\" step=\"0.01\" asp-for=\"Amount\" placeholder=\"ex.: 40.99\"/>\n        <label asp-for=\"Date\">Date</label>\n        <input asp-for=\"Date\" type=\"date\"/>\n\n        <label asp-for=\"Category\">catégorie</label>\n        <input asp-for=\"Category\" type=\"text\" placeholder=\"ex.: voyage\"/>\n        \n        \n        \n        <button asp-action=\"Add\" asp-controller=\"Expenditure\">Enregistrer</button>\n    </form>\n</div>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Views/Expenditure/Add.cshtml b/WildPay/Views/Expenditure/Add.cshtml
+--- a/WildPay/Views/Expenditure/Add.cshtml	(revision 373e84125685ad054090fe8ed6e44aa75501144a)
++++ b/WildPay/Views/Expenditure/Add.cshtml	(date 1722611527341)
+@@ -1,6 +1,8 @@
++@using WildPay.Models.Entities
+ @model WildPay.Models.Entities.Expenditure
+ @{ 
+-    int idGroup = (int)ViewBag.idGroup;
++    int idGroup = ViewBag.idGroup;
++    var users = ViewBag.users as List<ApplicationUser>;
+ }
+ 
+ <div>
+@@ -16,8 +18,17 @@
+ 
+         <label asp-for="Category">catégorie</label>
+         <input asp-for="Category" type="text" placeholder="ex.: voyage"/>
+-        
++
++        <label asp-for="Payer">payé par</label>
++        <select asp-for="PayerId" asp-items="@(new SelectList(users, "Id", "Firstname"))">
++        </select>
+         
++        <p>participants</p>
++        @foreach (var user in users)
++        {
++            <input type="checkbox" name="selectedUsers" value="@user.Id"/>
++            <label>@user.Firstname</label>
++        }
+         
+         <button asp-action="Add" asp-controller="Expenditure">Enregistrer</button>
+     </form>
+Index: WildPay/Repositories/ExpenditureRepository.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Microsoft.EntityFrameworkCore;\nusing WildPay.Data;\nusing WildPay.Interfaces;\nusing WildPay.Models.Entities;\n\nnamespace WildPay.Repositories\n{\n    public class ExpenditureRepository : IExpenditureRepository\n    {\n        private readonly WildPayDbContext _context;\n\n        public ExpenditureRepository(WildPayDbContext context)\n        {\n            _context = context;\n        }\n\n        public async Task<List<Expenditure>> GetExpendituresAsync(string groupId)\n        {\n            throw new NotImplementedException();\n        }\n\n        public async Task<Expenditure?> GetExpenditureByIdAsync(int expenditureId)\n        {\n            throw new NotImplementedException();\n        }\n\n        public async Task EditExpenditureAsync(Expenditure expenditure)\n        {\n            throw new NotImplementedException();\n        }\n\n        // method to create a new expenditure in a given group\n        public async Task AddExpenditureAsync(string name, double amount, DateTime date, string? payerId, int? categoryId, int? groupId)\n        {\n            Expenditure expenditure = new Expenditure() // create the new object expenditure to save in database\n            {\n                Name = name,\n                Amount = amount,\n                Date = date,\n                PayerId = payerId,\n                CategoryId = categoryId,\n                GroupId = groupId\n            };\n            await _context.Expenditures.AddAsync(expenditure); // calls the method from Entity Framework to add the new expenditure to database\n            await _context.SaveChangesAsync(); // commit the new change to the database\n        }\n\n        public async Task<bool> DeleteExpenditureAsync(int expenditureId)\n        {\n            throw new NotImplementedException();\n        }\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Repositories/ExpenditureRepository.cs b/WildPay/Repositories/ExpenditureRepository.cs
+--- a/WildPay/Repositories/ExpenditureRepository.cs	(revision 373e84125685ad054090fe8ed6e44aa75501144a)
++++ b/WildPay/Repositories/ExpenditureRepository.cs	(date 1722610522432)
+@@ -19,9 +19,11 @@
+             throw new NotImplementedException();
+         }
+ 
++        // method to get an expenditure by Id
+         public async Task<Expenditure?> GetExpenditureByIdAsync(int expenditureId)
+         {
+-            throw new NotImplementedException();
++            Expenditure? expenditureToFind = _context.Expenditures.FirstOrDefault(e => e.Id == expenditureId);
++            return expenditureToFind;
+         }
+ 
+         public async Task EditExpenditureAsync(Expenditure expenditure)
+@@ -30,18 +32,23 @@
+         }
+ 
+         // method to create a new expenditure in a given group
+-        public async Task AddExpenditureAsync(string name, double amount, DateTime date, string? payerId, int? categoryId, int? groupId)
++        public async Task AddExpenditureAsync(Expenditure expenditure)
+         {
+-            Expenditure expenditure = new Expenditure() // create the new object expenditure to save in database
++            Expenditure newExpenditure = new Expenditure
+             {
+-                Name = name,
+-                Amount = amount,
+-                Date = date,
+-                PayerId = payerId,
+-                CategoryId = categoryId,
+-                GroupId = groupId
++                Name = expenditure.Name,
++                Amount = expenditure.Amount,
++                Date = expenditure.Date,
++                Category = expenditure.Category,
++                CategoryId = expenditure.CategoryId,
++                Group = expenditure.Group,
++                GroupId = expenditure.GroupId,
++                Payer = expenditure.Payer,
++                PayerId = expenditure.PayerId,
++                RefundContributors = expenditure.RefundContributors
+             };
+-            await _context.Expenditures.AddAsync(expenditure); // calls the method from Entity Framework to add the new expenditure to database
++            
++            await _context.Expenditures.AddAsync(newExpenditure); // calls the method from Entity Framework to add the new expenditure to database
+             await _context.SaveChangesAsync(); // commit the new change to the database
+         }
+ 
+Index: WildPay/Models/Entities/Expenditure.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using System.ComponentModel.DataAnnotations;\n\nnamespace WildPay.Models.Entities\n{\n    public class Expenditure\n    {\n        public int Id { get; set; }\n\n        [Required]\n        public string Name { get; set; } = string.Empty;\n        public double Amount { get; set; }\n        public DateTime Date { get; set; }\n        public string? PayerId { get; set; } = null;\n        public ApplicationUser? Payer { get; set; }\n        public int? CategoryId { get; set; }\n        public Category? Category { get; set; }\n        public int? GroupId { get; set; }\n        public Group? Group { get; set; }\n        public List<ApplicationUser> RefundContributors { get; set; } = new List<ApplicationUser>();\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Models/Entities/Expenditure.cs b/WildPay/Models/Entities/Expenditure.cs
+--- a/WildPay/Models/Entities/Expenditure.cs	(revision 373e84125685ad054090fe8ed6e44aa75501144a)
++++ b/WildPay/Models/Entities/Expenditure.cs	(date 1722612006239)
+@@ -10,11 +10,11 @@
+         public string Name { get; set; } = string.Empty;
+         public double Amount { get; set; }
+         public DateTime Date { get; set; }
+-        public string? PayerId { get; set; } = null;
++        public string PayerId { get; set; } = String.Empty;
+         public ApplicationUser? Payer { get; set; }
+         public int? CategoryId { get; set; }
+         public Category? Category { get; set; }
+-        public int? GroupId { get; set; }
++        public int GroupId { get; set; }
+         public Group? Group { get; set; }
+         public List<ApplicationUser> RefundContributors { get; set; } = new List<ApplicationUser>();
+     }
+Index: WildPay/Controllers/ExpenditureController.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Microsoft.AspNetCore.Authorization;\nusing Microsoft.AspNetCore.Identity;\nusing Microsoft.AspNetCore.Mvc;\nusing NuGet.Protocol.Core.Types;\nusing WildPay.Interfaces;\nusing WildPay.Models.Entities;\n\nnamespace WildPay.Controllers;\n\n[Authorize]\npublic class ExpenditureController : Controller\n{\n    private readonly UserManager<ApplicationUser> _userManager;\n    private readonly IExpenditureRepository _expenditureRepository;\n    private readonly IGroupRepository _groupRepository;\n\n    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository)\n    {\n        _userManager = userManager;\n        _expenditureRepository = expenditureRepository;\n        _groupRepository = groupRepository;\n    }\n\n    // READ\n    async public Task<IActionResult> GroupExpenditures(int Id)\n    {\n        //Get the group\n        Group? group = await _groupRepository.GetGroupByIdAsync(Id);\n\n        //Return not found if no group is found\n        if (group == null) { return NotFound(); }\n\n        //Verify if the User belongs to the group, else we block the access\n        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }\n\n        return View(group);\n    }\n\n    async public Task<IActionResult> GroupBalances(int Id)\n    {\n        //Get the group\n        Group? group = await _groupRepository.GetGroupByIdAsync(Id);\n\n        //Return not found if no group is found\n        if (group == null) { return NotFound(); }\n\n        //Verify if the User belongs to the group, else we block the access\n        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }\n\n        return View(group);\n    }\n\n    // UPDATE\n    [HttpGet]\n    public IActionResult Edit()\n    {\n        return View();\n    }\n\n    // UPDATE\n    [HttpPost]\n    public IActionResult Edit(Expenditure expenditure)\n    {\n        return RedirectToAction(actionName: \"List\", controllerName: \"Expenditure\");\n    }\n\n    // CREATE\n    [HttpGet]\n    public async Task<IActionResult> Add(int Id)\n    {\n        ViewBag.idGroup = Id;\n        return View();\n    }\n\n    // CREATE\n    [HttpPost]\n    public async Task<IActionResult> Add(Expenditure expenditure)\n    {\n        if (ModelState.IsValid)\n        {\n            string applicationUserId = _userManager.GetUserId(User); // get the id of the connected user\n            await _expenditureRepository.AddExpenditureAsync( // add expediture to the repository\n                expenditure.Name, \n                (double)expenditure.Amount, \n                expenditure.Date, \n                applicationUserId, \n                expenditure.CategoryId, \n                expenditure.GroupId);\n            return RedirectToAction(actionName: \"GroupExpenditures\", controllerName: \"Expenditure\", new {id = expenditure.GroupId});\n        }\n        return View();\n    }\n\n\n    // DELETE\n    [HttpGet]\n    public IActionResult Delete()\n    {\n        return View();\n    }\n\n    // DELETE\n    [HttpPost]\n    public IActionResult Delete(Expenditure expenditure)\n    {\n        return RedirectToAction(actionName: \"List\", controllerName: \"Expenditure\");\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Controllers/ExpenditureController.cs b/WildPay/Controllers/ExpenditureController.cs
+--- a/WildPay/Controllers/ExpenditureController.cs	(revision 373e84125685ad054090fe8ed6e44aa75501144a)
++++ b/WildPay/Controllers/ExpenditureController.cs	(date 1722612530416)
+@@ -69,23 +69,36 @@
+     public async Task<IActionResult> Add(int Id)
+     {
+         ViewBag.idGroup = Id;
++        Group? group = await _groupRepository.GetGroupByIdAsync(Id);
++        List<ApplicationUser>? users = group.ApplicationUsers;
++        ViewBag.users = users;
+         return View();
+     }
+ 
+     // CREATE
+     [HttpPost]
+-    public async Task<IActionResult> Add(Expenditure expenditure)
++    public async Task<IActionResult> Add(Expenditure expenditure, List<ApplicationUser> selectedUsers)
+     {
+         if (ModelState.IsValid)
+         {
+-            string applicationUserId = _userManager.GetUserId(User); // get the id of the connected user
+-            await _expenditureRepository.AddExpenditureAsync( // add expediture to the repository
+-                expenditure.Name, 
+-                (double)expenditure.Amount, 
+-                expenditure.Date, 
+-                applicationUserId, 
+-                expenditure.CategoryId, 
+-                expenditure.GroupId);
++            List<ApplicationUser> selectedUserObjects = new List<ApplicationUser>();
++
++            foreach (var userId in selectedUsers)
++            {
++                
++                var user = await _userManager.FindByIdAsync(userId);
++                if (user != null)
++                {
++                    selectedUserObjects.Add(user);
++                }
++            }
++
++            expenditure.RefundContributors = selectedUserObjects;
++            
++            var group = _groupRepository.GetGroupByIdAsync(expenditure.GroupId);
++            
++            await _expenditureRepository.AddExpenditureAsync(expenditure); // add expediture to the repository
++
+             return RedirectToAction(actionName: "GroupExpenditures", controllerName: "Expenditure", new {id = expenditure.GroupId});
+         }
+         return View();
+Index: WildPay/Views/Expenditure/Add.cshtml.cs
+===================================================================
+diff --git a/WildPay/Views/Expenditure/Add.cshtml.cs b/WildPay/Views/Expenditure/Add.cshtml.cs
+deleted file mode 100644
+--- a/WildPay/Views/Expenditure/Add.cshtml.cs	(revision 373e84125685ad054090fe8ed6e44aa75501144a)
++++ /dev/null	(revision 373e84125685ad054090fe8ed6e44aa75501144a)
+@@ -1,11 +0,0 @@
+-using Microsoft.AspNetCore.Mvc.RazorPages;
+-
+-namespace WildPay.Views.Expenditure;
+-
+-public class Add : PageModel
+-{
+-    public void OnGet()
+-    {
+-        
+-    }
+-}
+\ No newline at end of file
+Index: WildPay/WildPay.csproj
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><Project Sdk=\"Microsoft.NET.Sdk.Web\">\n\n  <PropertyGroup>\n    <TargetFramework>net8.0</TargetFramework>\n    <Nullable>enable</Nullable>\n    <ImplicitUsings>enable</ImplicitUsings>\n  </PropertyGroup>\n\n  <ItemGroup>\n    <_ContentIncludedByDefault Remove=\"wwwroot\\css\\edit-button.css\" />\n  </ItemGroup>\n\n  <ItemGroup>\n    <PackageReference Include=\"Microsoft.AspNetCore.Identity.EntityFrameworkCore\" Version=\"8.0.7\" />\n    <PackageReference Include=\"Microsoft.AspNetCore.Identity.UI\" Version=\"8.0.7\" />\n    <PackageReference Include=\"Microsoft.EntityFrameworkCore\" Version=\"8.0.7\" />\n    <PackageReference Include=\"Microsoft.EntityFrameworkCore.Design\" Version=\"8.0.7\">\n      <PrivateAssets>all</PrivateAssets>\n      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>\n    </PackageReference>\n    <PackageReference Include=\"Microsoft.EntityFrameworkCore.SqlServer\" Version=\"8.0.7\" />\n    <PackageReference Include=\"Microsoft.EntityFrameworkCore.Tools\" Version=\"8.0.7\">\n      <PrivateAssets>all</PrivateAssets>\n      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>\n    </PackageReference>\n    <PackageReference Include=\"Microsoft.VisualStudio.Web.CodeGeneration.Design\" Version=\"8.0.3\" />\n  </ItemGroup>\n\n  <ItemGroup>\n    <Compile Remove=\"Views\\Expenditure\\Add.cshtml.cs\" />\n  </ItemGroup>\n\n</Project>\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/WildPay.csproj b/WildPay/WildPay.csproj
+--- a/WildPay/WildPay.csproj	(revision 373e84125685ad054090fe8ed6e44aa75501144a)
++++ b/WildPay/WildPay.csproj	(date 1722594049252)
+@@ -28,6 +28,17 @@
+ 
+   <ItemGroup>
+     <Compile Remove="Views\Expenditure\Add.cshtml.cs" />
++    <Compile Remove="Migrations\20240729124158_Initial.cs" />
++    <Compile Remove="Migrations\20240729124158_Initial.Designer.cs" />
++    <Compile Remove="Migrations\20240801124456_NewDatabase.cs" />
++    <Compile Remove="Migrations\20240801124456_NewDatabase.Designer.cs" />
++    <Compile Remove="Migrations\20240802101051_addRefund.cs" />
++    <Compile Remove="Migrations\20240802101051_addRefund.Designer.cs" />
++    <Compile Remove="Migrations\WildPayDbContextModelSnapshot.cs" />
++  </ItemGroup>
++
++  <ItemGroup>
++    <Folder Include="Migrations\" />
+   </ItemGroup>
+ 
+ </Project>
+Index: WildPay/Interfaces/IExpenditureRepository.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using WildPay.Models.Entities;\n\nnamespace WildPay.Interfaces\n{\n    public interface IExpenditureRepository\n    {\n        Task<List<Expenditure>> GetExpendituresAsync(string groupId);\n        Task<Expenditure?> GetExpenditureByIdAsync(int expenditureId);\n        Task EditExpenditureAsync(Expenditure expenditure);\n        Task AddExpenditureAsync(string name, double amount, DateTime date, string? payerId, int? categoryId, int? groupId);\n        Task<bool> DeleteExpenditureAsync(int expenditureId);\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Interfaces/IExpenditureRepository.cs b/WildPay/Interfaces/IExpenditureRepository.cs
+--- a/WildPay/Interfaces/IExpenditureRepository.cs	(revision 373e84125685ad054090fe8ed6e44aa75501144a)
++++ b/WildPay/Interfaces/IExpenditureRepository.cs	(date 1722592954499)
+@@ -7,7 +7,7 @@
+         Task<List<Expenditure>> GetExpendituresAsync(string groupId);
+         Task<Expenditure?> GetExpenditureByIdAsync(int expenditureId);
+         Task EditExpenditureAsync(Expenditure expenditure);
+-        Task AddExpenditureAsync(string name, double amount, DateTime date, string? payerId, int? categoryId, int? groupId);
++        Task AddExpenditureAsync(Expenditure expenditure);
+         Task<bool> DeleteExpenditureAsync(int expenditureId);
+     }
+ }

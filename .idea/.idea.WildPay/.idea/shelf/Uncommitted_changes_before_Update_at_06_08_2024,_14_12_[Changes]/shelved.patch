@@ -1,0 +1,196 @@
+Index: WildPay/Services/ExpenditureService.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Microsoft.AspNetCore.Identity;\nusing Microsoft.AspNetCore.Mvc;\nusing Microsoft.EntityFrameworkCore;\nusing WildPay.Interfaces;\nusing WildPay.Models.Entities;\nusing WildPay.Models.ViewModels;\nusing WildPay.Services.Interfaces;\n\nnamespace WildPay.Services;\n\npublic class ExpenditureService\n{\n    private readonly UserManager<ApplicationUser> _userManager;\n    private readonly IExpenditureRepository _expenditureRepository;\n    private readonly IGroupRepository _groupRepository;\n    private readonly ICategoryRepository _categoryRepository;\n    private readonly IBalanceService _balanceService;\n\n    public ExpenditureService(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, ICategoryRepository categoryRepository, IBalanceService balanceService)\n    {\n        _userManager = userManager;\n        _expenditureRepository = expenditureRepository;\n        _groupRepository = groupRepository;\n        _categoryRepository = categoryRepository;\n        _balanceService = balanceService;\n    }\n    public async Task<IActionResult> AddExpenditure(AddExpenditureInGroup model)\n    {\n        Group group = await _groupRepository.GetGroupByIdAsync(model.GroupId);\n        model.ExpenditureToCreate.Group = group;\n        \n        ApplicationUser payer = group.ApplicationUsers.FirstOrDefault(u => u.Id == model.ExpenditureToCreate.PayerId);\n        model.ExpenditureToCreate.Payer = payer;\n\n        var selectedUsers = await _userManager.Users\n            .Where(u => model.SelectedUsersIds.Contains(u.Id))\n            .ToListAsync();\n        \n        model.ExpenditureToCreate.RefundContributors = selectedUsers;\n\n        await _expenditureRepository.AddExpenditureAsync(model.ExpenditureToCreate);\n        return null;\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Services/ExpenditureService.cs b/WildPay/Services/ExpenditureService.cs
+--- a/WildPay/Services/ExpenditureService.cs	(revision c24379db643487117d7e37365fc68ed38523121e)
++++ b/WildPay/Services/ExpenditureService.cs	(date 1722946264671)
+@@ -8,37 +8,47 @@
+ 
+ namespace WildPay.Services;
+ 
+-public class ExpenditureService
++public class ExpenditureService : IExpenditureService
+ {
+     private readonly UserManager<ApplicationUser> _userManager;
+     private readonly IExpenditureRepository _expenditureRepository;
+     private readonly IGroupRepository _groupRepository;
+-    private readonly ICategoryRepository _categoryRepository;
+-    private readonly IBalanceService _balanceService;
+-
+-    public ExpenditureService(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, ICategoryRepository categoryRepository, IBalanceService balanceService)
++    
++    public ExpenditureService(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository)
+     {
+         _userManager = userManager;
+         _expenditureRepository = expenditureRepository;
+         _groupRepository = groupRepository;
+-        _categoryRepository = categoryRepository;
+-        _balanceService = balanceService;
+     }
+-    public async Task<IActionResult> AddExpenditure(AddExpenditureInGroup model)
++
++    public async Task<AddExpenditureInGroup> AddExpenditure(int Id)
+     {
+-        Group group = await _groupRepository.GetGroupByIdAsync(model.GroupId);
+-        model.ExpenditureToCreate.Group = group;
++        Group? group = await _groupRepository.GetGroupByIdAsync(Id); // Get the Id of the group associated to the new expenditure
++        List<ApplicationUser> users = group.ApplicationUsers.ToList();
++        AddExpenditureInGroup model = new AddExpenditureInGroup // creates a new instance of modelView 
++        {
++            GroupId = group.Id,
++            Users = users
++        };
++        return model;
++    }
++    
++    // method to create a new Expenditure that calls ExpenditureRepository
++    public async Task<bool> AddExpenditure(AddExpenditureInGroup model)
++    {
++        Group? group = await _groupRepository.GetGroupByIdAsync(model.GroupId); // find the group of the model.Expenditure
++        model.ExpenditureToCreate.Group = group; // link group to model.Expenditure
+         
+         ApplicationUser payer = group.ApplicationUsers.FirstOrDefault(u => u.Id == model.ExpenditureToCreate.PayerId);
+-        model.ExpenditureToCreate.Payer = payer;
++        model.ExpenditureToCreate.Payer = payer; // add Payer to model.Expenditure
+ 
+-        var selectedUsers = await _userManager.Users
++        var selectedUsers = await _userManager.Users // find the selected users in the view and convert it to a list
+             .Where(u => model.SelectedUsersIds.Contains(u.Id))
+             .ToListAsync();
+         
+-        model.ExpenditureToCreate.RefundContributors = selectedUsers;
++        model.ExpenditureToCreate.RefundContributors = selectedUsers; // add participants to the model.expenditure
+ 
+-        await _expenditureRepository.AddExpenditureAsync(model.ExpenditureToCreate);
+-        return null;
++        await _expenditureRepository.AddExpenditureAsync(model.ExpenditureToCreate); // add expenditure to databse
++        return true;
+     }
+ }
+\ No newline at end of file
+Index: WildPay/Controllers/ExpenditureController.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Microsoft.AspNetCore.Authorization;\nusing Microsoft.AspNetCore.Identity;\nusing Microsoft.AspNetCore.Mvc;\nusing Microsoft.EntityFrameworkCore;\nusing WildPay.Interfaces;\nusing WildPay.Models;\nusing WildPay.Models.Entities;\nusing WildPay.Models.ViewModels;\nusing WildPay.Services.Interfaces;\n\nnamespace WildPay.Controllers;\n\n[Authorize]\npublic class ExpenditureController : Controller\n{\n    private readonly UserManager<ApplicationUser> _userManager;\n    private readonly IExpenditureRepository _expenditureRepository;\n    private readonly IGroupRepository _groupRepository;\n    private readonly ICategoryRepository _categoryRepository;\n    private readonly IBalanceService _balanceService;\n\n    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService)\n    {\n        _userManager = userManager;\n        _expenditureRepository = expenditureRepository;\n        _groupRepository = groupRepository;\n        _balanceService = balanceService;\n    }\n\n    // READ\n    async public Task<IActionResult> ListGroupExpenditures(int Id)\n    {\n        //Get the group\n        Group? group = await _groupRepository.GetGroupByIdAsync(Id);\n\n        //Return not found if no group is found\n        if (group == null) { return NotFound(); }\n\n        //Verify if the User belongs to the group, else we block the access\n        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }\n\n        return View(group);\n    }\n\n    async public Task<IActionResult> ListGroupBalances(int Id)\n    {\n        //Get the group\n        Group? group = await _groupRepository.GetGroupByIdAsync(Id);\n\n        //Return not found if no group is found\n        if (group == null) { return NotFound(); }\n\n        //Verify if the User belongs to the group, else we block the access\n        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }\n\n        //Init GroupBalance instance\n        GroupBalance groupBalance = new GroupBalance();\n        groupBalance.Group = group;\n        groupBalance.TotalAmount = group.Expenditures.Sum(el => el.Amount);\n\n        Dictionary<ApplicationUser, double> membersBalance = await _balanceService.CalculateMembersBalance(group); //Calculate the balance of each member\n        membersBalance = membersBalance.OrderByDescending(el => el.Value).ToDictionary(el => el.Key, el => el.Value);\n        groupBalance.UsersBalance = membersBalance;\n        groupBalance = await _balanceService.CalculateDebtsList(groupBalance, group); //Calculate who must pay who\n\n        if (group.Expenditures.Any(el => el.PayerId is null) || group.Expenditures.Any(el => el.Payer is null)) groupBalance.Message = \"Attention ! Les d�penses qui n'ont pas de payeur n'ont pas �t� prises en compte. V�rifiez les d�penses du groupe et ajoutez-y un payeur si vous voulez les inclure au calcul.\";\n        else if (groupBalance.Debts.Count > 0 && groupBalance.Message == \"\") groupBalance.Message = \"Calcul effectu� avec succ�s.\";\n        else if (groupBalance.Debts.Count == 0 && groupBalance.Message == \"\") groupBalance.Message = \"Aucun remboursement � effectuer.\";\n\n        return View(groupBalance);\n    }\n    \n    // CREATE\n    [HttpGet]\n    public async Task<IActionResult> AddExpenditure(int Id)\n    {\n        Group? group = await _groupRepository.GetGroupByIdAsync(Id); // Get the Id of the group associated to the new expenditure\n        List<ApplicationUser> users = group.ApplicationUsers.ToList();\n        AddExpenditureInGroup model = new AddExpenditureInGroup // creates a new instance of modelView \n        {\n            GroupId = group.Id,\n            Users = users\n        };\n        \n        return View(model);\n    }\n\n    // CREATE\n    [HttpPost]\n    public async Task<IActionResult> AddExpenditure(AddExpenditureInGroup model)\n    {\n        if (ModelState.IsValid)\n        {\n            Group group = await _groupRepository.GetGroupByIdAsync(model.GroupId);\n            model.ExpenditureToCreate.Group = group;\n            \n            ApplicationUser payer = group.ApplicationUsers.FirstOrDefault(u => u.Id == model.ExpenditureToCreate.PayerId);\n            model.ExpenditureToCreate.Payer = payer;\n\n            var selectedUsers = await _userManager.Users\n                .Where(u => model.SelectedUsersIds.Contains(u.Id))\n                .ToListAsync();\n            \n            model.ExpenditureToCreate.RefundContributors = selectedUsers;\n\n            await _expenditureRepository.AddExpenditureAsync(model.ExpenditureToCreate);\n            return RedirectToAction(actionName: \"ListGroupExpenditures\", controllerName: \"Expenditure\", new {id = model.GroupId});\n        }\n        return View(model);\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Controllers/ExpenditureController.cs b/WildPay/Controllers/ExpenditureController.cs
+--- a/WildPay/Controllers/ExpenditureController.cs	(revision c24379db643487117d7e37365fc68ed38523121e)
++++ b/WildPay/Controllers/ExpenditureController.cs	(date 1722946264676)
+@@ -1,11 +1,13 @@
+ using Microsoft.AspNetCore.Authorization;
+ using Microsoft.AspNetCore.Identity;
+ using Microsoft.AspNetCore.Mvc;
++using Microsoft.CodeAnalysis.Elfie.Serialization;
+ using Microsoft.EntityFrameworkCore;
+ using WildPay.Interfaces;
+ using WildPay.Models;
+ using WildPay.Models.Entities;
+ using WildPay.Models.ViewModels;
++using WildPay.Services;
+ using WildPay.Services.Interfaces;
+ 
+ namespace WildPay.Controllers;
+@@ -16,15 +18,16 @@
+     private readonly UserManager<ApplicationUser> _userManager;
+     private readonly IExpenditureRepository _expenditureRepository;
+     private readonly IGroupRepository _groupRepository;
+-    private readonly ICategoryRepository _categoryRepository;
+     private readonly IBalanceService _balanceService;
++    private readonly IExpenditureService _expenditureService;
+ 
+-    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService)
++    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService, IExpenditureService expenditureService)
+     {
+         _userManager = userManager;
+         _expenditureRepository = expenditureRepository;
+         _groupRepository = groupRepository;
+         _balanceService = balanceService;
++        _expenditureService = expenditureService;
+     }
+ 
+     // READ
+@@ -74,36 +77,17 @@
+     [HttpGet]
+     public async Task<IActionResult> AddExpenditure(int Id)
+     {
+-        Group? group = await _groupRepository.GetGroupByIdAsync(Id); // Get the Id of the group associated to the new expenditure
+-        List<ApplicationUser> users = group.ApplicationUsers.ToList();
+-        AddExpenditureInGroup model = new AddExpenditureInGroup // creates a new instance of modelView 
+-        {
+-            GroupId = group.Id,
+-            Users = users
+-        };
+-        
++        AddExpenditureInGroup model = await _expenditureService.AddExpenditure(Id);
+         return View(model);
+     }
+-
++    
+     // CREATE
+     [HttpPost]
+     public async Task<IActionResult> AddExpenditure(AddExpenditureInGroup model)
+     {
+         if (ModelState.IsValid)
+         {
+-            Group group = await _groupRepository.GetGroupByIdAsync(model.GroupId);
+-            model.ExpenditureToCreate.Group = group;
+-            
+-            ApplicationUser payer = group.ApplicationUsers.FirstOrDefault(u => u.Id == model.ExpenditureToCreate.PayerId);
+-            model.ExpenditureToCreate.Payer = payer;
+-
+-            var selectedUsers = await _userManager.Users
+-                .Where(u => model.SelectedUsersIds.Contains(u.Id))
+-                .ToListAsync();
+-            
+-            model.ExpenditureToCreate.RefundContributors = selectedUsers;
+-
+-            await _expenditureRepository.AddExpenditureAsync(model.ExpenditureToCreate);
++            await _expenditureService.AddExpenditure(model);
+             return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new {id = model.GroupId});
+         }
+         return View(model);
+Index: WildPay/Program.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Microsoft.EntityFrameworkCore;\nusing WildPay.Models.Entities;\nusing WildPay.Data;\nusing WildPay.Interfaces;\nusing WildPay.Repositories;\nusing WildPay.Services;\nusing WildPay.Services.Interfaces;\n\nnamespace WildPay\n{\n    public class Program\n    {\n        public static void Main(string[] args)\n        {\n            var builder = WebApplication.CreateBuilder(args);\n            var connectionString = builder.Configuration.GetConnectionString(\"WildPayDbContextConnection\") ?? throw new InvalidOperationException(\"Connection string 'WildPayDbContextConnection' not found.\");\n\n            builder.Services.AddDbContext<WildPayDbContext>(options => options.UseSqlServer(connectionString));\n\n            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<WildPayDbContext>();\n\n            // Add services to the container.\n            builder.Services.AddControllersWithViews();\n\n            builder.Services.AddRazorPages();\n\n            builder.Services.AddScoped<IGroupRepository, GroupRepository>();\n            builder.Services.AddScoped<IExpenditureRepository, ExpenditureRepository>();\n            builder.Services.AddScoped<IBalanceService, BalanceService>();\n            // to add Expenditure Repository\n\n            var app = builder.Build();\n\n            // Configure the HTTP request pipeline.\n            if (!app.Environment.IsDevelopment())\n            {\n                app.UseExceptionHandler(\"/Home/Error\");\n                app.UseHsts();\n            }\n\n            app.UseHttpsRedirection();\n            app.UseStaticFiles();\n\n            app.UseRouting();\n\n            app.UseAuthentication();\n            app.UseAuthorization();\n\n            app.MapRazorPages();\n\n            app.MapControllerRoute(\n                name: \"default\",\n                pattern: \"{controller=Home}/{action=Index}/{id?}\");\n\n            app.MapControllerRoute(\n                name: \"defaultWithQueryString\",\n                pattern: \"{controller=Home}/{action=Index}\");\n\n            app.Run();\n        }\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Program.cs b/WildPay/Program.cs
+--- a/WildPay/Program.cs	(revision c24379db643487117d7e37365fc68ed38523121e)
++++ b/WildPay/Program.cs	(date 1722939414873)
+@@ -27,7 +27,7 @@
+             builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+             builder.Services.AddScoped<IExpenditureRepository, ExpenditureRepository>();
+             builder.Services.AddScoped<IBalanceService, BalanceService>();
+-            // to add Expenditure Repository
++            builder.Services.AddScoped<IExpenditureService, ExpenditureService>();
+ 
+             var app = builder.Build();
+ 
+Index: WildPay/Services/Interfaces/IExpenditureService.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Services/Interfaces/IExpenditureService.cs b/WildPay/Services/Interfaces/IExpenditureService.cs
+new file mode 100644
+--- /dev/null	(date 1722946264705)
++++ b/WildPay/Services/Interfaces/IExpenditureService.cs	(date 1722946264705)
+@@ -0,0 +1,9 @@
++using WildPay.Models.ViewModels;
++
++namespace WildPay.Services.Interfaces;
++
++public interface IExpenditureService
++{
++    public Task<bool> AddExpenditure(AddExpenditureInGroup model);
++    public Task<AddExpenditureInGroup> AddExpenditure(int Id);
++}
+\ No newline at end of file

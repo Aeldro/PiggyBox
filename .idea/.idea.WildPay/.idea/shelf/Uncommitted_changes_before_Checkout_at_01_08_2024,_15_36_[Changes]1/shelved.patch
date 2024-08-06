@@ -1,0 +1,41 @@
+Index: WildPay/Controllers/ExpenditureController.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Microsoft.AspNetCore.Authorization;\nusing Microsoft.AspNetCore.Identity;\nusing Microsoft.AspNetCore.Mvc;\nusing NuGet.Protocol.Core.Types;\nusing WildPay.Interfaces;\nusing WildPay.Models.Entities;\n\nnamespace WildPay.Controllers;\n\n[Authorize]\npublic class ExpenditureController : Controller\n{\n    private readonly UserManager<ApplicationUser> _userManager;\n    private readonly IExpenditureRepository _expenditureRepository;\n    private readonly IGroupRepository _groupRepository;\n\n    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository)\n    {\n        _userManager = userManager;\n        _expenditureRepository = expenditureRepository;\n        _groupRepository = groupRepository;\n    }\n\n    // READ\n    async public Task<IActionResult> GroupExpenditures(int Id)\n    {\n        //Get the group\n        Group? group = await _groupRepository.GetGroupByIdAsync(Id);\n\n        //Return not found if no group is found\n        if (group == null) { return NotFound(); }\n\n        //Verify if the User belongs to the group, else we block the access\n        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }\n\n        return View(group);\n    }\n\n    async public Task<IActionResult> GroupBalances(int Id)\n    {\n        //Get the group\n        Group? group = await _groupRepository.GetGroupByIdAsync(Id);\n\n        //Return not found if no group is found\n        if (group == null) { return NotFound(); }\n\n        //Verify if the User belongs to the group, else we block the access\n        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }\n\n        return View(group);\n    }\n\n    // UPDATE\n    [HttpGet]\n    public IActionResult Edit()\n    {\n        return View();\n    }\n\n    // UPDATE\n    [HttpPost]\n    public IActionResult Edit(Expenditure expenditure)\n    {\n        return RedirectToAction(actionName: \"List\", controllerName: \"Expenditure\");\n    }\n\n    // CREATE\n    [HttpGet]\n    public async Task<IActionResult> Add(int Id)\n    {\n        ViewBag.idGroup = Id;\n        return View();\n    }\n\n    // CREATE\n    [HttpPost]\n    public async Task<IActionResult> Add(Expenditure expenditure)\n    {\n        if (ModelState.IsValid)\n        {\n            string applicationUserId = _userManager.GetUserId(User); // get the id of the connected user\n            await _expenditureRepository.AddExpenditureAsync( // add expediture to the repository\n                expenditure.Name, \n                (double)expenditure.Amount, \n                expenditure.Date, \n                applicationUserId, \n                expenditure.CategoryId, \n                expenditure.GroupId);\n            return RedirectToAction(actionName: \"GroupExpenditures\", controllerName: \"Expenditure\", new {id = expenditure.GroupId});\n        }\n\n        return View();\n    }\n\n\n    // DELETE\n    [HttpGet]\n    public IActionResult Delete()\n    {\n        return View();\n    }\n\n    // DELETE\n    [HttpPost]\n    public IActionResult Delete(Expenditure expenditure)\n    {\n        return RedirectToAction(actionName: \"List\", controllerName: \"Expenditure\");\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/WildPay/Controllers/ExpenditureController.cs b/WildPay/Controllers/ExpenditureController.cs
+--- a/WildPay/Controllers/ExpenditureController.cs	
++++ b/WildPay/Controllers/ExpenditureController.cs	
+@@ -76,18 +76,18 @@
+     [HttpPost]
+     public async Task<IActionResult> Add(Expenditure expenditure)
+     {
+-        if (ModelState.IsValid)
+-        {
+-            string applicationUserId = _userManager.GetUserId(User); // get the id of the connected user
+-            await _expenditureRepository.AddExpenditureAsync( // add expediture to the repository
+-                expenditure.Name, 
+-                (double)expenditure.Amount, 
+-                expenditure.Date, 
+-                applicationUserId, 
+-                expenditure.CategoryId, 
+-                expenditure.GroupId);
+-            return RedirectToAction(actionName: "GroupExpenditures", controllerName: "Expenditure", new {id = expenditure.GroupId});
+-        }
++        // if (ModelState.IsValid)
++        // {
++        //     string applicationUserId = _userManager.GetUserId(User); // get the id of the connected user
++        //     await _expenditureRepository.AddExpenditureAsync( // add expediture to the repository
++        //         expenditure.Name, 
++        //         (double)expenditure.Amount, 
++        //         expenditure.Date, 
++        //         applicationUserId, 
++        //         expenditure.CategoryId, 
++        //         expenditure.GroupId);
++        //     return RedirectToAction(actionName: "GroupExpenditures", controllerName: "Expenditure", new {id = expenditure.GroupId});
++        // }
+ 
+         return View();
+     }
