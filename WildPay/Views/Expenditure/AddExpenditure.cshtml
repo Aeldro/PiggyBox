@@ -1,0 +1,33 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model WildPay.Models.ViewModels.AddExpenditureInGroup
+@{ 
+}
+
+<div>
+    <form method="post">
+        <input type="hidden" asp-for="@Model.GroupId" value="@Model.GroupId"/>
+        
+        <label asp-for="@Model.ExpenditureToCreate.Name">nom de la dépense</label>
+        <input type="text" asp-for="@Model.ExpenditureToCreate.Name" placeholder="ex.: piquenique"/>
+        <label asp-for="@Model.ExpenditureToCreate.Amount">valeur de la dépense</label>
+        <input type="number" step="0.01" asp-for="@Model.ExpenditureToCreate.Amount" placeholder="ex.: 40.99"/>
+        <label asp-for="@Model.ExpenditureToCreate.Date">Model.ExpenditureToCreate.Date</label>
+        <input asp-for="@Model.ExpenditureToCreate.Date" type="date"/>
+
+        <label asp-for="@Model.ExpenditureToCreate.Category">catégorie</label>
+        <input asp-for="@Model.ExpenditureToCreate.Category" type="text" placeholder="ex.: voyage"/>
+
+        <label asp-for="@Model.ExpenditureToCreate.Payer">Payé par</label>
+        <select asp-for="@Model.ExpenditureToCreate.PayerId" asp-items="@(new SelectList(Model.Users, "Id", "Firstname"))"></select>
+
+        <label>Participants</label>
+        <div>
+            @foreach (var user in Model.Users)
+            {
+            <input type="checkbox" name="SelectedUsersIds" value="@user.Id" />
+            <label>@user.Firstname</label>
+            }
+        </div>
+        <button asp-action="AddExpenditure" asp-controller="Expenditure">Enregistrer</button>
+    </form>
+</div>

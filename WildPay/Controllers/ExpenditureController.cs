@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Elfie.Serialization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NuGet.Protocol.Core.Types;
 using WildPay.Interfaces;
@@ -8,6 +10,7 @@ using WildPay.Models;
 using WildPay.Models.Entities;
 using WildPay.Models.ViewModels;
 using WildPay.Services;
+using WildPay.Services.Interfaces;
 
 namespace WildPay.Controllers;
 
@@ -19,7 +22,9 @@ public class ExpenditureController : Controller
     private readonly IGroupRepository _groupRepository;
     private readonly ICategoryRepository _categoryRepository;
     private readonly IBalanceService _balanceService;
+    private readonly IExpenditureService _expenditureService;
 
+    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService, IExpenditureService expenditureService)
     public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService, ICategoryRepository categoryRepository)
     {
         _userManager = userManager;
@@ -27,6 +32,7 @@ public class ExpenditureController : Controller
         _groupRepository = groupRepository;
         _categoryRepository = categoryRepository;
         _balanceService = balanceService;
+        _expenditureService = expenditureService;
     }
 
     // READ
@@ -65,9 +71,9 @@ public class ExpenditureController : Controller
         groupBalance.UsersBalance = membersBalance;
         groupBalance = await _balanceService.CalculateDebtsList(groupBalance, group); //Calculate who must pay who
 
-        if (group.Expenditures.Any(el => el.PayerId is null) || group.Expenditures.Any(el => el.Payer is null)) groupBalance.Message = "Attention ! Les dépenses qui n'ont pas de payeur n'ont pas été prises en compte. Vérifiez les dépenses du groupe et ajoutez-y un payeur si vous voulez les inclure au calcul.";
-        else if (groupBalance.Debts.Count > 0 && groupBalance.Message == "") groupBalance.Message = "Calcul effectué avec succès.";
-        else if (groupBalance.Debts.Count == 0 && groupBalance.Message == "") groupBalance.Message = "Aucun remboursement à effectuer.";
+        if (group.Expenditures.Any(el => el.PayerId is null) || group.Expenditures.Any(el => el.Payer is null)) groupBalance.Message = "Attention ! Les dï¿½penses qui n'ont pas de payeur n'ont pas ï¿½tï¿½ prises en compte. Vï¿½rifiez les dï¿½penses du groupe et ajoutez-y un payeur si vous voulez les inclure au calcul.";
+        else if (groupBalance.Debts.Count > 0 && groupBalance.Message == "") groupBalance.Message = "Calcul effectuï¿½ avec succï¿½s.";
+        else if (groupBalance.Debts.Count == 0 && groupBalance.Message == "") groupBalance.Message = "Aucun remboursement ï¿½ effectuer.";
 
         return View(groupBalance);
     }
@@ -128,5 +134,25 @@ public class ExpenditureController : Controller
 
         await _expenditureRepository.EditExpenditureAsync(expenditure);
         return RedirectToAction(actionName: "UpdateExpenditure", controllerName: "Expenditure", new { groupId = groupId, expenditureId = expenditure.Id });
+    }
+    
+    // CREATE
+    [HttpGet]
+    public async Task<IActionResult> AddExpenditure(int Id)
+    {
+        AddExpenditureInGroup model = await _expenditureService.AddExpenditure(Id); // returns a model to fetch in the View
+        return View(model);
+    }
+    
+    // CREATE
+    [HttpPost]
+    public async Task<IActionResult> AddExpenditure(AddExpenditureInGroup model)
+    {
+        if (ModelState.IsValid)
+        {
+            await _expenditureService.AddExpenditure(model); // add the new Expenditure calling service
+            return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new {id = model.GroupId});
+        }
+        return View(model);
     }
 }
