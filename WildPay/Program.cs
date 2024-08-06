@@ -3,6 +3,7 @@ using WildPay.Models.Entities;
 using WildPay.Data;
 using WildPay.Interfaces;
 using WildPay.Repositories;
+using WildPay.Services;
 
 namespace WildPay
 {

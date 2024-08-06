@@ -18,7 +18,7 @@ namespace WildPay.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GroupCategories(int Id)
+        public async Task<IActionResult> ListGroupCategories(int Id)
         {
             //Get the group
             Group? group = await _groupRepository.GetGroupByIdAsync(Id);
