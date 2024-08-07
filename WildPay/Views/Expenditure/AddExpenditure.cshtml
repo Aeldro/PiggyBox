@@ -1,17 +1,22 @@
-
 @model WildPay.Models.ViewModels.AddExpenditureInGroup
 @{
     ViewData["Title"] = "Nouvelle Dépense";
 }
 
 <div>
-    <form method="post">
-        <input type="hidden" asp-for="@Model.GroupId" value="@Model.GroupId"/> <!-- form to send the GroupId-->
-
-        <!-- form to add Name of expenditure -->
-        <label asp-for="@Model.ExpenditureToCreate.Name">nom de la dépense</label>
-        <input type="text" asp-for="@Model.ExpenditureToCreate.Name" placeholder="ex: piquenique"/>
-        <span asp-validation-for="@Model.ExpenditureToCreate.Name" class="text-danger"></span>
+    <partial name="_GroupTitlePartial" model="ViewBag.Group" />
+    <hr />
+    <div class="row">
+        <partial name="_GroupNavBarPartial" model="ViewBag.Group" />
+        <div class="col-md-9">
+            <section>
+                <h3>Modifier la dépense</h3>
+                <form method="post">
+                    <input type="hidden" asp-for="@Model.GroupId" value="@Model.GroupId" /> <!-- form to send the GroupId-->
+                    <!-- form to add Name of expenditure -->
+                    <label asp-for="@Model.ExpenditureToCreate.Name">nom de la dépense</label>
+                    <input type="text" asp-for="@Model.ExpenditureToCreate.Name" placeholder="ex: piquenique" />
+                    <span asp-validation-for="@Model.ExpenditureToCreate.Name" class="text-danger"></span>
 
         <!-- form to add Amount -->
         <label asp-for="@Model.ExpenditureToCreate.Amount">valeur de la dépense</label>
@@ -23,25 +28,28 @@
         <input asp-for="@Model.ExpenditureToCreate.Date" type="date"/>
         <span asp-validation-for="@Model.ExpenditureToCreate.Date" class="text-danger"></span>
 
-        <!-- form to choose Category -->
-        <label asp-for="@Model.CategoryId">catégorie</label>
-        <select asp-for="@Model.CategoryId" asp-items="@(new SelectList(Model.CategoriesInGroup, "Id", "Name"))">
-            <option value="">- sélectionnez un item -</option> <!-- Placeholder -->
-        </select>
+                    <!-- form to choose Category -->
+                    <label asp-for="@Model.CategoryId">catégorie</label>
+                    <select asp-for="@Model.CategoryId" asp-items="@(new SelectList(Model.CategoriesInGroup, "Id", "Name"))">
+                        <option value="">- sélectionnez un item -</option> <!-- Placeholder -->
+                    </select>
 
-        <!-- form to add Payer using a select list -->
-        <label asp-for="@Model.ExpenditureToCreate.Payer">payé par</label>
-        <select asp-for="@Model.ExpenditureToCreate.PayerId" asp-items="@(new SelectList(Model.UsersInGroup, "Id", "Firstname"))"></select>
+                    <!-- form to add Payer using a select list -->
+                    <label asp-for="@Model.ExpenditureToCreate.Payer">payé par</label>
+                    <select asp-for="@Model.ExpenditureToCreate.PayerId" asp-items="@(new SelectList(Model.UsersInGroup, "Id", "Firstname"))"></select>
 
-        <!-- form with checkboxes to choose who participate in the expenditure -->
-        <label>participants</label>
-        <div>
-            @foreach (var user in Model.UsersInGroup)
-            {
-            <input type="checkbox" name="SelectedUsersIds" value="@user.Id" />
-            <label>@user.Firstname</label>
-            }
+                    <!-- form with checkboxes to choose who participate in the expenditure -->
+                    <label>participants</label>
+                    <div>
+                        @foreach (var user in Model.UsersInGroup)
+                        {
+                            <input type="checkbox" name="SelectedUsersIds" value="@user.Id" />
+                            <label>@user.Firstname</label>
+                        }
+                    </div>
+                    <button asp-action="AddExpenditure" asp-controller="Expenditure">enregistrer</button>
+                </form>
+            </section>
         </div>
-        <button asp-action="AddExpenditure" asp-controller="Expenditure">enregistrer</button>
-    </form>
+    </div>
 </div>

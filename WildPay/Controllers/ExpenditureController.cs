@@ -175,6 +175,7 @@ public class ExpenditureController : Controller
     public async Task<IActionResult> AddExpenditure(int Id)
     {
         AddExpenditureInGroup model = await _expenditureService.AddExpenditure(Id); // returns a model to fetch in the View
+        ViewBag.Group = await _groupRepository.GetGroupByIdAsync(model.GroupId);
         return View(model);
     }
 
@@ -190,6 +191,7 @@ public class ExpenditureController : Controller
         Group initialGroup = await _groupRepository.GetGroupByIdAsync(model.GroupId);
         model.UsersInGroup = initialGroup.ApplicationUsers;
         model.CategoriesInGroup = initialGroup.Categories;
+        ViewBag.Group = initialGroup;
         return View(model);
     }
 }

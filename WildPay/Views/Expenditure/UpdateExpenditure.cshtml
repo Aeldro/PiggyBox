@@ -1,40 +1,51 @@
 ﻿@using WildPay.Models.Entities
 @model Expenditure
 
-<h3>Modifier la dépense</h3>
-<form action='@Url.Action("UpdateExpenditure", "Expenditure", new { groupId = ViewBag.Group.Id })' method="post">
+<div>
+    <partial name="_GroupTitlePartial" model="ViewBag.Group" />
+    <hr />
+    <div class="row">
+        <partial name="_GroupNavBarPartial" model="ViewBag.Group" />
+        <div class="col-md-9">
+            <section>
+                <h3>Modifier la dépense</h3>
+                <form action='@Url.Action("UpdateExpenditure", "Expenditure", new { groupId = ViewBag.Group.Id })' method="post">
 
-    <input type="text" asp-for="@Model.Id" hidden="hidden" readonly />
+                    <input type="text" asp-for="@Model.Id" hidden="hidden" readonly />
 
-    <label class="control-label" asp-for="@Model.Name">Nom</label>
-    <input class="form-control" type="text" asp-for="@Model.Name" />
-    <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                    <label class="control-label" asp-for="@Model.Name">Nom</label>
+                    <input class="form-control" type="text" asp-for="@Model.Name" />
+                    <span asp-validation-for="@Model.Name" class="text-danger"></span>
 
     <label class="control-label" asp-for="@Model.Amount">Montant</label>
     <input class="form-control" type="number" asp-for="@Model.Amount" step="0.01" min="0.01" />
     <span asp-validation-for="@Model.Amount" class="text-danger"></span>
 
-    <label class="control-label" asp-for="@Model.Date">Date</label>
-    <input class="form-control" type="date" asp-for="@Model.Date" />
-    <span asp-validation-for="@Model.Date" class="text-danger"></span>
+                    <label class="control-label" asp-for="@Model.Date">Date</label>
+                    <input class="form-control" type="date" asp-for="@Model.Date" />
+                    <span asp-validation-for="@Model.Date" class="text-danger"></span>
 
-    @Html.DropDownListFor(m => m.CategoryId, new SelectList(ViewBag.GroupCategoriesSelects, "Value", "Text"), "(Aucune catégorie)")
+                    @Html.DropDownListFor(m => m.CategoryId, new SelectList(ViewBag.GroupCategoriesSelects, "Value", "Text"), "(Aucune catégorie)")
 
-    @Html.DropDownListFor(m => m.PayerId, new SelectList(ViewBag.GroupUsersSelects, "Value", "Text"), "(Aucun payeur)")
+                    @Html.DropDownListFor(m => m.PayerId, new SelectList(ViewBag.GroupUsersSelects, "Value", "Text"), "(Aucun payeur)")
 
-    @foreach (var member in ViewBag.Group.ApplicationUsers)
-    {
-        if (Model.RefundContributors.Any(el => el.Id == member.Id))
-        {
-            <input type="checkbox" id="@member.Id" name="RefundContributors" value="@member.Id" checked />
-            <label for="@member.Id">@member.Firstname @member.Lastname</label>
-        }
-        else
-        {
-            <input type="checkbox" id="@member.Id" name="RefundContributors" value="@member.Id" />
-            <label for="@member.Id">@member.Firstname @member.Lastname</label>
-        }
-    }
+                    @foreach (var member in ViewBag.Group.ApplicationUsers)
+                    {
+                        if (Model.RefundContributors.Any(el => el.Id == member.Id))
+                        {
+                            <input type="checkbox" id="@member.Id" name="RefundContributors" value="@member.Id" checked />
+                            <label for="@member.Id">@member.Firstname @member.Lastname</label>
+                        }
+                        else
+                        {
+                            <input type="checkbox" id="@member.Id" name="RefundContributors" value="@member.Id" />
+                            <label for="@member.Id">@member.Firstname @member.Lastname</label>
+                        }
+                    }
 
-    <button type="submit">Sauvegarder</button>
-</form>
+                    <button type="submit">Sauvegarder</button>
+                </form>
+            </section>
+        </div>
+    </div>
+</div>
