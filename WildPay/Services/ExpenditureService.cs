@@ -31,7 +31,11 @@ public class ExpenditureService : IExpenditureService
         {
             GroupId = group.Id,
             UsersInGroup = usersInGroup,
-            CategoriesInGroup = categoriesInGroup
+            CategoriesInGroup = categoriesInGroup,
+            ExpenditureToCreate = new Expenditure()
+            {
+                Date = DateTime.Now
+            }
         };
         return model;
     }
@@ -39,20 +43,23 @@ public class ExpenditureService : IExpenditureService
     // method to create a new Expenditure that calls ExpenditureRepository
     public async Task<bool> AddExpenditure(AddExpenditureInGroup model)
     {
-        Group? group = await _groupRepository.GetGroupByIdAsync(model.GroupId); // find the group of the model.Expenditure
-        model.ExpenditureToCreate.Group = group; // set Group to the new Expenditure
-       
-        Category? category = await _categoryRepository.GetCategoryByIdAsync(model.CategoryId); // find the correspondent category 
-        model.ExpenditureToCreate.Category = category; // set the category to the new expenditure
-        
-        ApplicationUser payer = group.ApplicationUsers.FirstOrDefault(u => u.Id == model.ExpenditureToCreate.PayerId);
-        model.ExpenditureToCreate.Payer = payer; // set Payer to the new Expenditure
+        model.ExpenditureToCreate.Group = await _groupRepository.GetGroupByIdAsync(model.GroupId); ; // set Group to the new Expenditure
 
-        var selectedUsers = await _userManager.Users // find the selected users in the view and convert it to a list
+        if (model.CategoryId is not null)
+        {
+            model.ExpenditureToCreate.Category = await _categoryRepository.GetCategoryByIdAsync((int)model.CategoryId); // set the category to the new expenditure
+        }
+        else
+        {
+            model.CategoryId = null;
+        }
+        
+        model.ExpenditureToCreate.Payer = model.ExpenditureToCreate.Group.ApplicationUsers.FirstOrDefault(u => u.Id == model.ExpenditureToCreate.PayerId); // set Payer to the new Expenditure
+
+        // set RefundContributors to the new Expenditure
+        model.ExpenditureToCreate.RefundContributors = await _userManager.Users // find the selected users in the view and convert it to a list
             .Where(u => model.SelectedUsersIds.Contains(u.Id))
             .ToListAsync();
-        
-        model.ExpenditureToCreate.RefundContributors = selectedUsers; // set RefundContributors to the new Expenditure
 
         await _expenditureRepository.AddExpenditureAsync(model.ExpenditureToCreate); // add expenditure to databse
         return true;

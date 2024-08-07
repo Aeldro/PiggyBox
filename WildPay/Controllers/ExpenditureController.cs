@@ -182,6 +182,6 @@ public class ExpenditureController : Controller
             await _expenditureService.AddExpenditure(model); // add the new Expenditure calling service
             return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new {id = model.GroupId});
         }
-        return View(model);
+        return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new {id = model.GroupId});
     }
 }
