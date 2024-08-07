@@ -17,9 +17,9 @@
                     <input class="form-control" type="text" asp-for="@Model.Name" />
                     <span asp-validation-for="@Model.Name" class="text-danger"></span>
 
-                    <label class="control-label" asp-for="@Model.Amount">Montant</label>
-                    <input class="form-control" type="number" asp-for="@Model.Amount" />
-                    <span asp-validation-for="@Model.Amount" class="text-danger"></span>
+    <label class="control-label" asp-for="@Model.Amount">Montant</label>
+    <input class="form-control" type="number" asp-for="@Model.Amount" step="0.01" min="0.01" />
+    <span asp-validation-for="@Model.Amount" class="text-danger"></span>
 
                     <label class="control-label" asp-for="@Model.Date">Date</label>
                     <input class="form-control" type="date" asp-for="@Model.Date" />
