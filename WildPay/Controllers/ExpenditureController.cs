@@ -147,6 +147,11 @@ public class ExpenditureController : Controller
             ViewBag.Group = group;
             ViewBag.GroupCategoriesSelects = await _dropDownService.GetDropDownGroupCategories(group);
             ViewBag.GroupUsersSelects = await _dropDownService.GetDropDownGroupMembers(group);
+
+            //Rebuild the expenditure contributors
+            Expenditure initialExpenditure = await _expenditureRepository.GetExpenditureByIdAsync(expenditure.Id);
+            expenditure.RefundContributors = initialExpenditure.RefundContributors;
+
             return View(expenditure);
         }
 
@@ -162,9 +167,9 @@ public class ExpenditureController : Controller
         }
 
         await _expenditureRepository.EditExpenditureAsync(expenditure);
-        return RedirectToAction(actionName: "UpdateExpenditure", controllerName: "Expenditure", new { groupId = groupId, expenditureId = expenditure.Id });
+        return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new { id = groupId });
     }
-    
+
     // CREATE
     [HttpGet]
     public async Task<IActionResult> AddExpenditure(int Id)
@@ -172,7 +177,7 @@ public class ExpenditureController : Controller
         AddExpenditureInGroup model = await _expenditureService.AddExpenditure(Id); // returns a model to fetch in the View
         return View(model);
     }
-    
+
     // CREATE
     [HttpPost]
     public async Task<IActionResult> AddExpenditure(AddExpenditureInGroup model)
@@ -180,8 +185,11 @@ public class ExpenditureController : Controller
         if (ModelState.IsValid)
         {
             await _expenditureService.AddExpenditure(model); // add the new Expenditure calling service
-            return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new {id = model.GroupId});
+            return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new { id = model.GroupId });
         }
-        return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new {id = model.GroupId});
+        Group initialGroup = await _groupRepository.GetGroupByIdAsync(model.GroupId);
+        model.UsersInGroup = initialGroup.ApplicationUsers;
+        model.CategoriesInGroup = initialGroup.Categories;
+        return View(model);
     }
 }
