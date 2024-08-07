@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <Compile Remove="Views\Expenditure\Add.cshtml.cs" />
+    <Compile Remove="Views\Expenditure\AddExpenditure.cshtml.cs" />
   </ItemGroup>
 
 </Project>
