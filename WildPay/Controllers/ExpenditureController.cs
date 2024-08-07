@@ -1,13 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Elfie.Serialization;
-using Microsoft.EntityFrameworkCore;
 using WildPay.Interfaces;
 using WildPay.Models;
 using WildPay.Models.Entities;
 using WildPay.Models.ViewModels;
-using WildPay.Services;
 using WildPay.Services.Interfaces;
 
 namespace WildPay.Controllers;
@@ -20,6 +17,7 @@ public class ExpenditureController : Controller
     private readonly IGroupRepository _groupRepository;
     private readonly IBalanceService _balanceService;
     private readonly IExpenditureService _expenditureService;
+    
 
     public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService, IExpenditureService expenditureService)
     {
