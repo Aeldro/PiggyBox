@@ -1,0 +1,20 @@
+﻿@model WildPay.Models.ViewModels.MemberAdded
+
+<div>
+    <h3>Ajouter un participant</h3>
+    @* icon add person *@
+    <span class="material-symbols-outlined">person_add</span>
+</div>
+
+<form method="post">
+    <div class="mt-3 form-group">
+        <input type="text" asp-for="@Model.GroupId" hidden="hidden" readonly />
+
+        <label class="control-label" asp-for="@Model.Email">Email</label>
+        <input class="form-control" type="email" asp-for="@Model.Email" required />
+        <span asp-validation-for="@Model.Email" class="text-danger"></span>
+
+        <button asp-action="AddMemberToGroup" asp-controller="Group">Ajouter</button>
+    </div>
+</form>
+
