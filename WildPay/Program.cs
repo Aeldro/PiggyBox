@@ -4,6 +4,7 @@ using WildPay.Data;
 using WildPay.Interfaces;
 using WildPay.Repositories;
 using WildPay.Services;
+using WildPay.Services.Interfaces;
 
 namespace WildPay
 {
@@ -27,8 +28,8 @@ namespace WildPay
             builder.Services.AddScoped<IExpenditureRepository, ExpenditureRepository>();
             builder.Services.AddScoped<IBalanceService, BalanceService>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-
-            // to add Expenditure Repository
+            builder.Services.AddScoped<IExpenditureService, ExpenditureService>();
+            builder.Services.AddScoped<IDropDownService, DropDownService>();
 
             var app = builder.Build();
 

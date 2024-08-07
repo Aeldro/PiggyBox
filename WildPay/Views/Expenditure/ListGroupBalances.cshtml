@@ -4,10 +4,14 @@
 
 @{
     ViewData["Title"] = "Soldes " + Model.Group.Name;
+
+    // function that calculates the filling percent for each progress bar
     double PercentFillCalculation(double contribution, double totalContribution)
     {
         if (totalContribution == 0) return 0;
+
         if (contribution < 0) contribution = Math.Abs(contribution);
+
         return Math.Round(contribution / totalContribution * 100, 2);
     }
 }
@@ -23,13 +27,16 @@
                     Total des dépenses :
                     <b class="text-warning">@Model.TotalAmount€</b>
                 </h3>
+
                 <div class="card">
                     <h5 class="card-header">Soldes :</h5>
+
                     @foreach (KeyValuePair<ApplicationUser, double> member in Model.UsersBalance)
                     {
                         <div class="card-body border-success">
                             <h5 class="card-text">@member.Key.Firstname @member.Key.Lastname</h5>
-                            <h5 class="card-title">@member.Value€</h5>
+                            <h5 class="card-title">@Math.Round(member.Value, 2)€</h5>
+
                             <div class="progress">
                                 @if (member.Value >= 0)
                                 {
@@ -48,21 +55,21 @@
                         <div class="card-body">
                             <p class="card-text">@Model.Message</p>
                         </div>
+
                         @foreach (Debt debt in Model.Debts)
                         {
                             <div class="card-body">
                                 <h5 class="card-title">
                                     <span class="text-danger">@debt.Debtor.Firstname @debt.Debtor.Lastname</span>
                                     doit
-                                    <span class="text-info">@debt.Amount€</span>
+                                    <span class="text-info">@Math.Round(debt.Amount, 2)€</span>
                                     à
                                     <span class="text-success">@debt.Creditor.Firstname @debt.Creditor.Lastname</span>
                                 </h5>
-                                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
                             </div>
                         }
                     </div>
-
+                </div>
             </section>
         </div>
     </div>
