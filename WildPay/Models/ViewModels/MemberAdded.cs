@@ -6,7 +6,7 @@ namespace WildPay.Models.ViewModels
     {
         public int GroupId { get; set; }
 
-        [EmailAddress]
+        [EmailAddress(ErrorMessage = "L'adresse mail saisie n'est pas valide.")]
         public string Email { get; set; } = string.Empty;
     }
 }

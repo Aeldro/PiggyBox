@@ -11,23 +11,7 @@
         <partial name="_GroupNavBarPartial" model="Model.GroupToUpdate" />
 
         <div class="col-md-9">
-            <h3>Modifier groupe</h3>
-
-            <form method="post">
-                <input type="text" asp-for="@Model.GroupToUpdate.Id" hidden="hidden" readonly />
-
-                <div class="mt-3 form-group">
-                    <label class="control-label" asp-for="@Model.GroupToUpdate.Name">Nom du groupe</label>
-                    <input class="form-control" type="text" asp-for="GroupToUpdate.Name" />
-                </div>
-
-                <div class="mt-3 form-group">
-                    <label class="control-label" asp-for="@Model.GroupToUpdate.Image">Image du groupe</label>
-                    <input class="form-control" type="text" asp-for="GroupToUpdate.Image" />
-                </div>
-
-                <button asp-action="UpdateGroup" asp-controller="Group">Enregistrer</button>
-            </form>
+            <partial name="_UpdateNameGroup" model="Model.GroupToUpdate" />
 
             <h3>Supprimer un participant</h3>
             <table>
@@ -41,22 +25,12 @@
                 </tr>
             </table>
 
-            <h3>Ajouter un participant</h3>
-            <div>
-                <span class="material-symbols-outlined">person_add</span> <!-- person add icon-->
-            </div>
+            <partial name="_AddNewMemberToGroup" model="Model.NewMember" />
 
-            <form method="post">
-                <div class="mt-3 form-group">
-                    <input type="text" asp-for="@Model.NewMember.GroupId" hidden="hidden" readonly />
-
-                    <label class="control-label" asp-for="@Model.NewMember.Email">Email</label>
-                    <input class="form-control" type="email" asp-for="@Model.NewMember.Email" required />
-                    <span asp-validation-for="@Model.NewMember.Email"></span>
-
-                    <button asp-action="AddMemberToGroup" asp-controller="Group">Ajouter</button>
-                </div>
-            </form>
+            @if (ViewBag.MemberNotFound != null)
+            {
+                <p class="text-danger">@ViewBag.MemberNotFound</p>
+            }
 
             <a class="btn btn-danger d-flex justify-content-center align-items-center w-25" asp-action="DeleteGroup" asp-controller="Group" asp-route-Id="@Model.GroupToUpdate.Id"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
         </div>
