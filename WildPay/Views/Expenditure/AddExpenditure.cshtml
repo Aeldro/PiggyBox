@@ -14,24 +14,24 @@
 
         <!-- form to add Amount -->
         <label asp-for="@Model.ExpenditureToCreate.Amount">valeur de la dépense</label>
-        <input type="number" step="0.01" asp-for="@Model.ExpenditureToCreate.Amount" placeholder="ex.: 40.99"/>
+        <input type="number" step="0.01" asp-for="@Model.ExpenditureToCreate.Amount" placeholder="ex: 40.99"/>
         
         <!-- form to add Date -->
         <label asp-for="@Model.ExpenditureToCreate.Date">date</label>
         <input asp-for="@Model.ExpenditureToCreate.Date" type="date"/>
 
         <!-- form to choose Category -->
-        <label asp-for="@Model.CategoryId">Catégorie</label>
+        <label asp-for="@Model.CategoryId">catégorie</label>
         <select asp-for="@Model.CategoryId" asp-items="@(new SelectList(Model.CategoriesInGroup, "Id", "Name"))">
-            <option value="">- Sélectionnez un item -</option> <!-- Placeholder -->
+            <option value="">- sélectionnez un item -</option> <!-- Placeholder -->
         </select>
 
         <!-- form to add Payer using a select list -->
-        <label asp-for="@Model.ExpenditureToCreate.Payer">Payé par</label>
+        <label asp-for="@Model.ExpenditureToCreate.Payer">payé par</label>
         <select asp-for="@Model.ExpenditureToCreate.PayerId" asp-items="@(new SelectList(Model.UsersInGroup, "Id", "Firstname"))"></select>
 
         <!-- form with checkboxes to choose who participate in the expenditure -->
-        <label>Participants</label>
+        <label>participants</label>
         <div>
             @foreach (var user in Model.UsersInGroup)
             {
@@ -39,6 +39,6 @@
             <label>@user.Firstname</label>
             }
         </div>
-        <button asp-action="AddExpenditure" asp-controller="Expenditure">Enregistrer</button>
+        <button asp-action="AddExpenditure" asp-controller="Expenditure">enregistrer</button>
     </form>
 </div>
