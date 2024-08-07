@@ -204,13 +204,15 @@ public class GroupController : Controller
 
     // DELETE group view
     [HttpGet]
-    public async Task<IActionResult> DeleteGroup(int Id)
+    public async Task<IActionResult> DeleteGroup(int Id, string viewSender)
     {
         Group? group = await _groupRepository.GetGroupByIdAsync(Id);
 
         if (group is null) return NotFound();
 
         if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
+
+        ViewBag.Action = viewSender;
 
         return View(group);
     }

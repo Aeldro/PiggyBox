@@ -32,7 +32,7 @@
                 <p class="text-danger">@ViewBag.MemberNotFound</p>
             }
 
-            <a class="btn btn-danger d-flex justify-content-center align-items-center w-25" asp-action="DeleteGroup" asp-controller="Group" asp-route-Id="@Model.GroupToUpdate.Id"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
+            <a class="btn btn-danger d-flex justify-content-center align-items-center w-25" href="@Url.ActionLink("DeleteGroup", "Group", new { Id = @Model.GroupToUpdate.Id, viewSender = "UpdateGroup" })"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
         </div>
     </div>
 </div>
