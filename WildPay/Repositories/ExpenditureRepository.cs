@@ -32,7 +32,7 @@ namespace WildPay.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<int> GetContributorsCount(int expenditureId)
+        public async Task<int> GetContributorsCountAsync(int expenditureId)
         {
             Expenditure expenditure = await GetExpenditureByIdAsync(expenditureId);
             int contributorsCount = expenditure.RefundContributors.Count;
