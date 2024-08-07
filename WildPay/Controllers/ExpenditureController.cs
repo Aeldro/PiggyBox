@@ -22,8 +22,9 @@ public class ExpenditureController : Controller
     private readonly ICategoryRepository _categoryRepository;
     private readonly IBalanceService _balanceService;
     private readonly IExpenditureService _expenditureService;
+    private readonly IDropDownService _dropDownService;
 
-    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService, ICategoryRepository categoryRepository, IExpenditureService expenditureService)
+    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService, ICategoryRepository categoryRepository, IExpenditureService expenditureService, IDropDownService dropDownService)
     {
         _userManager = userManager;
         _expenditureRepository = expenditureRepository;
@@ -31,6 +32,7 @@ public class ExpenditureController : Controller
         _categoryRepository = categoryRepository;
         _balanceService = balanceService;
         _expenditureService = expenditureService;
+        _dropDownService = dropDownService;
     }
 
     // READ
@@ -96,7 +98,6 @@ public class ExpenditureController : Controller
     {
         //Get the group
         Group? group = await _groupRepository.GetGroupByIdAsync(groupId);
-        ViewBag.Group = group;
 
         //Return not found if no group is found
         if (group == null) { return NotFound(); }
@@ -123,8 +124,8 @@ public class ExpenditureController : Controller
         }
 
         ViewBag.Group = group;
-        ViewBag.GroupUsersSelects = groupUsers;
-        ViewBag.GroupCategoriesSelects = groupCategories;
+        ViewBag.GroupCategoriesSelects = await _dropDownService.GetDropDownGroupCategories(group);
+        ViewBag.GroupUsersSelects = await _dropDownService.GetDropDownGroupMembers(group);
 
         return View(expenditure);
     }
@@ -132,7 +133,22 @@ public class ExpenditureController : Controller
     [HttpPost]
     public async Task<IActionResult> UpdateExpenditure(Expenditure expenditure, int groupId, string[] RefundContributors)
     {
-        if (!ModelState.IsValid) return View(expenditure);
+        if (!ModelState.IsValid)
+        {
+            //Get the group
+            Group? group = await _groupRepository.GetGroupByIdAsync(groupId);
+
+            //Return not found if no group is found
+            if (group == null) { return NotFound(); }
+
+            //Verify if the User belongs to the group, else we block the access
+            if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }
+
+            ViewBag.Group = group;
+            ViewBag.GroupCategoriesSelects = await _dropDownService.GetDropDownGroupCategories(group);
+            ViewBag.GroupUsersSelects = await _dropDownService.GetDropDownGroupMembers(group);
+            return View(expenditure);
+        }
 
         if (expenditure.PayerId is not null) expenditure.Payer = await _userManager.FindByIdAsync(expenditure.PayerId);
         else expenditure.Payer = null;

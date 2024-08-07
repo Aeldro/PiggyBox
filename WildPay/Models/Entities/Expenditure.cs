@@ -6,15 +6,15 @@ namespace WildPay.Models.Entities
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Le nom est obligatoire.")]
         [MaxLength(50)]
         public string Name { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Le montant est obligatoire.")]
         [Range(0.01, int.MaxValue, ErrorMessage = "Le montant de la dépense doit être supérieur à 0.01.")]
         public double Amount { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "La date est obligatoire.")]
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }
 
