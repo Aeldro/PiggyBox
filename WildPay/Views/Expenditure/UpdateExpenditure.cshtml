@@ -18,9 +18,9 @@
     <input class="form-control" type="date" asp-for="@Model.Date" />
     <span asp-validation-for="@Model.Date" class="text-danger"></span>
 
-    @Html.DropDownListFor(m => m.CategoryId, new SelectList(ViewBag.GroupCategoriesSelects, "Value", "Text"), "Selectionnez une catégorie")
+    @Html.DropDownListFor(m => m.CategoryId, new SelectList(ViewBag.GroupCategoriesSelects, "Value", "Text"), "(Aucune catégorie)")
 
-    @Html.DropDownListFor(m => m.PayerId, new SelectList(ViewBag.GroupUsersSelects, "Value", "Text"), "Selectionnez un payeur")
+    @Html.DropDownListFor(m => m.PayerId, new SelectList(ViewBag.GroupUsersSelects, "Value", "Text"), "(Aucun payeur)")
 
     @foreach (var member in ViewBag.Group.ApplicationUsers)
     {

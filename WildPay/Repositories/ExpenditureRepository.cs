@@ -66,6 +66,7 @@ namespace WildPay.Repositories
             expenditureToUpdate.Amount = expenditure.Amount;
             expenditureToUpdate.Date = expenditure.Date;
             expenditureToUpdate.Payer = expenditure.Payer;
+            expenditureToUpdate.PayerId = expenditure.PayerId;
             expenditureToUpdate.Category = expenditure.Category;
             expenditureToUpdate.CategoryId = expenditure.CategoryId;
 
