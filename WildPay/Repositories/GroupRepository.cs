@@ -30,6 +30,7 @@ namespace WildPay.Repositories
             Group? group = await _context.Groups
                 .Include(g => g.ApplicationUsers)
                 .Include(g => g.Expenditures)
+                .ThenInclude(ex => ex.RefundContributors)
                 .Include(g => g.Categories)
                 .FirstOrDefaultAsync(g => g.Id == groupId);
             return group;
@@ -91,11 +92,22 @@ namespace WildPay.Repositories
         // user and group should remain untouched.
         public async Task DeleteMemberFromGroupAsync(Group group, string userId)
         {
-            ApplicationUser? member = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            ApplicationUser? member = await _context.Users.
+                Include(u => u.Groups).
+                Include(u => u.ExpendituresPayer).
+                Include(u => u.RefundContributions).
+                FirstOrDefaultAsync(u => u.Id == userId);
 
             if (member != null && member.Groups.Exists(g => g == group))
             {
-                // check if that remove the member in the list of Group
+                // remove all references of expenditures to pay from the group
+                // that the user is quitting
+                member.RefundContributions.RemoveAll(ex => ex.GroupId == group.Id);
+
+                // remove all references of expenditures been paid by the user
+                // for the group that the user is quitting
+                member.ExpendituresPayer.RemoveAll(ex => ex.GroupId == group.Id);
+
                 member.Groups.Remove(group);
 
                 await _context.SaveChangesAsync();
