@@ -55,7 +55,7 @@ namespace WildPay
 
             app.MapControllerRoute(
                 name: "defaultWithQueryString",
-                pattern: "{controller=Home}/{action=Index}");
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
         }

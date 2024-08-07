@@ -57,6 +57,7 @@ namespace WildPay.Controllers
 
             return RedirectToAction(actionName: "ListGroupCategories", controllerName: "Category", new { Id = category.GroupId });
         }
+        
         [HttpGet]
         public async Task<IActionResult> DeleteCategory(int id)
         {
@@ -72,10 +73,14 @@ namespace WildPay.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteCategory(int id, Category category)
         {
-
+            var existingCategory = await _categoryRepository.GetCategoryByIdAsync(id);
+            if (existingCategory == null)
+            {
+                return NotFound();
+            }
             await _categoryRepository.DeleteCategoryAsync(id);
-
-            return RedirectToAction(actionName:"ListGroupCategories", controllerName:"Category");
+            return RedirectToAction("ListGroupCategories", new { Id = existingCategory.GroupId });
         }
+
     }
 }

@@ -7,33 +7,10 @@
 <h2>Delete Category</h2>
 
 <h3>Êtes-vous sûr de vouloir supprimer cette catégorie?</h3>
-<div>
-    <h4>@Model.Name</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Name
-        </dt>
-        <dd class="col-sm-10">
-            @Model.Name
-        </dd>
-        <dt class="col-sm-2">
-            Group
-        </dt>
-        <dd class="col-sm-10">
-            @Model.Group?.Name
-        </dd>
-    </dl>
-</div>
-
-<form asp-action="DeleteCategoryConfirmed" method="post">
-    <input type="hidden" asp-for="Id" />
-   @* <div class="form-group">
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="ListGroupCategories" asp-route-Id="@Model.GroupId" class="btn btn-secondary">Back to List</a>
-    </div> @**@
+   
     <form method="post">
+    <input type="hidden" asp-for="Id" />
     <button asp-action="DeleteCategory" asp-controller="Category" asp-route-Id="@Model.Id" class="btn btn-danger">Oui</button>
-    <a class="btn btn-primary" href="@Url.ActionLink("DeleteCategory", "Category", new {Id = @Model.Id})">Non</a>
+    <a class="btn btn-primary" href="@Url.ActionLink("ListGroupCategories", "Category", new {Id = @Model.GroupId})">Non</a>
     </form>
-</form>
+
