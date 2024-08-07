@@ -1,9 +1,5 @@
 ﻿@using WildPay.Models.Entities
 @model Expenditure
-@{
-    string categoryId;
-    string payerId;
-}
 
 <h3>Modifier la dépense</h3>
 <form action='@Url.Action("UpdateExpenditure", "Expenditure", new { groupId = ViewBag.Group.Id })' method="post">

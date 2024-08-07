@@ -27,11 +27,6 @@ namespace WildPay.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task EditExpenditureAsync(Expenditure expenditure)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<bool> DeleteExpenditureAsync(int expenditureId)
         {
             throw new NotImplementedException();

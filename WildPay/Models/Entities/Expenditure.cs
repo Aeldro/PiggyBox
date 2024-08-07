@@ -18,7 +18,6 @@ namespace WildPay.Models.Entities
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }
 
-        //[Required]
         public string? PayerId { get; set; } = null;
         public ApplicationUser? Payer { get; set; }
         public int? CategoryId { get; set; } = null;

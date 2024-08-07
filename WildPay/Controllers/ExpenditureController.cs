@@ -24,8 +24,7 @@ public class ExpenditureController : Controller
     private readonly IBalanceService _balanceService;
     private readonly IExpenditureService _expenditureService;
 
-    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService, IExpenditureService expenditureService)
-    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService, ICategoryRepository categoryRepository)
+    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService, ICategoryRepository categoryRepository, IExpenditureService expenditureService)
     {
         _userManager = userManager;
         _expenditureRepository = expenditureRepository;
@@ -119,7 +118,7 @@ public class ExpenditureController : Controller
     [HttpPost]
     public async Task<IActionResult> UpdateExpenditure(Expenditure expenditure, int groupId, string[] RefundContributors)
     {
-        //if (!ModelState.IsValid) return View(model);
+        if (!ModelState.IsValid) return View(expenditure);
 
         if (expenditure.PayerId is not null) expenditure.Payer = await _userManager.FindByIdAsync(expenditure.PayerId);
         else expenditure.Payer = null;
