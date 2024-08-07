@@ -17,6 +17,7 @@ public class ExpenditureController : Controller
     private readonly IGroupRepository _groupRepository;
     private readonly IBalanceService _balanceService;
     private readonly IExpenditureService _expenditureService;
+    
 
     public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService, IExpenditureService expenditureService)
     {
