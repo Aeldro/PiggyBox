@@ -1,0 +1,63 @@
+﻿.bg-main-color-op100 {
+    background-color: var(--main-color-op100);
+    color: var(--main-light);
+}
+.bg-main-color-op80 {
+    background-color: var(--main-color-op80);
+    color: var(--main-light);
+}
+.bg-main-color-op60 {
+    background-color: var(--main-color-op60);
+    color: var(--main-dark);
+}
+.bg-main-color-op40 {
+    background-color: var(--main-color-op40);
+    color: var(--main-dark);
+}
+.bg-main-color-op20 {
+    background-color: var(--main-color-op20);
+    color: var(--main-dark);
+}
+.bg-secondary-color-op100 {
+    background-color: var(--secondary-color-op100);
+    color: var(--main-dark);
+}
+.bg-secondary-color-op80 {
+    background-color: var(--secondary-color-op80);
+    color: var(--main-dark);
+}
+.bg-secondary-color-op60 {
+    background-color: var(--secondary-color-op60);
+    color: var(--main-dark);
+}
+.bg-secondary-color-op40 {
+    background-color: var(--secondary-color-op40);
+    color: var(--main-dark);
+}
+.bg-secondary-color-op20 {
+    background-color: var(--secondary-color-op20);
+    color: var(--main-dark);
+}
+.bg-third-color-op100 {
+    background-color: var(--third-color-op100);
+    color: var(--main-dark);
+}
+.bg-third-color-op80 {
+    background-color: var(--third-color-op80);
+    color: var(--main-dark);
+}
+.bg-third-color-op60 {
+    background-color: var(--third-color-op60);
+    color: var(--main-dark);
+}
+.bg-third-color-op40 {
+    background-color: var(--third-color-op40);
+    color: var(--main-dark);
+}
+.bg-third-color-op20 {
+    background-color: var(--third-color-op20);
+    color: var(--main-dark);
+}
+.text-main-light {
+    color: var(--main-light);
+}

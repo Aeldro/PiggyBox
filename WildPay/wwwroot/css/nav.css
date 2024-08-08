@@ -1,0 +1,23 @@
+﻿.nav-link {
+    color: var(--main-color-op80);
+}
+
+    .nav-link:hover {
+        color: var(--main-color-op100);
+    }
+
+
+.nav-pills .nav-link.active {
+    color: var(--main-light);
+    background-color: var(--main-color-op100);
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: var(--main-light);
+    border-radius: 0.5em;
+}
+
+    .navbar-dark .navbar-nav .nav-link:hover {
+        color: var(--main-color-op100);
+        background-color: var(--secondary-color-op100);
+    }
