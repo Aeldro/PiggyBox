@@ -1,6 +1,8 @@
 ﻿@using WildPay.Models.Entities
 @model Expenditure
 @{
+    ViewData["Title"] = "Dépense " + Model.Name;
+    
     ViewData["ReturnPageAction"] = "ListGroupExpenditures";
     ViewData["ReturnPageController"] = "Expenditure";
     ViewData["ReturnId"] = Model.GroupId;

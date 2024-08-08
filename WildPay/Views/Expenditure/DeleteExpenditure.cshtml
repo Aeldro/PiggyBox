@@ -1,19 +1,18 @@
 @model WildPay.Models.Entities.Expenditure
 
 @{
-
+    ViewData["Title"] = "Dépense " + Model.Name;
 }
 
 <div>
     <h3>Voulez-vous vraiment supprimer la dépense @Model.Name ?</h3>
-    <hr/>
 
     <form method="post">
         <input type="hidden" asp-for="Id"/>
         <input type="hidden" asp-for="GroupId"/>
-        
+
         <button asp-action="DeleteExpenditure" asp-controller="Expenditure" asp-route-Id="@Model.Id" class="btn btn-danger">Oui</button>
 
-        <a class="btn btn-primary" href="@Url.ActionLink("UpdateExpenditure", "Expenditure", new {groupId = Model.GroupId, expenditureId = Model.Id})">Non</a>
+        <a class="btn btn-primary" href="@Url.ActionLink("UpdateExpenditure", "Expenditure", new { groupId = Model.GroupId, expenditureId = Model.Id })">Non</a>
     </form>
 </div>
