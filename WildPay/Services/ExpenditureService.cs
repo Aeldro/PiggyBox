@@ -71,4 +71,10 @@ public class ExpenditureService : IExpenditureService
         _expenditureRepository.DeleteExpenditureAsync(expenditureToRemove);
         return false;
     }
+
+    public async Task<Expenditure> GetExpenditureById(int expenditureId)
+    {
+        Expenditure expenditureToRemove = await _expenditureRepository.GetExpenditureByIdAsync(expenditureId);
+        return expenditureToRemove;
+    }
 }

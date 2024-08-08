@@ -189,7 +189,7 @@ public class ExpenditureController : Controller
     [HttpGet]
     public async Task<IActionResult> DeleteExpenditure(int Id)
     {
-        Expenditure expenditureToRemove = await _expenditureRepository.GetExpenditureByIdAsync(Id);
+        Expenditure expenditureToRemove = await _expenditureService.GetExpenditureById(Id);
         return View(expenditureToRemove);
     }
     
