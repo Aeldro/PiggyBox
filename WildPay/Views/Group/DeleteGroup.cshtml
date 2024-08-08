@@ -3,9 +3,14 @@
 @{
     ViewData["Title"] = "Supprimer " + Model.Name;
     string action = ViewBag.Action;
+    
+    ViewData["ReturnPageAction"] = "GetGroup";
+    ViewData["ReturnPageController"] = "Group";
+    ViewData["ReturnId"] = Model.Id;
 }
-
-<h2>Voulez-vous vraiment supprimer le groupe @Model.Name ?</h2>
+<partial name="_GroupTitlePartial" model="Model" />
+<hr />
+<h3>Voulez-vous vraiment supprimer le groupe @Model.Name ?</h3>
 
 <form method="post">
     <button asp-action="DeleteGroup" asp-controller="Group" asp-route-Id="@Model.Id" class="btn btn-danger">Oui</button>
