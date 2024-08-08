@@ -41,19 +41,26 @@
                         <label for="payerDropdown" class="form-label">Payé par</label>
                     </div>
 
-                    @foreach (var member in ViewBag.Group.ApplicationUsers)
-                    {
-                        if (Model.RefundContributors.Any(el => el.Id == member.Id))
+                    <div id="checkboxDiv">
+                        <label for="checkboxDiv">Contributeurs</label>
+                        @foreach (var member in ViewBag.Group.ApplicationUsers)
                         {
-                            <input type="checkbox" id="@member.Id" name="RefundContributors" value="@member.Id" checked />
-                            <label for="@member.Id">@member.Firstname @member.Lastname</label>
+                            if (Model.RefundContributors.Any(el => el.Id == member.Id))
+                            {
+                                <div class="form-check">
+                                    <input type="checkbox" id="@member.Id" name="RefundContributors" value="@member.Id" checked />
+                                    <label for="@member.Id">@member.Firstname @member.Lastname</label>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="form-check">
+                                    <input class="form-control" type="checkbox" id="@member.Id" name="RefundContributors" value="@member.Id" />
+                                    <label class="control-label" for="@member.Id">@member.Firstname @member.Lastname</label>
+                                </div>
+                            }
                         }
-                        else
-                        {
-                            <input type="checkbox" id="@member.Id" name="RefundContributors" value="@member.Id" />
-                            <label for="@member.Id">@member.Firstname @member.Lastname</label>
-                        }
-                    }
+                    </div>
 
                     <button class="w-100 btn btn-lg main-button" type="submit">Sauvegarder</button>
                 </form>

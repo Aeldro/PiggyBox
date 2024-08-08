@@ -37,7 +37,7 @@
 
                     <!-- form to choose Category -->
                     <div class="form-floating mb-3">
-                        <select asp-for="@Model.CategoryId" asp-items="@(new SelectList(Model.CategoriesInGroup, "Id", "Name"))">
+                        <select class="form-select" asp-for="@Model.CategoryId" asp-items="@(new SelectList(Model.CategoriesInGroup, "Id", "Name"))">
                             <option value="">- sélectionnez un item -</option> <!-- Placeholder -->
                         </select>
                         <label asp-for="@Model.CategoryId">Catégorie</label>
@@ -46,12 +46,12 @@
 
                     <!-- form to add Payer using a select list -->
                     <div class="form-floating mb-3">
-                        <select asp-for="@Model.ExpenditureToCreate.PayerId" asp-items="@(new SelectList(Model.UsersInGroup, "Id", "Firstname"))"></select>
-                        <label asp-for="@Model.ExpenditureToCreate.Payer">payé par</label>
+                        <select class="form-select" asp-for="@Model.ExpenditureToCreate.PayerId" asp-items="@(new SelectList(Model.UsersInGroup, "Id", "Firstname"))"></select>
+                        <label asp-for="@Model.ExpenditureToCreate.Payer">Payé par</label>
                     </div>
 
                     <!-- form with checkboxes to choose who participate in the expenditure -->
-                    <label>participants</label>
+                    <label>Contributeurs</label>
                     <div>
                         @foreach (var user in Model.UsersInGroup)
                         {
