@@ -2,16 +2,16 @@
 @model Expenditure
 
 <div>
-    <partial name="_GroupTitlePartial" model="ViewBag.Group" />
-    <hr />
+    <partial name="_GroupTitlePartial" model="ViewBag.Group"/>
+    <hr/>
     <div class="row">
-        <partial name="_GroupNavBarPartial" model="ViewBag.Group" />
+        <partial name="_GroupNavBarPartial" model="ViewBag.Group"/>
         <div class="col-md-9">
             <section>
                 <h3>Modifier la dépense</h3>
                 <form action='@Url.Action("UpdateExpenditure", "Expenditure", new { groupId = ViewBag.Group.Id })' method="post">
 
-                    <input type="text" asp-for="@Model.Id" hidden="hidden" readonly />
+                    <input type="text" asp-for="@Model.Id" hidden="hidden" readonly/>
 
                     <div class="form-floating mb-3">
                         <input class="form-control" type="text" asp-for="@Model.Name" />
@@ -64,6 +64,8 @@
 
                     <button class="w-100 btn btn-lg main-button" type="submit">Sauvegarder</button>
                 </form>
+                
+                <a class="btn btn-danger d-flex justify-content-center align-items-center w-25" asp-action="DeleteExpenditure" asp-controller="Expenditure" asp-route-Id="@Model.Id"><span class="material-symbols-outlined">delete</span>Supprimer la dépense</a>
             </section>
         </div>
     </div>

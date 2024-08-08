@@ -27,11 +27,6 @@ namespace WildPay.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<bool> DeleteExpenditureAsync(int expenditureId)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<int> GetContributorsCountAsync(int expenditureId)
         {
             Expenditure expenditure = await GetExpenditureByIdAsync(expenditureId);
@@ -72,7 +67,13 @@ namespace WildPay.Repositories
 
             expenditureToUpdate.RefundContributors = expenditure.RefundContributors;
             await _context.SaveChangesAsync();
-
+        }
+        
+        public async Task<bool> DeleteExpenditureAsync(Expenditure expenditure)
+        {
+            _context.Expenditures.Remove(expenditure);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
     }
