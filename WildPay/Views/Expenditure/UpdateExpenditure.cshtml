@@ -1,8 +1,13 @@
 ﻿@using WildPay.Models.Entities
 @model Expenditure
-
+@{
+    ViewData["ReturnPageAction"] = "ListGroupExpenditures";
+    ViewData["ReturnPageController"] = "Expenditure";
+    ViewData["ReturnId"] = Model.GroupId;
+}
 <div>
     <partial name="_GroupTitlePartial" model="ViewBag.Group"/>
+    
     <hr/>
     <div class="row">
         <partial name="_GroupNavBarPartial" model="ViewBag.Group"/>
@@ -45,7 +50,7 @@
 
                     <button type="submit">Sauvegarder</button>
                 </form>
-                
+
                 <a class="btn btn-danger d-flex justify-content-center align-items-center w-25" asp-action="DeleteExpenditure" asp-controller="Expenditure" asp-route-Id="@Model.Id"><span class="material-symbols-outlined">delete</span>Supprimer la dépense</a>
             </section>
         </div>
