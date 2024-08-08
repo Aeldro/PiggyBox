@@ -1,6 +1,10 @@
 @model WildPay.Models.ViewModels.AddExpenditureInGroup
 @{
     ViewData["Title"] = "Nouvelle Dépense";
+    
+    ViewData["ReturnPageAction"] = "ListGroupExpenditures";
+    ViewData["ReturnPageController"] = "Expenditure";
+    ViewData["ReturnId"] = Model.GroupId;
 }
 
 <div>
