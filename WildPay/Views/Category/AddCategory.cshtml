@@ -4,16 +4,16 @@
     ViewData["Title"] = "Ajouter une Categorie";
 }
 
-
 <div>
+    <a asp-action="ListGroupCategories" asp-controller="Category" asp-route-Id="@Model.GroupId"><span class="material-symbols-outlined">arrow_back</span></a>
     <h3>Nouvelle catégorie</h3>
 
     <form method="post">
-        <input class="form-control" type="text" asp-for="GroupId" readonly hidden />
+        <input class="form-control" type="text" asp-for="GroupId" readonly hidden/>
 
         <div class="mt-3 form-group">
             <label class="control-label" asp-for="Name">Nom</label>
-            <input class="form-control" type="text" asp-for="Name" />
+            <input class="form-control" type="text" asp-for="Name"/>
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 

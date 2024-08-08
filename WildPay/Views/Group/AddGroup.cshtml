@@ -4,16 +4,17 @@
 ViewData["Title"] = "Créer groupe";
 }
 <div>
+    <a asp-action="ListMyGroups" asp-controller="Group"><span class="material-symbols-outlined">arrow_back</span></a>
     <h3>Nouveau groupe</h3>
     <hr/>
-    
+
     <form method="post">
         <div class="mt-3 form-group">
             <label class="control-label" asp-for="Name">Nom</label>
             <input class="form-control" type="text" asp-for="Name"/>
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
-        
+
         <button asp-action="AddGroup" asp-controller="Group">Enregistrer</button>
     </form>
 </div>
