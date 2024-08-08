@@ -4,9 +4,9 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
-<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom shadow-sm position-fixed top-0 above w-100">
+<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark shadow-sm position-fixed top-0 above w-100 bg-main-color-op100">
     <div class="container-fluid">
-        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WildPay</a>
+        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">🐖 PiggyBox</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                 aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -16,17 +16,17 @@
                 @if (SignInManager.IsSignedIn(User))
                 {
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Accueil</a>
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Accueil</a>
                     </li>
                     <li class="nav-item">
-                        <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Mon Profil </a>
+                        <a id="manage" class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Mon profil </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Group" asp-action="List">Mes Groupes</a>
+                        <a class="nav-link" asp-area="" asp-controller="Group" asp-action="ListMyGroups">Mes groupes</a>
                     </li>
                     <li class="nav-item">
                         <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                            <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">Déconnexion</button>
+                            <button id="logout" type="submit" class="nav-link btn btn-link border-0">Déconnexion</button>
                         </form>
                     </li>
 
@@ -35,13 +35,13 @@
                 else
                 {
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Accueil</a>
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Accueil</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">S'inscrire</a>
+                        <a class="nav-link" id="register" asp-area="Identity" asp-page="/Account/Register">S'inscrire</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">Se connecter</a>
+                        <a class="nav-link" id="login" asp-area="Identity" asp-page="/Account/Login">Se connecter</a>
                     </li>
                 }
             </ul>

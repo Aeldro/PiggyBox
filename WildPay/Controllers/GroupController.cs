@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WildPay.Interfaces;
 using WildPay.Models.Entities;
-using WildPay.Models.ViewModel;
 using WildPay.Models.ViewModels;
 
 namespace WildPay.Controllers;
@@ -23,7 +22,7 @@ public class GroupController : Controller
 
     // READ: get all the groups for the connected user
     [HttpGet]
-    public async Task<IActionResult> List()
+    public async Task<IActionResult> ListMyGroups()
     {
         var userId = _userManager.GetUserId(User);
         if (userId is null) return NotFound();
@@ -33,7 +32,7 @@ public class GroupController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index(int Id)
+    public async Task<IActionResult> GetGroup(int Id)
     {
         //Get the group
         Group? group = await _groupRepository.GetGroupByIdAsync(Id);
@@ -49,26 +48,28 @@ public class GroupController : Controller
 
     // CREATE group view
     [HttpGet]
-    public IActionResult Add()
+    public IActionResult AddGroup()
     {
         return View();
     }
 
     // CREATE group action
     [HttpPost]
-    public async Task<IActionResult> Add(Group group)
+    public async Task<IActionResult> AddGroup(Group group)
     {
+        if (!ModelState.IsValid) return View(group);
+
         string? userId = _userManager.GetUserId(User);
         if (userId is null) return NotFound();
 
         await _groupRepository.AddGroupAsync(group.Name, group.Image, userId);
         
-        return RedirectToAction(actionName: "List", controllerName: "Group");
+        return RedirectToAction(actionName: "ListMyGroups", controllerName: "Group");
     }
 
     // UPDATE group view
     [HttpGet]
-    public async Task<IActionResult> Update(int Id)
+    public async Task<IActionResult> UpdateGroup(int Id, bool IsMemberAdded = true)
     {
         Group? group = await _groupRepository.GetGroupByIdAsync(Id);
 
@@ -79,61 +80,90 @@ public class GroupController : Controller
         UpdateGroupModel updateGroupModel = new UpdateGroupModel
         {
             GroupToUpdate = group,
-            NewMember = new Models.ViewModel.MemberAdded()
+            NewMember = new MemberAdded()
             {
                 GroupId = Id,
                 Email = ""
             }
         };
 
+        if (!IsMemberAdded)
+        {
+            ViewBag.MemberNotFound = "Pas d'utilisateur trouvé avec cette adresse mail.";
+        }
+
         return View(updateGroupModel);
     }
 
     // UPDATE group action
     [HttpPost]
-    public async Task<IActionResult> Update(UpdateGroupModel modelUpdated)
+    public async Task<IActionResult> UpdateGroup(Group group)
     {
-        Group? groupUpdated = modelUpdated.GroupToUpdate;
-
-        if (groupUpdated is null) return NotFound();
-
-        if (groupUpdated.Image is null)
+        if (!ModelState.IsValid) 
         {
-            groupUpdated.Image = string.Empty;
+            Group? invalidGroup = await _groupRepository.GetGroupByIdAsync(group.Id);
+
+            UpdateGroupModel updateGroupModel = new UpdateGroupModel
+            {
+                GroupToUpdate = invalidGroup,
+                NewMember = new MemberAdded()
+                {
+                    GroupId = invalidGroup.Id,
+                    Email = ""
+                }
+            };
+
+            return View(updateGroupModel);
         }
 
-        await _groupRepository.EditGroupAsync(groupUpdated);
-        return RedirectToAction(actionName: "List", controllerName: "Group");
+        if (group is null) return NotFound();
+
+        if (group.Image is null)
+        {
+            group.Image = string.Empty;
+        }
+
+        await _groupRepository.EditGroupAsync(group);
+
+        return RedirectToAction(actionName: "GetGroup", controllerName: "Group", new { group.Id });
     }
 
     // Add a member to a group using a form
     // Make sure to add a hidden field for the group ID
     [HttpPost]
-    public async Task<IActionResult> AddMember(UpdateGroupModel modelUpdated)
+    public async Task<IActionResult> AddMemberToGroup(MemberAdded newMember)
     {
-        if (modelUpdated.NewMember is null) return NotFound();
+        if (!ModelState.IsValid)
+        {
+            Group? groupUpdated = await _groupRepository.GetGroupByIdAsync(newMember.GroupId);
 
-        MemberAdded newMember = modelUpdated.NewMember;
-        if (newMember is null) return NotFound();
+            if (groupUpdated is null) return NotFound();
 
-        if (newMember.Email is null) return NotFound();
+            UpdateGroupModel updateGroupModel = new UpdateGroupModel
+            {
+                GroupToUpdate = groupUpdated,
+                NewMember = newMember
+            };
+
+            return View("UpdateGroup", updateGroupModel);
+        }
 
         Group? group = await _groupRepository.GetGroupByIdAsync(newMember.GroupId);
 
         if (group is null) return NotFound();
 
-        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
+        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(user => user.Id == _userManager.GetUserId(User)) is null) return NotFound();
 
         // Returns false if no match is found;
         // think about a way to handle the case the email doesn't match a user
-        await _groupRepository.AddMemberToGroupAsync(group, newMember.Email);
+        bool IsFound = await _groupRepository.AddMemberToGroupAsync(group, newMember.Email);
 
-        return RedirectToAction(actionName: "Update", controllerName: "Group", new { Id = newMember.GroupId });    
+        return RedirectToAction(actionName: "UpdateGroup", controllerName: "Group", new { Id = newMember.GroupId, IsMemberAdded = IsFound });    
     }
 
     // Delete a member from a group view
     [HttpGet]
-    public async Task<IActionResult> DeleteMember(string userId, int groupId)
+    public async Task<IActionResult> DeleteMemberFromGroup(string userId, int groupId)
     {
         Group? group = await _groupRepository.GetGroupByIdAsync(groupId);
         if (group is null) return NotFound();
@@ -147,12 +177,12 @@ public class GroupController : Controller
         if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
 
         ViewBag.user = userToRemove;
-        return View("DeleteMember", group);
+        return View("DeleteMemberFromGroup", group);
     }
 
     // Delete a member from a group action
     [HttpPost]
-    public async Task<IActionResult> DeleteMember(string userId, int groupId, Group group)
+    public async Task<IActionResult> DeleteMemberFromGroup(string userId, int groupId, Group group)
     {
         Group? userGroup = await _groupRepository.GetGroupByIdAsync(groupId);
 
@@ -164,12 +194,17 @@ public class GroupController : Controller
         // think about a way to handle the case the email doesn't match a user
         await _groupRepository.DeleteMemberFromGroupAsync(userGroup, userId);
 
-        return RedirectToAction(actionName: "Update", controllerName: "Group", new { Id = groupId });
+        if (_userManager.GetUserId(User) == userId)
+        {
+            return RedirectToAction(actionName: "ListMyGroups", controllerName: "Group");
+        }
+
+        return RedirectToAction(actionName: "UpdateGroup", controllerName: "Group", new { Id = groupId });
     }
 
     // DELETE group view
     [HttpGet]
-    public async Task<IActionResult> Delete(int Id)
+    public async Task<IActionResult> DeleteGroup(int Id, string viewSender)
     {
         Group? group = await _groupRepository.GetGroupByIdAsync(Id);
 
@@ -177,14 +212,16 @@ public class GroupController : Controller
 
         if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
 
+        ViewBag.Action = viewSender;
+
         return View(group);
     }
 
     // DELETE group action 
     [HttpPost]
-    public async Task<IActionResult> Delete(int Id, Group group)
+    public async Task<IActionResult> DeleteGroup(int Id, Group group)
     {
         await _groupRepository.DeleteGroupAsync(Id);
-        return RedirectToAction(actionName: "List", controllerName: "Group");
+        return RedirectToAction(actionName: "ListMyGroups", controllerName: "Group");
     }
 }

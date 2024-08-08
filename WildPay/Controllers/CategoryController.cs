@@ -9,15 +9,16 @@ namespace WildPay.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IGroupRepository _groupRepository;
-
-        public CategoryController(UserManager<ApplicationUser> userManager, IGroupRepository groupRepository)
+        private readonly ICategoryRepository _categoryRepository;
+        public CategoryController(UserManager<ApplicationUser> userManager, IGroupRepository groupRepository, ICategoryRepository categoryRepository)
         {
             _userManager = userManager;
             _groupRepository = groupRepository;
+            _categoryRepository = categoryRepository;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GroupCategories(int Id)
+        public async Task<IActionResult> ListGroupCategories(int Id)
         {
             //Get the group
             Group? group = await _groupRepository.GetGroupByIdAsync(Id);
@@ -30,22 +31,55 @@ namespace WildPay.Controllers
 
             return View(group);
         }
-
-
-        public IActionResult List()
-        {
-            return View();
-        }
-
         [HttpGet]
-        public IActionResult Edit()
+        
+        public IActionResult AddCategory(int Id)
         {
-            return View();
+            Category category = new Category
+            {
+                GroupId = Id
+            };
+
+            return View(category);
         }
+
         [HttpPost]
-        public IActionResult Edit(Category category)
+        public async Task<IActionResult> AddCategory(Category category)
         {
-            return RedirectToAction(actionName: "List", controllerName: "Category");
+            string? userId = _userManager.GetUserId(User);
+            if (category == null) return NotFound();
+
+            Group? group = await _groupRepository.GetGroupByIdAsync(category.GroupId);
+
+            category.Group = group;
+
+            await _categoryRepository.AddCategoryAsync(category);
+
+            return RedirectToAction(actionName: "ListGroupCategories", controllerName: "Category", new { Id = category.GroupId });
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> DeleteCategory(int id)
+        {
+            var category = await _categoryRepository.GetCategoryByIdAsync(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+                return View(category);
+            
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCategory(int id, Category category)
+        {
+            var existingCategory = await _categoryRepository.GetCategoryByIdAsync(id);
+            if (existingCategory == null)
+            {
+                return NotFound();
+            }
+            await _categoryRepository.DeleteCategoryAsync(id);
+            return RedirectToAction("ListGroupCategories", new { Id = existingCategory.GroupId });
         }
 
     }

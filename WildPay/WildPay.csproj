@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <_ContentIncludedByDefault Remove="wwwroot\css\edit-button.css" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
@@ -24,6 +20,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Views\Expenditure\Add.cshtml.cs" />
+    <Compile Remove="Views\Expenditure\AddExpenditure.cshtml.cs" />
   </ItemGroup>
 
 </Project>

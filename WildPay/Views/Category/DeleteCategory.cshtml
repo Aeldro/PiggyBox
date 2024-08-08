@@ -1,0 +1,16 @@
+﻿@model WildPay.Models.Entities.Category
+
+@{
+    ViewData["Title"] = "Supprimer Categories";
+}
+
+<h2>Delete Category</h2>
+
+<h3>Êtes-vous sûr de vouloir supprimer cette catégorie?</h3>
+   
+    <form method="post">
+    <input type="hidden" asp-for="Id" />
+    <button asp-action="DeleteCategory" asp-controller="Category" asp-route-Id="@Model.Id" class="btn btn-danger">Oui</button>
+    <a class="btn main-button" href="@Url.ActionLink("ListGroupCategories", "Category", new {Id = @Model.GroupId})">Non</a>
+    </form>
+

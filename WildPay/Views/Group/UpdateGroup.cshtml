@@ -1,0 +1,38 @@
+@model WildPay.Models.ViewModels.UpdateGroupModel
+
+@{
+    ViewData["Title"] = "Modifier " + Model.GroupToUpdate.Name;
+}
+
+<div>
+    <partial name="_GroupTitlePartial" model="Model.GroupToUpdate" />
+    <hr />
+    <div class="row">
+        <partial name="_GroupNavBarPartial" model="Model.GroupToUpdate" />
+
+        <div class="col-md-9">
+            <partial name="_UpdateNameGroup" model="Model.GroupToUpdate" />
+
+            <h3>Supprimer un participant</h3>
+            <table>
+                <tr>
+                    @foreach (var user in Model.GroupToUpdate.ApplicationUsers)
+                    {
+                        <td>@user.Firstname</td>
+                        <td>@user.Lastname</td>
+                        <td><a href="@Url.ActionLink("DeleteMemberFromGroup", "Group", new {userId = user.Id, groupId = Model.GroupToUpdate.Id})"><span class="material-symbols-outlined">delete</span></a></td> <!--bin icon-->
+                    }
+                </tr>
+            </table>
+
+            <partial name="_AddNewMemberToGroup" model="Model.NewMember" />
+
+            @if (ViewBag.MemberNotFound != null)
+            {
+                <p class="text-danger">@ViewBag.MemberNotFound</p>
+            }
+
+            <a class="btn btn-danger d-flex justify-content-center align-items-center w-25" href="@Url.ActionLink("DeleteGroup", "Group", new { Id = @Model.GroupToUpdate.Id, viewSender = "UpdateGroup" })"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
+        </div>
+    </div>
+</div>
