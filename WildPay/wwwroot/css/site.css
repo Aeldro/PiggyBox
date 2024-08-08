@@ -1,5 +1,33 @@
-@import "edit-button.css";
+@import "buttons.css";
 @import "responsive.css";
+@import "backgrounds.css";
+@import "nav.css";
+@import "list.css";
+
+:root {
+    --main-color-op100: rgba(74, 163, 162, 1);
+    --main-color-op80: rgba(74, 163, 162, 0.8);
+    --main-color-op60: rgba(74, 163, 162, 0.6);
+    --main-color-op40: rgba(74, 163, 162, 0.4);
+    --main-color-op20: rgba(74, 163, 162, 0.2);
+    --secondary-color-op100: rgba(167, 224, 224, 1);
+    --secondary-color-op80: rgba(167, 224, 224, 0.8);
+    --secondary-color-op60: rgba(167, 224, 224, 0.6);
+    --secondary-color-op40: rgba(167, 224, 224, 0.4);
+    --secondary-color-op20: rgba(167, 224, 224, 0.2);
+    --third-color-op100: rgba(232, 170, 190, 1);
+    --third-color-op80: rgba(232, 170, 190, 0.8);
+    --third-color-op60: rgba(232, 170, 190, 0.6);
+    --third-color-op40: rgba(232, 170, 190, 0.4);
+    --third-color-op20: rgba(232, 170, 190, 0.2);
+    --main-dark: rgba(74, 74, 74);
+    --main-light: rgba(245, 245, 245);
+    --main-font: "Poppins", sans-serif;
+}
+
+* {
+    font-family: var(--main-font);
+}
 
 html {
     font-size: 14px;
@@ -26,4 +54,8 @@ body {
 
 .above {
     z-index: 1040;
+}
+
+.active {
+    background-color: var(--main-color-op100);
 }

@@ -10,3 +10,13 @@
         background-color: lightgray;
         color: black;
     }
+
+.main-button {
+    background-color: var(--main-color-op100);
+    color: var(--main-light);
+}
+
+    .main-button:hover {
+        background-color: var(--secondary-color-op100);
+        color: var(--main-color-op100);
+    }

@@ -13,21 +13,33 @@
 
                     <input type="text" asp-for="@Model.Id" hidden="hidden" readonly />
 
-                    <label class="control-label" asp-for="@Model.Name">Nom</label>
-                    <input class="form-control" type="text" asp-for="@Model.Name" />
-                    <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                    <div class="form-floating mb-3">
+                        <input class="form-control" type="text" asp-for="@Model.Name" />
+                        <label class="control-label" asp-for="@Model.Name">Nom</label>
+                        <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                    </div>
 
-    <label class="control-label" asp-for="@Model.Amount">Montant</label>
-    <input class="form-control" type="number" asp-for="@Model.Amount" step="0.01" min="0.01" />
-    <span asp-validation-for="@Model.Amount" class="text-danger"></span>
+                    <div class="form-floating mb-3">
+                        <input class="form-control" type="number" asp-for="@Model.Amount" step="0.01" min="0.01" />
+                        <label class="control-label" asp-for="@Model.Amount">Montant</label>
+                        <span asp-validation-for="@Model.Amount" class="text-danger"></span>
+                    </div>
 
-                    <label class="control-label" asp-for="@Model.Date">Date</label>
-                    <input class="form-control" type="date" asp-for="@Model.Date" />
-                    <span asp-validation-for="@Model.Date" class="text-danger"></span>
+                    <div class="form-floating mb-3">
+                        <input class="form-control" type="date" asp-for="@Model.Date" />
+                        <label class="control-label" asp-for="@Model.Date">Date</label>
+                        <span asp-validation-for="@Model.Date" class="text-danger"></span>
+                    </div>
 
-                    @Html.DropDownListFor(m => m.CategoryId, new SelectList(ViewBag.GroupCategoriesSelects, "Value", "Text"), "(Aucune catégorie)")
+                    <div class="form-floating mb-3">
+                        @Html.DropDownListFor(m => m.CategoryId, new SelectList(ViewBag.GroupCategoriesSelects, "Value", "Text"), "(Aucune catégorie)", new { @class = "form-select", id = "categoryDropdown" })
+                        <label for="categoryDropdown" class="form-label">Catégorie</label>
+                    </div>
 
-                    @Html.DropDownListFor(m => m.PayerId, new SelectList(ViewBag.GroupUsersSelects, "Value", "Text"), "(Aucun payeur)")
+                    <div class="form-floating mb-3">
+                        @Html.DropDownListFor(m => m.PayerId, new SelectList(ViewBag.GroupUsersSelects, "Value", "Text"), "(Aucun payeur)", new { @class = "form-select", id = "payerDropdown" })
+                        <label for="payerDropdown" class="form-label">Payé par</label>
+                    </div>
 
                     @foreach (var member in ViewBag.Group.ApplicationUsers)
                     {
@@ -43,7 +55,7 @@
                         }
                     }
 
-                    <button type="submit">Sauvegarder</button>
+                    <button class="w-100 btn btn-lg main-button" type="submit">Sauvegarder</button>
                 </form>
             </section>
         </div>

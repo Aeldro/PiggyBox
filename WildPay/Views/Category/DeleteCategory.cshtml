@@ -11,6 +11,6 @@
     <form method="post">
     <input type="hidden" asp-for="Id" />
     <button asp-action="DeleteCategory" asp-controller="Category" asp-route-Id="@Model.Id" class="btn btn-danger">Oui</button>
-    <a class="btn btn-primary" href="@Url.ActionLink("ListGroupCategories", "Category", new {Id = @Model.GroupId})">Non</a>
+    <a class="btn main-button" href="@Url.ActionLink("ListGroupCategories", "Category", new {Id = @Model.GroupId})">Non</a>
     </form>
 
