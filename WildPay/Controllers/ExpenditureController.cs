@@ -194,4 +194,20 @@ public class ExpenditureController : Controller
         ViewBag.Group = initialGroup;
         return View(model);
     }
+    
+    // DELETE
+    [HttpGet]
+    public async Task<IActionResult> DeleteExpenditure(int Id)
+    {
+        Expenditure expenditureToRemove = await _expenditureService.GetExpenditureById(Id);
+        return View(expenditureToRemove);
+    }
+    
+    // DELETE
+    [HttpPost]
+    public async Task<IActionResult> DeleteExpenditure(Expenditure expenditure)
+    {
+        await _expenditureService.DeleteExpenditure(expenditure);
+        return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new { id = expenditure.GroupId });;
+    }
 }
