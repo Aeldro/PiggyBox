@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using WildPay.Interfaces;
 using WildPay.Models.Entities;
-
+using System.Threading.Tasks;
+using WildPay.Models.ViewModels;
 namespace WildPay.Controllers
 {
     public class CategoryController : Controller
@@ -31,8 +32,8 @@ namespace WildPay.Controllers
 
             return View(group);
         }
+
         [HttpGet]
-        
         public IActionResult AddCategory(int Id)
         {
             Category category = new Category
@@ -57,7 +58,7 @@ namespace WildPay.Controllers
 
             return RedirectToAction(actionName: "ListGroupCategories", controllerName: "Category", new { Id = category.GroupId });
         }
-        
+
         [HttpGet]
         public async Task<IActionResult> DeleteCategory(int id)
         {
@@ -66,8 +67,8 @@ namespace WildPay.Controllers
             {
                 return NotFound();
             }
-                return View(category);
-            
+            return View(category);
+
         }
 
         [HttpPost]
@@ -82,5 +83,36 @@ namespace WildPay.Controllers
             return RedirectToAction("ListGroupCategories", new { Id = existingCategory.GroupId });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> UpdateCategory(int id)
+        {
+            var category = await _categoryRepository.GetCategoryByIdAsync(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+            return View(category);
+        }
+
+        //[HttpPost]
+
+        //public async Task<IActionResult> UpdateCategory(UpdateCategoryModel modelUpdated)
+        //{
+        //    if (ModelState.IsValid) return View(modelUpdated);
+        //    Category? categoryUpdated = modelUpdated.CategoryToUpdate;
+        //    if (categoryUpdated == null) return NotFound();
+        //    await _categoryRepository.UpdateCategoryAsync(categoryUpdated);
+        //    return RedirectToAction(actionName: "GetCategory", controllerName: "Category", new { categoryUpdated.Id });
+
+        //}
+        [HttpPost]
+        public async Task<IActionResult> UpdateCategory(Category category)
+        {
+            if (!ModelState.IsValid) return View(category);
+
+            await _categoryRepository.UpdateCategoryAsync(category);
+
+            return RedirectToAction("ListGroupCategories", new { Id = category.GroupId });
+        }
     }
 }
