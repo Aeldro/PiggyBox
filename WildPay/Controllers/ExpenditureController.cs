@@ -184,4 +184,21 @@ public class ExpenditureController : Controller
         }
         return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new {id = model.GroupId});
     }
+    
+    // DELETE
+    [HttpGet]
+    public async Task<IActionResult> DeleteExpenditure(int Id)
+    {
+        Expenditure expenditureToRemove = await _expenditureRepository.GetExpenditureByIdAsync(Id);
+        return View(expenditureToRemove);
+    }
+    
+    // DELETE
+    [HttpPost]
+    public async Task<IActionResult> DeleteExpenditure(Expenditure expenditure)
+    {
+        int groupId = expenditure.GroupId;
+        await _expenditureService.DeleteExpenditure(expenditure);
+        return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new { id = groupId });;
+    }
 }

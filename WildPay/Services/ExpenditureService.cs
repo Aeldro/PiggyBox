@@ -64,4 +64,11 @@ public class ExpenditureService : IExpenditureService
         await _expenditureRepository.AddExpenditureAsync(model.ExpenditureToCreate); // add expenditure to databse
         return true;
     }
+
+    public async Task<bool> DeleteExpenditure(Expenditure expenditure)
+    {
+        Expenditure expenditureToRemove = await _expenditureRepository.GetExpenditureByIdAsync(expenditure.Id);
+        _expenditureRepository.DeleteExpenditureAsync(expenditureToRemove);
+        return false;
+    }
 }
