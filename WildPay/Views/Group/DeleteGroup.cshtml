@@ -14,5 +14,5 @@
 
 <form method="post">
     <button asp-action="DeleteGroup" asp-controller="Group" asp-route-Id="@Model.Id" class="btn btn-danger">Oui</button>
-    <a class="btn btn-primary" href="@Url.ActionLink(action, "Group", new {Id = @Model.Id})">Non</a>
+    <a class="btn main-button" href="@Url.ActionLink(action, "Group", new {Id = @Model.Id})">Non</a>
 </form>

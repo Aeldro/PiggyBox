@@ -1,0 +1,4 @@
+﻿.list-element:hover {
+    background-color: var(--secondary-color-op100);
+    color: var(--main-color-op100);
+}
