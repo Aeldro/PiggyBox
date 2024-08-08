@@ -197,8 +197,7 @@ public class ExpenditureController : Controller
     [HttpPost]
     public async Task<IActionResult> DeleteExpenditure(Expenditure expenditure)
     {
-        int groupId = expenditure.GroupId;
         await _expenditureService.DeleteExpenditure(expenditure);
-        return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new { id = groupId });;
+        return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new { id = expenditure.GroupId });;
     }
 }
