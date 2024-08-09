@@ -147,6 +147,11 @@ public class ExpenditureController : Controller
             ViewBag.Group = group;
             ViewBag.GroupCategoriesSelects = await _dropDownService.GetDropDownGroupCategories(group);
             ViewBag.GroupUsersSelects = await _dropDownService.GetDropDownGroupMembers(group);
+
+            //Rebuild the expenditure contributors
+            Expenditure initialExpenditure = await _expenditureRepository.GetExpenditureByIdAsync(expenditure.Id);
+            expenditure.RefundContributors = initialExpenditure.RefundContributors;
+
             return View(expenditure);
         }
 
@@ -162,17 +167,18 @@ public class ExpenditureController : Controller
         }
 
         await _expenditureRepository.EditExpenditureAsync(expenditure);
-        return RedirectToAction(actionName: "UpdateExpenditure", controllerName: "Expenditure", new { groupId = groupId, expenditureId = expenditure.Id });
+        return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new { id = groupId });
     }
-    
+
     // CREATE
     [HttpGet]
     public async Task<IActionResult> AddExpenditure(int Id)
     {
         AddExpenditureInGroup model = await _expenditureService.AddExpenditure(Id); // returns a model to fetch in the View
+        ViewBag.Group = await _groupRepository.GetGroupByIdAsync(model.GroupId);
         return View(model);
     }
-    
+
     // CREATE
     [HttpPost]
     public async Task<IActionResult> AddExpenditure(AddExpenditureInGroup model)
@@ -180,8 +186,28 @@ public class ExpenditureController : Controller
         if (ModelState.IsValid)
         {
             await _expenditureService.AddExpenditure(model); // add the new Expenditure calling service
-            return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new {id = model.GroupId});
+            return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new { id = model.GroupId });
         }
-        return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new {id = model.GroupId});
+        Group initialGroup = await _groupRepository.GetGroupByIdAsync(model.GroupId);
+        model.UsersInGroup = initialGroup.ApplicationUsers;
+        model.CategoriesInGroup = initialGroup.Categories;
+        ViewBag.Group = initialGroup;
+        return View(model);
+    }
+    
+    // DELETE
+    [HttpGet]
+    public async Task<IActionResult> DeleteExpenditure(int Id)
+    {
+        Expenditure expenditureToRemove = await _expenditureService.GetExpenditureById(Id);
+        return View(expenditureToRemove);
+    }
+    
+    // DELETE
+    [HttpPost]
+    public async Task<IActionResult> DeleteExpenditure(Expenditure expenditure)
+    {
+        await _expenditureService.DeleteExpenditure(expenditure);
+        return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new { id = expenditure.GroupId });;
     }
 }

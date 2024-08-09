@@ -11,54 +11,24 @@
         <partial name="_GroupNavBarPartial" model="Model.GroupToUpdate" />
 
         <div class="col-md-9">
-            <h3>Modifier groupe</h3>
+            <partial name="_UpdateNameGroup" model="Model.GroupToUpdate" />
+            <hr />
+            <partial name="_AddNewMemberToGroup" model="Model.NewMember" />
+            <hr />
+            <h3 class=""><span class="material-symbols-outlined">block</span> Renvoyer une personne du groupe</h3>
+            <div class="list-group">
+                @foreach (var user in Model.GroupToUpdate.ApplicationUsers)
+                {
+                    <a class="list-group-item list-group-item-action list-group-item-danger d-inline-flex justify-content-center" href="@Url.ActionLink("DeleteMemberFromGroup", "Group", new {userId = user.Id, groupId = Model.GroupToUpdate.Id})"><span class="material-symbols-outlined">delete</span> @user.Firstname @user.Lastname</a>
+                }
+                </<div>
 
-            <form method="post">
-                <input type="text" asp-for="@Model.GroupToUpdate.Id" hidden="hidden" readonly />
-
-                <div class="mt-3 form-group">
-                    <label class="control-label" asp-for="@Model.GroupToUpdate.Name">Nom du groupe</label>
-                    <input class="form-control" type="text" asp-for="GroupToUpdate.Name" />
-                </div>
-
-                <div class="mt-3 form-group">
-                    <label class="control-label" asp-for="@Model.GroupToUpdate.Image">Image du groupe</label>
-                    <input class="form-control" type="text" asp-for="GroupToUpdate.Image" />
-                </div>
-
-                <button asp-action="UpdateGroup" asp-controller="Group">Enregistrer</button>
-            </form>
-
-            <h3>Supprimer un participant</h3>
-            <table>
-                <tr>
-                    @foreach (var user in Model.GroupToUpdate.ApplicationUsers)
+                    @if (ViewBag.MemberNotFound != null)
                     {
-                        <td>@user.Firstname</td>
-                        <td>@user.Lastname</td>
-                        <td><a href="@Url.ActionLink("DeleteMemberFromGroup", "Group", new {userId = user.Id, groupId = Model.GroupToUpdate.Id})"><span class="material-symbols-outlined">delete</span></a></td> <!--bin icon-->
+                        <p class="text-danger">@ViewBag.MemberNotFound</p>
                     }
-                </tr>
-            </table>
-
-            <h3>Ajouter un participant</h3>
-            <div>
-                <span class="material-symbols-outlined">person_add</span> <!-- person add icon-->
-            </div>
-
-            <form method="post">
-                <div class="mt-3 form-group">
-                    <input type="text" asp-for="@Model.NewMember.GroupId" hidden="hidden" readonly />
-
-                    <label class="control-label" asp-for="@Model.NewMember.Email">Email</label>
-                    <input class="form-control" type="email" asp-for="@Model.NewMember.Email" required />
-                    <span asp-validation-for="@Model.NewMember.Email"></span>
-
-                    <button asp-action="AddMemberToGroup" asp-controller="Group">Ajouter</button>
                 </div>
-            </form>
-
-            <a class="btn btn-danger d-flex justify-content-center align-items-center w-25" asp-action="DeleteGroup" asp-controller="Group" asp-route-Id="@Model.GroupToUpdate.Id"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
+                <hr />
+                <a class="btn btn-danger delete-button" href="@Url.ActionLink("DeleteGroup", "Group", new { Id = @Model.GroupToUpdate.Id, viewSender = "UpdateGroup" })"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
+            </div>
         </div>
-    </div>
-</div>

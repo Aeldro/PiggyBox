@@ -1,0 +1,36 @@
+﻿.group-settings-button {
+    text-decoration: none;
+    color: var(--main-dark);
+    padding: 3px;
+    border-radius: 50%;
+}
+
+    .group-settings-button:hover {
+        transition-duration: 0.3s;
+        background-color: var(--disable-color);
+        color: var(--main-dark);
+    }
+
+.main-button {
+    background-color: var(--main-color-op100);
+    color: var(--main-light);
+    border-color: var(--main-color-op100);
+    margin-top: 1em;
+}
+
+    .main-button:hover {
+        background-color: initial;
+        color: var(--main-color-op100);
+    }
+
+.delete-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--main-light);
+}
+
+.delete-button:hover {
+    background-color: initial;
+    color: red;
+}

@@ -5,18 +5,18 @@
 }
 
 
-<div>
+<div class="col-md-4 m-auto">
     <h3>Nouvelle catégorie</h3>
-
+    </hr>
     <form method="post">
         <input class="form-control" type="text" asp-for="GroupId" readonly hidden />
 
-        <div class="mt-3 form-group">
-            <label class="control-label" asp-for="Name">Nom</label>
-            <input class="form-control" type="text" asp-for="Name" />
+        <div class="form-floating mb-3">
+            <input class="form-control" type="text" asp-for="Name" placeholder="Nom de la catégorie" />
+            <label class="control-label" asp-for="Name">Nom de la catégorie</label>
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
-        <button asp-action="AddCategory" asp-controller="Category">Enregistrer</button>
+        <button class="w-100 btn btn-lg main-button" asp-action="AddCategory" asp-controller="Category">Créer</button>
     </form>
 </div>

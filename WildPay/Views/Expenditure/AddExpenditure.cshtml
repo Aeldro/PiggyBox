@@ -1,44 +1,67 @@
-
 @model WildPay.Models.ViewModels.AddExpenditureInGroup
 @{
     ViewData["Title"] = "Nouvelle Dépense";
 }
 
 <div>
-    <form method="post">
-        <input type="hidden" asp-for="@Model.GroupId" value="@Model.GroupId"/> <!-- form to send the GroupId-->
+    <partial name="_GroupTitlePartial" model="ViewBag.Group" />
+    <hr />
+    <div class="row">
+        <partial name="_GroupNavBarPartial" model="ViewBag.Group" />
+        <div class="col-md-9">
+            <section>
+                <h3>Ajouter une dépense</h3>
+                <hr />
+                <form method="post">
+                    <input type="hidden" asp-for="@Model.GroupId" value="@Model.GroupId" /> <!-- form to send the GroupId-->
+                    <!-- form to add Name of expenditure -->
+                    <div class="form-floating mb-3">
+                        <input class="form-control" type="text" asp-for="@Model.ExpenditureToCreate.Name" placeholder="ex: piquenique" />
+                        <label asp-for="@Model.ExpenditureToCreate.Name">Nom de la dépense</label>
+                        <span asp-validation-for="@Model.ExpenditureToCreate.Name" class="text-danger"></span>
+                    </div>
 
-        <!-- form to add Name of expenditure -->
-        <label asp-for="@Model.ExpenditureToCreate.Name">nom de la dépense</label>
-        <input type="text" asp-for="@Model.ExpenditureToCreate.Name" placeholder="ex: piquenique"/>
+                    <!-- form to add Amount -->
+                    <div class="form-floating mb-3">
+                        <input class="form-control" type="number" asp-for="@Model.ExpenditureToCreate.Amount" placeholder="ex: 40.99" step="0.01" min="0.01" />
+                        <label asp-for="@Model.ExpenditureToCreate.Amount">Montant</label>
+                        <span asp-validation-for="@Model.ExpenditureToCreate.Amount" class="text-danger"></span>
+                    </div>
 
-        <!-- form to add Amount -->
-        <label asp-for="@Model.ExpenditureToCreate.Amount">valeur de la dépense</label>
-        <input type="number" step="0.01" asp-for="@Model.ExpenditureToCreate.Amount" placeholder="ex: 40.99"/>
-        
-        <!-- form to add Date -->
-        <label asp-for="@Model.ExpenditureToCreate.Date">date</label>
-        <input asp-for="@Model.ExpenditureToCreate.Date" type="date"/>
+                    <!-- form to add Date -->
+                    <div class="form-floating mb-3">
+                        <input class="form-control" asp-for="@Model.ExpenditureToCreate.Date" type="date" />
+                        <label asp-for="@Model.ExpenditureToCreate.Date">Date</label>
+                        <span asp-validation-for="@Model.ExpenditureToCreate.Date" class="text-danger"></span>
+                    </div>
 
-        <!-- form to choose Category -->
-        <label asp-for="@Model.CategoryId">catégorie</label>
-        <select asp-for="@Model.CategoryId" asp-items="@(new SelectList(Model.CategoriesInGroup, "Id", "Name"))">
-            <option value="">- sélectionnez un item -</option> <!-- Placeholder -->
-        </select>
+                    <!-- form to choose Category -->
+                    <div class="form-floating mb-3">
+                        <select class="form-select" asp-for="@Model.CategoryId" asp-items="@(new SelectList(Model.CategoriesInGroup, "Id", "Name"))">
+                            <option value="">- sélectionnez un item -</option> <!-- Placeholder -->
+                        </select>
+                        <label asp-for="@Model.CategoryId">Catégorie</label>
+                    </div>
 
-        <!-- form to add Payer using a select list -->
-        <label asp-for="@Model.ExpenditureToCreate.Payer">payé par</label>
-        <select asp-for="@Model.ExpenditureToCreate.PayerId" asp-items="@(new SelectList(Model.UsersInGroup, "Id", "Firstname"))"></select>
 
-        <!-- form with checkboxes to choose who participate in the expenditure -->
-        <label>participants</label>
-        <div>
-            @foreach (var user in Model.UsersInGroup)
-            {
-            <input type="checkbox" name="SelectedUsersIds" value="@user.Id" />
-            <label>@user.Firstname</label>
-            }
+                    <!-- form to add Payer using a select list -->
+                    <div class="form-floating mb-3">
+                        <select class="form-select" asp-for="@Model.ExpenditureToCreate.PayerId" asp-items="@(new SelectList(Model.UsersInGroup, "Id", "Firstname"))"></select>
+                        <label asp-for="@Model.ExpenditureToCreate.Payer">Payé par</label>
+                    </div>
+
+                    <!-- form with checkboxes to choose who participate in the expenditure -->
+                    <label>Contributeurs</label>
+                    <div class="custom-checkbox-container">
+                        @foreach (var user in Model.UsersInGroup)
+                        {
+                            <input class="custom-checkbox-input" type="checkbox" name="SelectedUsersIds" value="@user.Id" id="@user.Id" checked />
+                            <label class="custom-checkbox-label" for="@user.Id">@user.Firstname</label>
+                        }
+                    </div>
+                    <button class="btn btn-lg main-button" asp-action="AddExpenditure" asp-controller="Expenditure">Sauvegarder</button>
+                </form>
+            </section>
         </div>
-        <button asp-action="AddExpenditure" asp-controller="Expenditure">enregistrer</button>
-    </form>
+    </div>
 </div>
