@@ -48,6 +48,7 @@ namespace WildPay.Controllers
         public async Task<IActionResult> AddCategory(Category category)
         {
             string? userId = _userManager.GetUserId(User);
+            if (!ModelState.IsValid) return View(category);
             if (category == null) return NotFound();
 
             Group? group = await _groupRepository.GetGroupByIdAsync(category.GroupId);
@@ -94,17 +95,6 @@ namespace WildPay.Controllers
             return View(category);
         }
 
-        //[HttpPost]
-
-        //public async Task<IActionResult> UpdateCategory(UpdateCategoryModel modelUpdated)
-        //{
-        //    if (ModelState.IsValid) return View(modelUpdated);
-        //    Category? categoryUpdated = modelUpdated.CategoryToUpdate;
-        //    if (categoryUpdated == null) return NotFound();
-        //    await _categoryRepository.UpdateCategoryAsync(categoryUpdated);
-        //    return RedirectToAction(actionName: "GetCategory", controllerName: "Category", new { categoryUpdated.Id });
-
-        //}
         [HttpPost]
         public async Task<IActionResult> UpdateCategory(Category category)
         {
