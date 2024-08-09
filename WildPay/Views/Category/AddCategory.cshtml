@@ -16,7 +16,7 @@
         <input class="form-control" type="text" asp-for="GroupId" readonly hidden />
 
         <div class="form-floating mb-3">
-            <input class="form-control" type="text" asp-for="Name" placeholder="Nom de la catégorie" />
+            <input class="form-control" type="text" asp-for="Name" placeholder="Nom de la catégorie" required />
             <label class="control-label" asp-for="Name">Nom de la catégorie</label>
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>

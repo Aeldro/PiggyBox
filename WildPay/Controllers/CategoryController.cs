@@ -95,17 +95,6 @@ namespace WildPay.Controllers
             return View(category);
         }
 
-        //[HttpPost]
-
-        //public async Task<IActionResult> UpdateCategory(UpdateCategoryModel modelUpdated)
-        //{
-        //    if (ModelState.IsValid) return View(modelUpdated);
-        //    Category? categoryUpdated = modelUpdated.CategoryToUpdate;
-        //    if (categoryUpdated == null) return NotFound();
-        //    await _categoryRepository.UpdateCategoryAsync(categoryUpdated);
-        //    return RedirectToAction(actionName: "GetCategory", controllerName: "Category", new { categoryUpdated.Id });
-
-        //}
         [HttpPost]
         public async Task<IActionResult> UpdateCategory(Category category)
         {
