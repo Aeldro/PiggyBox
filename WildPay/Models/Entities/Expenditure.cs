@@ -12,6 +12,7 @@ namespace WildPay.Models.Entities
 
         [Required(ErrorMessage = "Le montant est obligatoire.")]
         [Range(0.01, int.MaxValue, ErrorMessage = "Le montant de la dépense doit être supérieur à 0.01.")]
+        [DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
         public double Amount { get; set; }
 
         [Required(ErrorMessage = "La date est obligatoire.")]
