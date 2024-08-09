@@ -12,27 +12,23 @@
 
         <div class="col-md-9">
             <partial name="_UpdateNameGroup" model="Model.GroupToUpdate" />
-
-            <h3>Supprimer un participant</h3>
-            <table>
-                <tr>
-                    @foreach (var user in Model.GroupToUpdate.ApplicationUsers)
-                    {
-                        <td>@user.Firstname</td>
-                        <td>@user.Lastname</td>
-                        <td><a href="@Url.ActionLink("DeleteMemberFromGroup", "Group", new {userId = user.Id, groupId = Model.GroupToUpdate.Id})"><span class="material-symbols-outlined">delete</span></a></td> <!--bin icon-->
-                    }
-                </tr>
-            </table>
-
+            <hr />
             <partial name="_AddNewMemberToGroup" model="Model.NewMember" />
+            <hr />
+            <h3 class=""><span class="material-symbols-outlined">block</span> Renvoyer une personne du groupe</h3>
+            <div class="list-group">
+                @foreach (var user in Model.GroupToUpdate.ApplicationUsers)
+                {
+                    <a class="list-group-item list-group-item-action list-group-item-danger d-inline-flex justify-content-center" href="@Url.ActionLink("DeleteMemberFromGroup", "Group", new {userId = user.Id, groupId = Model.GroupToUpdate.Id})"><span class="material-symbols-outlined">delete</span> @user.Firstname @user.Lastname</a>
+                }
+                </<div>
 
-            @if (ViewBag.MemberNotFound != null)
-            {
-                <p class="text-danger">@ViewBag.MemberNotFound</p>
-            }
-
-            <a class="btn btn-danger d-flex justify-content-center align-items-center w-25" href="@Url.ActionLink("DeleteGroup", "Group", new { Id = @Model.GroupToUpdate.Id, viewSender = "UpdateGroup" })"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
+                    @if (ViewBag.MemberNotFound != null)
+                    {
+                        <p class="text-danger">@ViewBag.MemberNotFound</p>
+                    }
+                </div>
+                <hr />
+                <a class="btn btn-danger delete-button" href="@Url.ActionLink("DeleteGroup", "Group", new { Id = @Model.GroupToUpdate.Id, viewSender = "UpdateGroup" })"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
+            </div>
         </div>
-    </div>
-</div>

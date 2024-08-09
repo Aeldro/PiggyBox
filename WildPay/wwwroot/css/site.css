@@ -3,6 +3,7 @@
 @import "backgrounds.css";
 @import "nav.css";
 @import "list.css";
+@import "checkboxes.css";
 
 :root {
     --main-color-op100: rgba(74, 163, 162, 1);
@@ -22,6 +23,7 @@
     --third-color-op20: rgba(232, 170, 190, 0.2);
     --main-dark: rgba(74, 74, 74);
     --main-light: rgba(245, 245, 245);
+    --disable-color: rgb(235, 235, 228);
     --main-font: "Poppins", sans-serif;
 }
 

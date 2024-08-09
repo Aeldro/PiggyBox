@@ -1,0 +1,24 @@
+﻿custom-checkbox-container {
+    display: flex;
+}
+
+.custom-checkbox-input {
+    display: none;
+}
+
+.custom-checkbox-label {
+    cursor: pointer;
+    border: var(--disable-color) 2px solid;
+    border-radius: 0.5em;
+    background-color: none;
+    padding: 0.5em;
+}
+
+    .custom-checkbox-label:hover {
+        border: var(--secondary-color-op100) 2px solid;
+        background-color: var(--secondary-color-op40);
+    }
+
+.custom-checkbox-input:checked + .custom-checkbox-label {
+    border: var(--main-color-op100) 2px solid;
+}
