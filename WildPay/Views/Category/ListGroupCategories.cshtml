@@ -26,7 +26,8 @@
                             foreach (Category category in Model.Categories)
                             {
                                 <hr />
-                                <h5 class="card-title"><a class="group-settings-button material-symbols-outlined" asp-action="Update" asp-controller="Category" asp-route-id=@Model.Id>edit</a> @category.Name</h5>
+                                <h5 class="card-title">
+                                <a class="group-settings-button material-symbols-outlined" asp-action="UpdateCategory" asp-controller="Category" asp-route-id=@category.Id>edit</a>@category.Name</h5>
                                 <a class="btn btn-outline-danger material-symbols-outlined" asp-action="DeleteCategory" asp-controller="Category" asp-route-Id=@category.Id>delete</a>
                             }
                         }

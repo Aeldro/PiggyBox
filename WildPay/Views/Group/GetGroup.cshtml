@@ -40,9 +40,8 @@
                 {
                     <p>Comment êtes-vous arrivés là ?</p>
                 }
-                <div class="d-flex justify-content-center">
-                    <a class="btn btn-danger d-flex justify-content-center align-items-center w-50" href="@Url.ActionLink("DeleteGroup", "Group", new { Id = @Model.Id, viewSender = "GetGroup" })"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
-                </div>
+                <hr />
+                <a class="btn btn-danger delete-button" href="@Url.ActionLink("DeleteGroup", "Group", new { Id = @Model.Id, viewSender = "GetGroup" })"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
             </section>
         </div>
     </div>

@@ -8,9 +8,8 @@
     ViewData["ReturnId"] = Model.GroupId;
 }
 <div>
-    <partial name="_GroupTitlePartial" model="ViewBag.Group"/>
-    
-    <hr/>
+    <partial name="_GroupTitlePartial" model="ViewBag.Group" />
+    <hr />
     <div class="row">
         <partial name="_GroupNavBarPartial" model="ViewBag.Group"/>
         <div class="col-md-9">
@@ -71,8 +70,8 @@
 
                     <button class="w-100 btn btn-lg main-button" type="submit">Sauvegarder</button>
                 </form>
-
-                <a class="btn btn-danger d-flex justify-content-center align-items-center w-25" asp-action="DeleteExpenditure" asp-controller="Expenditure" asp-route-Id="@Model.Id"><span class="material-symbols-outlined">delete</span>Supprimer la dépense</a>
+                <hr />
+                <a class="btn btn-danger delete-button" asp-action="DeleteExpenditure" asp-controller="Expenditure" asp-route-Id="@Model.Id"><span class="material-symbols-outlined">delete</span>Supprimer la dépense</a>
             </section>
         </div>
     </div>

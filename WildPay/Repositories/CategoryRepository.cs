@@ -30,7 +30,7 @@ namespace WildPay.Repositories
             return category;
         }
 
-        public async Task EditCategoryAsync(Category category)
+        public async Task UpdateCategoryAsync(Category category)
         {
             if (await _context.Categories.FindAsync(category.Id) is Category found && found != null)
             {
@@ -52,6 +52,14 @@ namespace WildPay.Repositories
             await _context.Categories.AddAsync(newCategory);
             await _context.SaveChangesAsync();
         }
+        public async Task EditCategoryAsync(Category category)
+        {
+            if (await _context.Categories.FindAsync(category.Id) is Category found && found != null)
+            {
+                found.Name = category.Name;
+                await _context.SaveChangesAsync();
+            }
+        }
 
         public async Task<bool> DeleteCategoryAsync(int categoryId)
         {
@@ -68,5 +76,6 @@ namespace WildPay.Repositories
 
             return false;
         }
+      
     }
 }

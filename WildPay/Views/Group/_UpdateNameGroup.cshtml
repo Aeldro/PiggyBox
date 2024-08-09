@@ -2,21 +2,22 @@
 @{
     ViewData["Title"] = Model.Name;
 }
-<h3>Modifier groupe</h3>
-
+<h3>Modifier le groupe</h3>
 <form method="post">
+   
     <input type="text" asp-for="@Model.Id" hidden="hidden" readonly />
 
-    <div class="mt-3 form-group">
+    <div class="form-floating mb-3">
+        <input class="form-control" type="text" asp-for="@Model.Name" placeholder="Nom du groupe" required />
         <label class="control-label" asp-for="@Model.Name">Nom du groupe</label>
-        <input class="form-control" type="text" asp-for="Name" required />
-        <span asp-validation-for="Name" class="text-danger"></span>
+        <span asp-validation-for="@Model.Name" class="text-danger"></span>
     </div>
 
-    <div class="mt-3 form-group">
+    <div class="form-floating mb-3">
+        <input class="form-control" type="text" asp-for="@Model.Image" placeholder="Image" />
         <label class="control-label" asp-for="@Model.Image">Image du groupe</label>
-        <input class="form-control" type="text" asp-for="Image" />
+        <span asp-validation-for="@Model.Image" class="text-danger"></span>
     </div>
 
-    <button asp-action="UpdateGroup" asp-controller="Group">Enregistrer</button>
+    <button class="btn btn-lg main-button" asp-action="UpdateGroup" asp-controller="Group">Enregistrer</button>
 </form>

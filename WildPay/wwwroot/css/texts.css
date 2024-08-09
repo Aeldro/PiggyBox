@@ -1,0 +1,6 @@
+﻿.text-main-light {
+    color: var(--main-light);
+}
+.text-main-dark {
+    color: var(--main-dark);
+}
