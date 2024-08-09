@@ -69,7 +69,7 @@ public class GroupController : Controller
 
     // UPDATE group view
     [HttpGet]
-    public async Task<IActionResult> UpdateGroup(int Id, bool IsMemberAdded = true, bool IsMemberAlreadyExisting = false)
+    public async Task<IActionResult> UpdateGroup(int Id, bool IsMemberAdded = true, bool IsMemberAlreadyExisting = false, bool FirstDisplay = true)
     {
         Group? group = await _groupRepository.GetGroupByIdAsync(Id);
 
@@ -91,10 +91,13 @@ public class GroupController : Controller
         {
             ViewBag.Message = "Pas d'utilisateur trouvé avec cette adresse mail.";
         }
-
-        if (IsMemberAlreadyExisting)
+        else if (IsMemberAlreadyExisting)
         {
             ViewBag.Message = "Cet utilisateur appartient déjà au groupe.";
+        }
+        else if (!FirstDisplay)
+        {
+            ViewBag.Message = "Utilisateur ajouté au groupe avec succès.";
         }
 
             return View(updateGroupModel);
@@ -167,10 +170,10 @@ public class GroupController : Controller
             // think about a way to handle the case the email doesn't match a user
             bool IsFound = await _groupRepository.AddMemberToGroupAsync(group, newMember.Email);
 
-            return RedirectToAction(actionName: "UpdateGroup", controllerName: "Group", new { Id = newMember.GroupId, IsMemberAdded = IsFound });
+            return RedirectToAction(actionName: "UpdateGroup", controllerName: "Group", new { Id = newMember.GroupId, IsMemberAdded = IsFound, FirstDisplay = false });
         }
 
-        return RedirectToAction(actionName: "UpdateGroup", controllerName: "Group", new { Id = newMember.GroupId, IsMemberAlreadyExisting = OldMember });
+        return RedirectToAction(actionName: "UpdateGroup", controllerName: "Group", new { Id = newMember.GroupId, IsMemberAlreadyExisting = OldMember, FirstDisplay = false });
     }
 
     // Delete a member from a group view

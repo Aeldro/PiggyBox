@@ -7,17 +7,19 @@
     ViewData["ReturnPageController"] = "Group";
     ViewData["ReturnId"] = Model.GroupToUpdate.Id;
 
+    // used in the partial view _AddNewMember
     ViewBag.Message = ViewBag.Message;
 }
 <div>
-<partial name="_GroupTitlePartial" model="Model.GroupToUpdate" />
-<hr />
-<div class="row">
-<partial name="_GroupNavBarPartial" model="Model.GroupToUpdate" />
+    <partial name="_GroupTitlePartial" model="Model.GroupToUpdate" />
+    <hr />
+    <div class="row">
+        <partial name="_GroupNavBarPartial" model="Model.GroupToUpdate" />
 
         <div class="col-md-9">
             <partial name="_UpdateNameGroup" model="Model.GroupToUpdate" />
             <hr />
+
             <h3 class=""><span class="material-symbols-outlined">block</span> Renvoyer une personne du groupe</h3>
             <div class="list-group">
                 @foreach (var user in Model.GroupToUpdate.ApplicationUsers)
@@ -32,3 +34,5 @@
                 <a class="btn btn-danger delete-button" href="@Url.ActionLink("DeleteGroup", "Group", new { Id = @Model.GroupToUpdate.Id, viewSender = "UpdateGroup" })"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
             </div>
         </div>
+    </div>
+</div>
