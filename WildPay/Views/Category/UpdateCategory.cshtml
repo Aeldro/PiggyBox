@@ -2,24 +2,33 @@
 
 @{
     ViewData["Title"] = "Modifier Categorie " + Model.Name;
+
+    ViewData["ReturnPageAction"] = "ListGroupCategories";
+    ViewData["ReturnPageController"] = "Category";
+    ViewData["ReturnId"] = Model.GroupId;
 }
 
-<h2>Modifier catégorie :</h2>
-
-<form method="post">
-    <div class="form-group">
-        <label asp-for="Name" class="control-label">Nom</label>
-        <input asp-for="Name" class="form-control" required />
-        <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
-    <input type="hidden" asp-for="Id" />
-    <input type="hidden" asp-for="GroupId" />
-    <div class="form-group">
-        <input type="submit" value="Sauvegarder" class="btn btn-primary" />
-    </div>
-</form>
-
 <div>
-    <a asp-action="ListGroupCategories" asp-route-id="@Model.GroupId">Retour</a>
+    <partial name="_GroupTitlePartial" model="ViewBag.Group" />
+    <hr />
+    <div class="row">
+        <partial name="_GroupNavBarPartial" model="ViewBag.Group" />
+        <div class="col-md-9">
+            <section>
+                <h3>Modifier la catégorie</h3>
+                <hr />
+                <form method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="GroupId" />
+                    <div class="form-floating mb-3">
+                        <input asp-for="@Model.Name" class="form-control" placeholder="Nom" required />
+                        <label asp-for="@Model.Name" class="control-label">Nom</label>
+                        <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                    </div>
+                    <button class="btn btn-lg main-button" asp-action="UpdateCategory" asp-controller="Category">Sauvegarder</button>
+                </form>
 
+            </section>
+        </div>
+    </div>
 </div>
