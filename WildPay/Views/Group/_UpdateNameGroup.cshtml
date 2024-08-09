@@ -1,7 +1,10 @@
 ﻿@model WildPay.Models.Entities.Group
-
+@{
+    ViewData["Title"] = Model.Name;
+}
 <h3>Modifier le groupe</h3>
 <form method="post">
+   
     <input type="text" asp-for="@Model.Id" hidden="hidden" readonly />
 
     <div class="form-floating mb-3">

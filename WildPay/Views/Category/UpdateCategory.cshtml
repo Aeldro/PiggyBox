@@ -8,18 +8,18 @@
 
 <form method="post">
     <div class="form-group">
-        <label asp-for="Name" class="control-label" ></label>
-        <input asp-for="Name" class="form-control" />
+        <label asp-for="Name" class="control-label">Nom</label>
+        <input asp-for="Name" class="form-control" required />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="GroupId" />
     <div class="form-group">
-        <input type="submit" value="Save" class="btn btn-primary" />
+        <input type="submit" value="Sauvegarder" class="btn btn-primary" />
     </div>
 </form>
 
 <div>
-    <a asp-action="ListGroupCategories" asp-route-id="@Model.GroupId">Back to List</a>
+    <a asp-action="ListGroupCategories" asp-route-id="@Model.GroupId">Retour</a>
 
 </div>

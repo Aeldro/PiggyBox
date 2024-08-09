@@ -2,13 +2,16 @@
 
 @{
     ViewData["Title"] = "Modifier " + Model.GroupToUpdate.Name;
+    
+    ViewData["ReturnPageAction"] = "GetGroup";
+    ViewData["ReturnPageController"] = "Group";
+    ViewData["ReturnId"] = Model.GroupToUpdate.Id;
 }
-
 <div>
-    <partial name="_GroupTitlePartial" model="Model.GroupToUpdate" />
-    <hr />
-    <div class="row">
-        <partial name="_GroupNavBarPartial" model="Model.GroupToUpdate" />
+<partial name="_GroupTitlePartial" model="Model.GroupToUpdate" />
+<hr />
+<div class="row">
+<partial name="_GroupNavBarPartial" model="Model.GroupToUpdate" />
 
         <div class="col-md-9">
             <partial name="_UpdateNameGroup" model="Model.GroupToUpdate" />

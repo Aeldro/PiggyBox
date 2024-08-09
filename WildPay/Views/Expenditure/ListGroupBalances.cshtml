@@ -4,6 +4,9 @@
 
 @{
     ViewData["Title"] = "Soldes " + Model.Group.Name;
+    
+    ViewData["ReturnPageAction"] = "ListMyGroups";
+    ViewData["ReturnPageController"] = "Group";
 
     // function that calculates the filling percent for each progress bar
     double PercentFillCalculation(double contribution, double totalContribution)
