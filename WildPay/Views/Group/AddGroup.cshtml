@@ -1,26 +1,26 @@
 @model WildPay.Models.Entities.Group
 
 @{
-ViewData["Title"] = "Créer groupe";
+    ViewData["Title"] = "Créer groupe";
 }
 <div class="col-md-4 m-auto">
-<div>
-    <a asp-action="ListMyGroups" asp-controller="Group"><span class="material-symbols-outlined">arrow_back</span></a>
+
+    <a asp-action="ListMyGroups" asp-controller="Group">
+        <span class="material-symbols-outlined">arrow_back</span>
+    </a>
     <h3>Nouveau groupe</h3>
-    <hr />
+    <hr/>
     <hr/>
 
     <form method="post">
         <div class="form-floating mb-3">
-            <input class="form-control" type="text" asp-for="Name" placeholder="Nom du groupe" />
+            <input class="form-control" type="text" asp-for="Name" placeholder="Nom du groupe"/>
             <label class="control-label" asp-for="Name">Nom du groupe</label>
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
-        
+
         <button class="w-100 btn btn-lg main-button" asp-action="AddGroup" asp-controller="Group">Créer</button>
 
         <button asp-action="AddGroup" asp-controller="Group">Enregistrer</button>
     </form>
 </div>
-
-
