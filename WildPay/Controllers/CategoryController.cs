@@ -48,6 +48,7 @@ namespace WildPay.Controllers
         public async Task<IActionResult> AddCategory(Category category)
         {
             string? userId = _userManager.GetUserId(User);
+            if (!ModelState.IsValid) return View(category);
             if (category == null) return NotFound();
 
             Group? group = await _groupRepository.GetGroupByIdAsync(category.GroupId);
