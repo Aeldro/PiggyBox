@@ -6,8 +6,12 @@
 
 
 <div class="col-md-4 m-auto">
+
+    <a asp-action="ListGroupCategories" asp-controller="Category" asp-route-Id="@Model.GroupId">
+        <span class="material-symbols-outlined">arrow_back</span>
+    </a>
     <h3>Nouvelle catégorie</h3>
-    </hr>
+    <hr/>
     <form method="post">
         <input class="form-control" type="text" asp-for="GroupId" readonly hidden />
 
