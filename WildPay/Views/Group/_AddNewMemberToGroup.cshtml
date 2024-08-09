@@ -8,6 +8,11 @@
     <h3><span class="material-symbols-outlined">person_add</span> Ajouter une personne au groupe</h3>
 </div>
 
+@if (ViewBag.Message != null)
+{
+    <p class="text-danger">@ViewBag.Message</p>
+}
+
 <form method="post">
     <div class="mt-3 form-group">
         <input type="text" asp-for="@Model.GroupId" hidden="hidden" readonly />

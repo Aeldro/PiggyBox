@@ -63,13 +63,13 @@ public class GroupController : Controller
         if (userId is null) return NotFound();
 
         await _groupRepository.AddGroupAsync(group.Name, group.Image, userId);
-        
+
         return RedirectToAction(actionName: "ListMyGroups", controllerName: "Group");
     }
 
     // UPDATE group view
     [HttpGet]
-    public async Task<IActionResult> UpdateGroup(int Id, bool IsMemberAdded = true)
+    public async Task<IActionResult> UpdateGroup(int Id, bool IsMemberAdded = true, bool IsMemberAlreadyExisting = false)
     {
         Group? group = await _groupRepository.GetGroupByIdAsync(Id);
 
@@ -89,17 +89,22 @@ public class GroupController : Controller
 
         if (!IsMemberAdded)
         {
-            ViewBag.MemberNotFound = "Pas d'utilisateur trouvé avec cette adresse mail.";
+            ViewBag.Message = "Pas d'utilisateur trouvé avec cette adresse mail.";
         }
 
-        return View(updateGroupModel);
+        if (IsMemberAlreadyExisting)
+        {
+            ViewBag.Message = "Cet utilisateur appartient déjà au groupe.";
+        }
+
+            return View(updateGroupModel);
     }
 
     // UPDATE group action
     [HttpPost]
     public async Task<IActionResult> UpdateGroup(Group group)
     {
-        if (!ModelState.IsValid) 
+        if (!ModelState.IsValid)
         {
             Group? invalidGroup = await _groupRepository.GetGroupByIdAsync(group.Id);
 
@@ -154,11 +159,18 @@ public class GroupController : Controller
 
         if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(user => user.Id == _userManager.GetUserId(User)) is null) return NotFound();
 
-        // Returns false if no match is found;
-        // think about a way to handle the case the email doesn't match a user
-        bool IsFound = await _groupRepository.AddMemberToGroupAsync(group, newMember.Email);
+        bool OldMember = group.ApplicationUsers.Any(u => u.NormalizedEmail == newMember.Email.ToUpper());
 
-        return RedirectToAction(actionName: "UpdateGroup", controllerName: "Group", new { Id = newMember.GroupId, IsMemberAdded = IsFound });    
+        if (!OldMember)
+        {
+            // Returns false if no match is found;
+            // think about a way to handle the case the email doesn't match a user
+            bool IsFound = await _groupRepository.AddMemberToGroupAsync(group, newMember.Email);
+
+            return RedirectToAction(actionName: "UpdateGroup", controllerName: "Group", new { Id = newMember.GroupId, IsMemberAdded = IsFound });
+        }
+
+        return RedirectToAction(actionName: "UpdateGroup", controllerName: "Group", new { Id = newMember.GroupId, IsMemberAlreadyExisting = OldMember });
     }
 
     // Delete a member from a group view
