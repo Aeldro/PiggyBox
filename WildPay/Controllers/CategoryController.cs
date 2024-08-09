@@ -34,12 +34,14 @@ namespace WildPay.Controllers
         }
 
         [HttpGet]
-        public IActionResult AddCategory(int Id)
+        public async Task<IActionResult> AddCategory(int Id)
         {
             Category category = new Category
             {
                 GroupId = Id
             };
+
+            ViewBag.Group = await _groupRepository.GetGroupByIdAsync(Id);
 
             return View(category);
         }
@@ -48,7 +50,11 @@ namespace WildPay.Controllers
         public async Task<IActionResult> AddCategory(Category category)
         {
             string? userId = _userManager.GetUserId(User);
-            if (!ModelState.IsValid) return View(category);
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Group = await _groupRepository.GetGroupByIdAsync(category.GroupId);
+                return View(category);
+            }
             if (category == null) return NotFound();
 
             Group? group = await _groupRepository.GetGroupByIdAsync(category.GroupId);
@@ -85,20 +91,27 @@ namespace WildPay.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> UpdateCategory(int id)
+        public async Task<IActionResult> UpdateCategory(int GroupId, int CategoryId)
         {
-            var category = await _categoryRepository.GetCategoryByIdAsync(id);
+            var category = await _categoryRepository.GetCategoryByIdAsync(CategoryId);
             if (category == null)
             {
                 return NotFound();
             }
+
+            ViewBag.Group = await _groupRepository.GetGroupByIdAsync(GroupId);
+
             return View(category);
         }
 
         [HttpPost]
         public async Task<IActionResult> UpdateCategory(Category category)
         {
-            if (!ModelState.IsValid) return View(category);
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Group = await _groupRepository.GetGroupByIdAsync(category.GroupId);
+                return View(category);
+            }
 
             await _categoryRepository.UpdateCategoryAsync(category);
 

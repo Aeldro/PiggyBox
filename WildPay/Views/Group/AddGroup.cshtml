@@ -1,14 +1,13 @@
 @model WildPay.Models.Entities.Group
 
 @{
-    ViewData["Title"] = "Créer groupe";
+    ViewData["Title"] = "Créer un groupe";
+    ViewData["ReturnPageAction"] = "ListMyGroups";
+    ViewData["ReturnPageController"] = "Group";
 }
-<div class="col-md-4 m-auto">
 
-    <a asp-action="ListMyGroups" asp-controller="Group">
-        <span class="material-symbols-outlined">arrow_back</span>
-    </a>
-    <h3>Nouveau groupe</h3>
+<div class="col-md-4 m-auto">
+    <h3 class="d-inline-flex gap-3 align-items-center justify-content-center"><partial name="_BackButtonPartial" /> Nouveau groupe</h3>
     <hr />
     <form method="post">
         <div class="form-floating mb-3">
