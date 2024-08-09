@@ -2,31 +2,31 @@
 @model Expenditure
 
 <div>
-    <partial name="_GroupTitlePartial" model="ViewBag.Group"/>
-    <hr/>
+    <partial name="_GroupTitlePartial" model="ViewBag.Group" />
+    <hr />
     <div class="row">
-        <partial name="_GroupNavBarPartial" model="ViewBag.Group"/>
+        <partial name="_GroupNavBarPartial" model="ViewBag.Group" />
         <div class="col-md-9">
             <section>
                 <h3>Modifier la dépense</h3>
                 <form action='@Url.Action("UpdateExpenditure", "Expenditure", new { groupId = ViewBag.Group.Id })' method="post">
 
-                    <input type="text" asp-for="@Model.Id" hidden="hidden" readonly/>
+                    <input type="text" asp-for="@Model.Id" hidden="hidden" readonly />
 
                     <div class="form-floating mb-3">
-                        <input class="form-control" type="text" asp-for="@Model.Name" />
+                        <input class="form-control" type="text" asp-for="@Model.Name" placeholder="Nom de la dépense" />
                         <label class="control-label" asp-for="@Model.Name">Nom</label>
                         <span asp-validation-for="@Model.Name" class="text-danger"></span>
                     </div>
 
                     <div class="form-floating mb-3">
-                        <input class="form-control" type="number" asp-for="@Model.Amount" step="0.01" min="0.01" />
+                        <input class="form-control" type="number" asp-for="@Model.Amount" step="0.01" min="0.01" placeholder="Montant" />
                         <label class="control-label" asp-for="@Model.Amount">Montant</label>
                         <span asp-validation-for="@Model.Amount" class="text-danger"></span>
                     </div>
 
                     <div class="form-floating mb-3">
-                        <input class="form-control" type="date" asp-for="@Model.Date" />
+                        <input class="form-control" type="date" asp-for="@Model.Date" placeholder="Date" />
                         <label class="control-label" asp-for="@Model.Date">Date</label>
                         <span asp-validation-for="@Model.Date" class="text-danger"></span>
                     </div>
@@ -41,31 +41,27 @@
                         <label for="payerDropdown" class="form-label">Payé par</label>
                     </div>
 
-                    <div id="checkboxDiv">
-                        <label for="checkboxDiv">Contributeurs</label>
+                    <label>Contributeurs</label>
+                    <div class="custom-checkbox-container">
                         @foreach (var member in ViewBag.Group.ApplicationUsers)
                         {
                             if (Model.RefundContributors.Any(el => el.Id == member.Id))
                             {
-                                <div class="form-check">
-                                    <input type="checkbox" id="@member.Id" name="RefundContributors" value="@member.Id" checked />
-                                    <label for="@member.Id">@member.Firstname @member.Lastname</label>
-                                </div>
+                                <input class="custom-checkbox-input" type="checkbox" id="@member.Id" name="RefundContributors" value="@member.Id" checked />
+                                <label class="custom-checkbox-label" for="@member.Id">@member.Firstname @member.Lastname</label>
                             }
                             else
                             {
-                                <div class="form-check">
-                                    <input class="form-control" type="checkbox" id="@member.Id" name="RefundContributors" value="@member.Id" />
-                                    <label class="control-label" for="@member.Id">@member.Firstname @member.Lastname</label>
-                                </div>
+                                <input class="custom-checkbox-input" type="checkbox" id="@member.Id" name="RefundContributors" value="@member.Id" />
+                                <label class="custom-checkbox-label" for="@member.Id">@member.Firstname @member.Lastname</label>
                             }
                         }
                     </div>
 
-                    <button class="w-100 btn btn-lg main-button" type="submit">Sauvegarder</button>
+                    <button class="btn btn-lg main-button" type="submit">Sauvegarder</button>
                 </form>
-                
-                <a class="btn btn-danger d-flex justify-content-center align-items-center w-25" asp-action="DeleteExpenditure" asp-controller="Expenditure" asp-route-Id="@Model.Id"><span class="material-symbols-outlined">delete</span>Supprimer la dépense</a>
+                <hr />
+                <a class="btn btn-danger delete-button" asp-action="DeleteExpenditure" asp-controller="Expenditure" asp-route-Id="@Model.Id"><span class="material-symbols-outlined">delete</span>Supprimer la dépense</a>
             </section>
         </div>
     </div>
