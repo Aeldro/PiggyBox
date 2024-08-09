@@ -4,6 +4,7 @@
 @import "nav.css";
 @import "list.css";
 @import "checkboxes.css";
+@import "alerts.css";
 
 :root {
     --main-color-op100: rgba(74, 163, 162, 1);

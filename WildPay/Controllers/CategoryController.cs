@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using WildPay.Interfaces;
 using WildPay.Models.Entities;
-
 namespace WildPay.Controllers
 {
     public class CategoryController : Controller
@@ -31,8 +30,8 @@ namespace WildPay.Controllers
 
             return View(group);
         }
+
         [HttpGet]
-        
         public IActionResult AddCategory(int Id)
         {
             Category category = new Category
@@ -47,6 +46,7 @@ namespace WildPay.Controllers
         public async Task<IActionResult> AddCategory(Category category)
         {
             string? userId = _userManager.GetUserId(User);
+            if (!ModelState.IsValid) return View(category);
             if (category == null) return NotFound();
 
             Group? group = await _groupRepository.GetGroupByIdAsync(category.GroupId);
@@ -57,7 +57,7 @@ namespace WildPay.Controllers
 
             return RedirectToAction(actionName: "ListGroupCategories", controllerName: "Category", new { Id = category.GroupId });
         }
-        
+
         [HttpGet]
         public async Task<IActionResult> DeleteCategory(int id)
         {
@@ -66,8 +66,8 @@ namespace WildPay.Controllers
             {
                 return NotFound();
             }
-                return View(category);
-            
+            return View(category);
+
         }
 
         [HttpPost]
@@ -82,5 +82,25 @@ namespace WildPay.Controllers
             return RedirectToAction("ListGroupCategories", new { Id = existingCategory.GroupId });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> UpdateCategory(int id)
+        {
+            var category = await _categoryRepository.GetCategoryByIdAsync(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+            return View(category);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateCategory(Category category)
+        {
+            if (!ModelState.IsValid) return View(category);
+
+            await _categoryRepository.UpdateCategoryAsync(category);
+
+            return RedirectToAction("ListGroupCategories", new { Id = category.GroupId });
+        }
     }
 }

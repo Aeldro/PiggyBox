@@ -1,11 +1,18 @@
 ﻿@using WildPay.Models.Entities
 @model Expenditure
-
+@{
+    ViewData["Title"] = "Dépense " + Model.Name;
+    
+    ViewData["ReturnPageAction"] = "ListGroupExpenditures";
+    ViewData["ReturnPageController"] = "Expenditure";
+    ViewData["ReturnId"] = Model.GroupId;
+}
 <div>
-    <partial name="_GroupTitlePartial" model="ViewBag.Group" />
-    <hr />
+    <partial name="_GroupTitlePartial" model="ViewBag.Group"/>
+    
+    <hr/>
     <div class="row">
-        <partial name="_GroupNavBarPartial" model="ViewBag.Group" />
+        <partial name="_GroupNavBarPartial" model="ViewBag.Group"/>
         <div class="col-md-9">
             <section>
                 <h3>Modifier la dépense</h3>
@@ -20,7 +27,7 @@
                     </div>
 
                     <div class="form-floating mb-3">
-                        <input class="form-control" type="number" asp-for="@Model.Amount" step="0.01" min="0.01" placeholder="Montant" />
+                        <input class="form-control" type="number" asp-for="@Model.Amount" step="0,01" min="0,01" placeholder="Montant" />
                         <label class="control-label" asp-for="@Model.Amount">Montant</label>
                         <span asp-validation-for="@Model.Amount" class="text-danger"></span>
                     </div>
@@ -45,16 +52,16 @@
                     <div class="custom-checkbox-container">
                         @foreach (var member in ViewBag.Group.ApplicationUsers)
                         {
-                            if (Model.RefundContributors.Any(el => el.Id == member.Id))
-                            {
-                                <input class="custom-checkbox-input" type="checkbox" id="@member.Id" name="RefundContributors" value="@member.Id" checked />
-                                <label class="custom-checkbox-label" for="@member.Id">@member.Firstname @member.Lastname</label>
-                            }
-                            else
-                            {
-                                <input class="custom-checkbox-input" type="checkbox" id="@member.Id" name="RefundContributors" value="@member.Id" />
-                                <label class="custom-checkbox-label" for="@member.Id">@member.Firstname @member.Lastname</label>
-                            }
+                        if (Model.RefundContributors.Any(el => el.Id == member.Id))
+                        {
+                        <input class="custom-checkbox-input" type="checkbox" id="@member.Id" name="RefundContributors" value="@member.Id" checked />
+                        <label class="custom-checkbox-label" for="@member.Id">@member.Firstname @member.Lastname</label>
+                        }
+                        else
+                        {
+                        <input class="custom-checkbox-input" type="checkbox" id="@member.Id" name="RefundContributors" value="@member.Id" />
+                        <label class="custom-checkbox-label" for="@member.Id">@member.Firstname @member.Lastname</label>
+                        }
                         }
                     </div>
 

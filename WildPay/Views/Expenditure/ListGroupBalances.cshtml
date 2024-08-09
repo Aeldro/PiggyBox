@@ -4,6 +4,9 @@
 
 @{
     ViewData["Title"] = "Soldes " + Model.Group.Name;
+    
+    ViewData["ReturnPageAction"] = "ListMyGroups";
+    ViewData["ReturnPageController"] = "Group";
 
     // function that calculates the filling percent for each progress bar
     double PercentFillCalculation(double contribution, double totalContribution)
@@ -25,7 +28,7 @@
             <section>
                 <h3>
                     Total des dépenses :
-                    <b class="text-warning">@Math.Round(Model.TotalAmount, 2)€</b>
+                    <b class="text-warning">@Math.Round(Model.TotalAmount, 2).ToString("F2")€</b>
                 </h3>
 
                 <div class="card">
@@ -35,7 +38,7 @@
                     {
                         <div class="card-body border-success">
                             <h5 class="card-text">@member.Key.Firstname @member.Key.Lastname</h5>
-                            <h5 class="card-title">@Math.Round(member.Value, 2)€</h5>
+                            <h5 class="card-title">@Math.Round(member.Value, 2).ToString("F2")€</h5>
 
                             <div class="progress">
                                 @if (member.Value >= 0)
