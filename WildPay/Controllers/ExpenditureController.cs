@@ -73,19 +73,22 @@ public class ExpenditureController : Controller
         // Calculate the debts: creditor-debitor for each due amount
         groupBalance = _balanceService.CalculateDebtsList(groupBalance, group);
 
-        if (group.Expenditures.Any(el => el.PayerId is null) || group.Expenditures.Any(el => el.Payer is null))
+        // if no payer or no contributors are found in one expenditure or more
+        if (group.Expenditures.Any(el => el.PayerId is null) || group.Expenditures.Any(el => el.Payer is null) ||
+            group.Expenditures.Any(el => el.RefundContributors == null) ||
+            group.Expenditures.Any(el => el.RefundContributors.Count() == 0))
         {
-            groupBalance.Message = "Attention ! Les dépenses qui n'ont pas de payeur n'ont pas été prises en compte.\nVérifiez les dépenses du groupe et ajoutez-y un payeur si vous voulez les inclure au calcul.\n";
+            groupBalance.Message = "Attention ! Les dépenses qui n'ont pas de payeur ou de contributeurs n'ont pas été prises compte.";
         }
 
-        // n'arrive pas à retrouver les refundcontributors de expenditures
-        if (group.Expenditures.Any(el => el.RefundContributors == null) || group.Expenditures.Any(el => el.RefundContributors.Count() == 0))
+        if (groupBalance.Debts.Count > 0 && groupBalance.Message == "")
         {
-            groupBalance.Message = groupBalance.Message + "Attention ! Les dépenses qui n'ont pas de contributeurs n'ont pas été prises en compte.\nVérifiez les dépenses du groupe et ajoutez-y des contributeurs si vous voulez les inclure au calcul.";
+            groupBalance.Message = "Toutes les dépenses ont été prises en compte.";
         }
-
-        if (groupBalance.Debts.Count > 0 && groupBalance.Message == "") groupBalance.Message = "Toutes les dépenses ont été prises en compte.";
-        else if (groupBalance.Debts.Count == 0 && groupBalance.Message == "") groupBalance.Message = "Aucun remboursement à effectuer.";
+        else if (groupBalance.Debts.Count == 0 && groupBalance.Message == "")
+        {
+            groupBalance.Message = "Aucun remboursement à effectuer.";
+        }
 
         return View(groupBalance);
     }
