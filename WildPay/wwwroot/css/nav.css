@@ -1,4 +1,9 @@
-﻿.nav-link {
+﻿img.nav-logo {
+    max-width: 6%;
+    height: auto;
+}
+
+.nav-link {
     color: var(--main-color-op80);
 }
 
