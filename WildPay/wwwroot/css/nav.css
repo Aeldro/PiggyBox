@@ -1,6 +1,11 @@
 ﻿img.nav-logo {
-    max-width: 6%;
+    max-width: 3em;
     height: auto;
+}
+
+.logo-title-container {
+    max-width: fit-content;
+    max-height: fit-content;
 }
 
 .nav-link {
