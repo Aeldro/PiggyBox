@@ -21,7 +21,7 @@
                     </h5>
                     @if (Model is not null && Model.Expenditures.Count != 0)
                     {
-                        foreach (Expenditure expenditure in Model.Expenditures)
+                        foreach (Expenditure expenditure in Model.Expenditures.OrderByDescending(e => e.Date))
                         {
                             <div class="card-body">
                                 <h5 class="card-title"><a class="group-settings-button material-symbols-outlined" href="@Url.ActionLink("UpdateExpenditure", "Expenditure", new {groupId = Model.Id, expenditureId = expenditure.Id})">edit</a> @expenditure.Name - @expenditure.Amount.ToString("F2")€</h5>
