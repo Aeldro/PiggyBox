@@ -9,26 +9,36 @@
 <partial name="_StatusMessage" for="StatusMessage" />
 <div class="row">
     <div class="col-md-6">
-        <form id="profile-form" method="post">
+        <form id="profile-form" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
-                <input asp-for="Username" class="form-control" placeholder="Please choose your username." disabled />
+                <input asp-for="Username" class="form-control" placeholder="Choisissez votre nom d'utilisateur'." disabled />
                 <label asp-for="Username" class="form-label"></label>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Firstname" class="form-control" placeholder="Please enter your firstname." />
+                <input asp-for="Input.Firstname" class="form-control" placeholder="Entrez votre prénom." />
                 <label asp-for="Input.Firstname" class="form-label"></label>
                 <span asp-validation-for="Input.Firstname" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Lastname" class="form-control" placeholder="Please enter your lastname." />
+                <input asp-for="Input.Lastname" class="form-control" placeholder="Entrez votre nom." />
                 <label asp-for="Input.Lastname" class="form-label"></label>
                 <span asp-validation-for="Input.Lastname" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number."/>
+                <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Entrez votre numéro de téléphone." />
                 <label asp-for="Input.PhoneNumber" class="form-label"></label>
                 <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <img src="Input.ImageUrl" alt="[Photo de profil]" />
+
+            <div class="form-floating mb-3">
+                <div class="custom-file">
+                    <label asp-for="Input.Image" class="control-label"></label>
+                    <input asp-for="Input.Image" class="custom-file-input" id="customFile" />
+                </div>
+                <span asp-validation-for="Input.Image" class="text-danger"></span>
             </div>
             <button id="update-profile-button" type="submit" class="w-100 btn btn-lg main-button">Sauvegarder</button>
         </form>

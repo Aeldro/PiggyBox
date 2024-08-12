@@ -9,7 +9,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using WildPay.Helpers;
 using WildPay.Models.Entities;
+using WildPay.Services.Interfaces;
 
 namespace WildPay.Areas.Identity.Pages.Account.Manage
 {
@@ -17,13 +19,19 @@ namespace WildPay.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ILogger<IndexModel> _logger;
+        private readonly ICloudinaryService _cloudinaryService;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            ILogger<IndexModel> logger,
+            ICloudinaryService cloudinaryService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _logger = logger;
+            _cloudinaryService = cloudinaryService;
         }
 
         /// <summary>
@@ -71,6 +79,14 @@ namespace WildPay.Areas.Identity.Pages.Account.Manage
             [MaxLength(25)]
             [Display(Name = "Nom de famille")]
             public string Lastname { get; set; }
+
+            [Display(Name = "Photo de profil"),]
+            //[Required(ErrorMessage = "Vous devez ajouter une photo de profil")]
+            [AllowedExtensions(new string[] { ".jpg", ".jpeg", ".png" })]
+            [MaxFileSize(2 * 1024 * 1024)]
+            public IFormFile Image { get; set; }
+
+            public string? ImageUrl { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -79,6 +95,7 @@ namespace WildPay.Areas.Identity.Pages.Account.Manage
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             var firstname = user.Firstname;
             var lastname = user.Lastname;
+            var imageUrl = user.ImageUrl;
 
             Username = userName;
 
@@ -86,7 +103,9 @@ namespace WildPay.Areas.Identity.Pages.Account.Manage
             {
                 PhoneNumber = phoneNumber,
                 Firstname = firstname,
-                Lastname = lastname
+                Lastname = lastname,
+                ImageUrl = imageUrl,
+                Image = null
             };
         }
 
@@ -129,6 +148,33 @@ namespace WildPay.Areas.Identity.Pages.Account.Manage
 
             user.Firstname = Input.Firstname;
             user.Lastname = Input.Lastname;
+
+            // idéalement trouver un moyen de checker si la photo a été changée
+            if (Input.Image != null && Input.Image.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(user.ImagePublicID))
+                {
+                    try
+                    {
+                        await _cloudinaryService.DeleteImageCloudinaryAsync(user.ImagePublicID);
+                    }
+                    catch (Exception cloudinaryException)
+                    {
+                        _logger.LogInformation(cloudinaryException.Message);
+                    }
+                }
+
+                try
+                {
+                    List<string> ImageInfos = await _cloudinaryService.UploadImageCloudinaryAsync(Input.Image);
+                    user.ImageUrl = ImageInfos[0];
+                    user.ImagePublicID = ImageInfos[1];
+                }
+                catch (Exception cloudinaryException)
+                {
+                    _logger.LogInformation(cloudinaryException.Message);
+                }
+            }
 
             var result = await _userManager.UpdateAsync(user);
 
