@@ -5,6 +5,7 @@
 @import "list.css";
 @import "checkboxes.css";
 @import "alerts.css";
+@import "form.css";
 
 :root {
     --main-color-op100: rgba(74, 163, 162, 1);
