@@ -86,6 +86,7 @@ namespace WildPay.Areas.Identity.Pages.Account.Manage
             [MaxFileSize(2 * 1024 * 1024)]
             public IFormFile Image { get; set; }
 
+            [BindProperty]
             public string? ImageUrl { get; set; }
         }
 
@@ -116,6 +117,8 @@ namespace WildPay.Areas.Identity.Pages.Account.Manage
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
+
+            ViewData["imageUrl"] = user.ImageUrl;
 
             await LoadAsync(user);
             return Page();

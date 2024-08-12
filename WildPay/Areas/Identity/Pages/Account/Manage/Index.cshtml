@@ -3,6 +3,8 @@
 @{
     ViewData["Title"] = "Profil";
     ViewData["ActivePage"] = ManageNavPages.Index;
+
+    string? imageUrl = (string)ViewData["imageUrl"];
 }
 
 <h3>@ViewData["Title"]</h3>
@@ -31,11 +33,15 @@
                 <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
             </div>
 
-            <img src="Input.ImageUrl" alt="[Photo de profil]" />
-
             <div class="form-floating mb-3">
-                <div class="custom-file">
+                <div class="custom-file file-form-flex">
                     <label asp-for="Input.Image" class="control-label"></label>
+
+                    @if (imageUrl != null)
+                    {
+                        <img class="form-img" src="@ViewData["imageUrl"]" alt="[Photo de profil]" />
+                    }
+
                     <input asp-for="Input.Image" class="custom-file-input" id="customFile" />
                 </div>
                 <span asp-validation-for="Input.Image" class="text-danger"></span>
