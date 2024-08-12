@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using WildPay.Interfaces;
 using WildPay.Models.Entities;
-using System.Threading.Tasks;
-using WildPay.Models.ViewModels;
 namespace WildPay.Controllers
 {
     public class CategoryController : Controller
