@@ -6,7 +6,7 @@
 
 <div class="col-md-4 m-auto">
     <h1>@ViewData["Title"]</h1>
-    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" enctype="multipart/form-data">
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
         <div class="form-floating mb-3">
@@ -23,6 +23,13 @@
             <input asp-for="Input.Lastname" class="form-control" autocomplete="lastname" aria-required="true" placeholder="lastname" />
             <label asp-for="Input.Lastname"></label>
             <span asp-validation-for="Input.Lastname" class="text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <div class="custom-file">
+                <label asp-for="Input.Image" class="control-label"></label>
+                <input asp-for="Input.Image" class="custom-file-input" id="customFile" />
+            </div>
+            <span asp-validation-for="Input.Image" class="text-danger"></span>
         </div>
         <div class="form-floating mb-3">
             <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />

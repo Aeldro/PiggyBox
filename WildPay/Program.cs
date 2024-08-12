@@ -1,3 +1,5 @@
+using dotenv.net;
+using CloudinaryDotNet;
 using Microsoft.EntityFrameworkCore;
 using WildPay.Models.Entities;
 using WildPay.Data;
@@ -7,6 +9,7 @@ using WildPay.Services;
 using WildPay.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using WildPay.Repositories.Interfaces;
 
 namespace WildPay
 {
@@ -14,7 +17,13 @@ namespace WildPay
     {
         public static void Main(string[] args)
         {
+            // Set the cloudinary credentials
+            DotEnv.Load(options: new DotEnvOptions(probeForEnv: true));
+            Cloudinary cloudinary = new Cloudinary(Environment.GetEnvironmentVariable("CLOUDINARY_URL"));
+            cloudinary.Api.Secure = true;
+
             var builder = WebApplication.CreateBuilder(args);
+
             var connectionString = builder.Configuration.GetConnectionString("WildPayDbContextConnection") ?? throw new InvalidOperationException("Connection string 'WildPayDbContextConnection' not found.");
 
             builder.Services.AddDbContext<WildPayDbContext>(options => options.UseSqlServer(connectionString));
@@ -26,6 +35,8 @@ namespace WildPay
 
             builder.Services.AddRazorPages();
 
+            builder.Services.AddSingleton(cloudinary);
+
             builder.Services.AddScoped<IGroupRepository, GroupRepository>();
             builder.Services.AddScoped<IExpenditureRepository, ExpenditureRepository>();
             builder.Services.AddScoped<IBalanceService, BalanceService>();
@@ -34,6 +45,7 @@ namespace WildPay
             builder.Services.AddScoped<IDropDownService, DropDownService>();
             builder.Services.AddScoped<IVerificationService, VerificationService>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
+            builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
             var app = builder.Build();
 
