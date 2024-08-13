@@ -5,16 +5,16 @@
 }
 
 <div class="col-md-4 m-auto">
-<h5>
-    <a class="btn btn-outline-success material-symbols-outlined" asp-action="AddGroup" asp-controller="Group">add</a> Mes groupes :
-</h5>
-<hr/>
+    <h5>
+        <a class="btn btn-outline-success material-symbols-outlined" asp-action="AddGroup" asp-controller="Group">add</a> Mes groupes :
+    </h5>
+    <hr />
 
-<div class="list-group">
-    @foreach (var group in Model)
-    {
-        <a class="list-group-item bg-main-color-op80 list-element" asp-action="GetGroup" asp-controller="Group" asp-route-id=@group.Id>@group.Name</a>
-    }
-</div>
+    <div class="list-group">
+        @foreach (var group in Model)
+        {
+            <a class="list-group-item bg-main-color-op80 list-element" href="@Url.ActionLink("GetGroup", "Group", new {Id = group.Id })">@group.Name</a>
+        }
+    </div>
 
 </div>

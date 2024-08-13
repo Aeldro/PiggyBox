@@ -6,10 +6,12 @@ using WildPay.Interfaces;
 using WildPay.Models;
 using WildPay.Models.Entities;
 using WildPay.Models.ViewModels;
+using WildPay.Services;
 using WildPay.Services.Interfaces;
 
 namespace WildPay.Controllers;
 
+// methods are only accessible if the user is connected
 [Authorize]
 public class ExpenditureController : Controller
 {
@@ -20,8 +22,9 @@ public class ExpenditureController : Controller
     private readonly IBalanceService _balanceService;
     private readonly IExpenditureService _expenditureService;
     private readonly IDropDownService _dropDownService;
+    private readonly IVerificationService _verificationService;
 
-    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService, ICategoryRepository categoryRepository, IExpenditureService expenditureService, IDropDownService dropDownService)
+    public ExpenditureController(UserManager<ApplicationUser> userManager, IExpenditureRepository expenditureRepository, IGroupRepository groupRepository, IBalanceService balanceService, ICategoryRepository categoryRepository, IExpenditureService expenditureService, IDropDownService dropDownService, IVerificationService verificationService)
     {
         _userManager = userManager;
         _expenditureRepository = expenditureRepository;
@@ -30,6 +33,7 @@ public class ExpenditureController : Controller
         _balanceService = balanceService;
         _expenditureService = expenditureService;
         _dropDownService = dropDownService;
+        _verificationService = verificationService;
     }
 
     // READ
@@ -38,11 +42,9 @@ public class ExpenditureController : Controller
         //Get the group
         Group? group = await _groupRepository.GetGroupByIdAsync(Id);
 
-        //Return not found if no group is found
-        if (group == null) { return NotFound(); }
-
         //Verify if the User belongs to the group, else we block the access
-        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }
+        bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+        if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
 
         return View(group);
     }
@@ -52,11 +54,9 @@ public class ExpenditureController : Controller
         //Get the group
         Group? group = await _groupRepository.GetGroupByIdAsync(Id);
 
-        //Return not found if no group is found
-        if (group == null) { return NotFound(); }
-
         //Verify if the User belongs to the group, else we block the access
-        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }
+        bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+        if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
 
         //Init GroupBalance instance
         GroupBalance groupBalance = new GroupBalance();
@@ -99,11 +99,9 @@ public class ExpenditureController : Controller
         //Get the group
         Group? group = await _groupRepository.GetGroupByIdAsync(groupId);
 
-        //Return not found if no group is found
-        if (group == null) { return NotFound(); }
-
         //Verify if the User belongs to the group, else we block the access
-        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }
+        bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+        if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
 
         //Get the expenditure
         Expenditure? expenditure = await _expenditureRepository.GetExpenditureByIdAsync(expenditureId);
@@ -138,11 +136,9 @@ public class ExpenditureController : Controller
             //Get the group
             Group? group = await _groupRepository.GetGroupByIdAsync(groupId);
 
-            //Return not found if no group is found
-            if (group == null) { return NotFound(); }
-
             //Verify if the User belongs to the group, else we block the access
-            if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) { return NotFound(); }
+            bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+            if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
 
             ViewBag.Group = group;
             ViewBag.GroupCategoriesSelects = await _dropDownService.GetDropDownGroupCategories(group);
@@ -174,6 +170,12 @@ public class ExpenditureController : Controller
     [HttpGet]
     public async Task<IActionResult> AddExpenditure(int Id)
     {
+        Group? group = await _groupRepository.GetGroupByIdAsync(Id);
+
+        //Verify if the User belongs to the group, else we block the access
+        bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+        if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
+
         AddExpenditureInGroup model = await _expenditureService.AddExpenditure(Id); // returns a model to fetch in the View
         ViewBag.Group = await _groupRepository.GetGroupByIdAsync(model.GroupId);
         return View(model);
@@ -183,6 +185,12 @@ public class ExpenditureController : Controller
     [HttpPost]
     public async Task<IActionResult> AddExpenditure(AddExpenditureInGroup model)
     {
+        Group? group = await _groupRepository.GetGroupByIdAsync(model.GroupId);
+
+        //Verify if the User belongs to the group, else we block the access
+        bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+        if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
+
         if (ModelState.IsValid)
         {
             await _expenditureService.AddExpenditure(model); // add the new Expenditure calling service
@@ -200,6 +208,12 @@ public class ExpenditureController : Controller
     public async Task<IActionResult> DeleteExpenditure(int Id)
     {
         Expenditure expenditureToRemove = await _expenditureService.GetExpenditureById(Id);
+        Group? group = await _groupRepository.GetGroupByIdAsync(expenditureToRemove.GroupId);
+
+        //Verify if the User belongs to the group, else we block the access
+        bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+        if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
+
         return View(expenditureToRemove);
     }
     
@@ -207,6 +221,12 @@ public class ExpenditureController : Controller
     [HttpPost]
     public async Task<IActionResult> DeleteExpenditure(Expenditure expenditure)
     {
+        Group? group = await _groupRepository.GetGroupByIdAsync(expenditure.GroupId);
+
+        //Verify if the User belongs to the group, else we block the access
+        bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+        if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
+
         await _expenditureService.DeleteExpenditure(expenditure);
         return RedirectToAction(actionName: "ListGroupExpenditures", controllerName: "Expenditure", new { id = expenditure.GroupId });;
     }
