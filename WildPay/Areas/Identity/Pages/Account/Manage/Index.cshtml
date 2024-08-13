@@ -45,20 +45,28 @@
                     <img src="#" id="previewImage" class="form-img display-none" alt="Pré-visualisation de l'image choisie" />
                     <div id="fileError" class="text-danger display-none"></div>
 
-                    <input asp-for="Input.Image" class="custom-file-input" id="customFile" />
+                    <input asp-for="Input.Image" class="custom-file-input" id="customFile" accept=".jpeg, .jpg, .png" />
                 </div>
                 <span asp-validation-for="Input.Image" class="text-danger"></span>
+
+                <button id="delete" class="btn btn-danger delete-button" type="submit" asp-page-handler="DeletePicture" >
+                    <span class="material-symbols-outlined">delete</span>
+                    Supprimer ma photo de profil    
+                </button>
+
             </div>
-            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg main-button">Sauvegarder</button>
+            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg main-button" asp-page-handler="Edit">Sauvegarder</button>
         </form>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script src="~/js/imagePreview.js"></script>
-    <script>
+    <script type="text/javascript" src="~/js/imagePreview.js"></script>
+    <script type="text/javascript">
         // Initialize the image preview functionality
-        setupImagePreview('customFile', 'previewImage', 'defaultImage', 'fileError', 'update-profile-button')
+        window.onload = function () {
+            setupImagePreview('customFile', 'previewImage', 'defaultImage', 'fileError');
+        };
     </script>
 }

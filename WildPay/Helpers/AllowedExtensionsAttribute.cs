@@ -30,7 +30,7 @@ namespace WildPay.Helpers
 
         public string GetErrorMessage()
         {
-            return $"L'image doit être au format jpeg, jpg ou png";
+            return $"L'image doit être au format jpeg, jpg ou png.";
         }
     }
 }

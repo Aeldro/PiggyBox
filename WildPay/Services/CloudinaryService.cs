@@ -16,7 +16,7 @@ namespace WildPay.Services
 
         public async Task<List<string>> UploadImageCloudinaryAsync(IFormFile image)
         {
-            // unique file name on the site
+            // unique file name
             // otherwise it can be overwrite by a file of the same name
             string fileName = Guid.NewGuid().ToString() + "_" + image.FileName;
 

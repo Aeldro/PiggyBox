@@ -5,48 +5,43 @@
  * @param {string} previewImageId
  * @param {string} defaultImageId
  * @param {string} errorId
- * @param {string} submitButtonid
+ * @param {string} submitButtonId
  * @returns {void}
  */
-function setupImagePreview(inputId, previewImageId, defaultImageId, errorId, submitButtonid) {
+function setupImagePreview(inputId, previewImageId, defaultImageId, errorId) {
     //retrieve the elements with their ID
     let input = document.getElementById(inputId);
     let previewImage = document.getElementById(previewImageId);
     let defaultImage = document.getElementById(defaultImageId);
     let fileError = document.getElementById(errorId);
-    let submitButton = document.getElementById(submitButtonId);
 
     // if the user loads an image as a new profile picture
     input.addEventListener('change', (event) => {
         let file = event.target.files[0];
 
-        // reset the preview image and error message
+        // reset the preview image, error and success messages
         previewImage.style.display = 'none';
         previewImage.src = "#";
         fileError.style.display = 'none';
         fileError.textContent = '';
-        defaultImage.style.display = 'block';
 
-        // submit button enabled by default
-        submitButton.disabled = false;
+        if (defaultImage !== null) {
+            defaultImage.style.display = 'block';
+        }
 
         if (file) {
             if (!IsTypeValid(file)) {
-                fileError.textContent = "L'image doit être au format jpeg, jpg ou png";
+                fileError.textContent = "L'image doit être au format jpeg, jpg ou png.";
                 fileError.style.display = 'block';
                 input.value = '';
-
-                submitButton.disabled = true;
                 return;
             }
 
             // checking image's size
             if (!IsSizeValid(file.size)) {
-                fileError.textContent = "La taille maximale de l'image autorisée est de 2Mo";
+                fileError.textContent = "La taille maximale de l'image autorisée est de 2Mo.";
                 fileError.style.display = 'block';
                 input.value = '';
-
-                submitButton.disabled = true;
                 return;
             }
 
@@ -56,7 +51,10 @@ function setupImagePreview(inputId, previewImageId, defaultImageId, errorId, sub
             reader.onload = function (e) {
                 previewImage.src = e.target.result;
                 previewImage.style.display = 'block';
-                defaultImage.style.display = 'none';
+
+                if (defaultImage !== null) {
+                    defaultImage.style.display = 'none';
+                }
             }
 
             // converts the file to a data URL,
@@ -88,7 +86,7 @@ function IsTypeValid(file) {
  * @returns {boolean}
  */
 function IsSizeValid(fileSize) {
-    const maxsize = 2 * 1024 * 1024;
+    const maxSize = 2 * 1024 * 1024;
 
     if (fileSize > maxSize) {
         return false;

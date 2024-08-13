@@ -6,12 +6,17 @@
 }
 
 .form-img {
-    max-width: fit-content;
-    max-height: auto;
+    object-fit: cover;
+    width: 150px;
+    height: 150px;
 
     margin: 3%;
 }
 
 .display-none {
     display: none;
+}
+
+button#delete {
+    margin: 5%;
 }
