@@ -27,7 +27,11 @@
         <div class="form-floating mb-3">
             <div class="custom-file">
                 <label asp-for="Input.Image" class="control-label"></label>
-                <input asp-for="Input.Image" class="custom-file-input" id="customFile" />
+
+                <img src="#" id="previewImage" class="form-img display-none" alt="Pré-visualisation de l'image choisie" />
+                <div id="fileError" class="text-danger display-none"></div>
+
+                <input asp-for="Input.Image" class="custom-file-input" id="customFile" accept=".jpeg, .jpg, .png" />
             </div>
             <span asp-validation-for="Input.Image" class="text-danger"></span>
         </div>
@@ -47,4 +51,11 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript" src="~/js/imagePreview.js"></script>
+    <script type="text/javascript">
+        // Initialize the image preview functionality
+        window.onload = function () {
+            setupImagePreview('customFile', 'previewImage', 'defaultImage', 'fileError');
+        };
+    </script>
 }

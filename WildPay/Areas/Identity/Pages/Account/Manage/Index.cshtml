@@ -33,7 +33,7 @@
                 <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
             </div>
 
-            <div class="form-floating mb-3">
+            <div class="form-floating">
                 <div class="custom-file file-form-flex">
                     <label asp-for="Input.Image" class="control-label"></label>
 
@@ -49,13 +49,13 @@
                 </div>
                 <span asp-validation-for="Input.Image" class="text-danger"></span>
 
-                <button id="delete" class="btn btn-danger delete-button" type="submit" asp-page-handler="DeletePicture" >
+                <button id="delete" class="btn btn-danger delete-button delete-margin" type="submit" asp-page-handler="DeletePicture" >
                     <span class="material-symbols-outlined">delete</span>
                     Supprimer ma photo de profil    
                 </button>
 
             </div>
-            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg main-button" asp-page-handler="Edit">Sauvegarder</button>
+            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg main-button update-button-margin" asp-page-handler="Edit">Sauvegarder</button>
         </form>
     </div>
 </div>
