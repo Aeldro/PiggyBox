@@ -39,8 +39,11 @@
 
                     @if (imageUrl != null)
                     {
-                        <img class="form-img" src="@ViewData["imageUrl"]" alt="[Photo de profil]" />
+                        <img id="defaultImage" class="form-img" src="@ViewData["imageUrl"]" alt="[Photo de profil]" />
                     }
+
+                    <img src="#" id="previewImage" class="form-img display-none" alt="Pré-visualisation de l'image choisie" />
+                    <div id="fileError" class="text-danger display-none"></div>
 
                     <input asp-for="Input.Image" class="custom-file-input" id="customFile" />
                 </div>
@@ -53,4 +56,9 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/imagePreview.js"></script>
+    <script>
+        // Initialize the image preview functionality
+        setupImagePreview('customFile', 'previewImage', 'defaultImage', 'fileError', 'update-profile-button')
+    </script>
 }
