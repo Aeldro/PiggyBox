@@ -17,6 +17,10 @@
     display: none;
 }
 
-button#delete {
-    margin: 5%;
+button.delete-margin {
+    margin: 5% 0;
+}
+
+button.update-button-margin {
+    margin-top: 0;
 }
