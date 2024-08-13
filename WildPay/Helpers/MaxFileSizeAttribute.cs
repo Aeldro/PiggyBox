@@ -28,7 +28,7 @@ namespace WildPay.Helpers
 
         public string GetErrorMessage()
         {
-            return $"La taille maximale de l'image autorisée est de 2Mo";
+            return $"La taille maximale de l'image autorisée est de 2Mo.";
         }
     }
 }

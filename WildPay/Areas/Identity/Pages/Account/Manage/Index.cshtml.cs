@@ -124,7 +124,7 @@ namespace WildPay.Areas.Identity.Pages.Account.Manage
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostEditAsync()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -183,6 +183,31 @@ namespace WildPay.Areas.Identity.Pages.Account.Manage
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Le profil a bien été modifié";
+            return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostDeletePictureAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            try
+            {
+                if (!string.IsNullOrEmpty(user.ImagePublicID))
+                {
+                    await _cloudinaryService.DeleteImageCloudinaryAsync(user.ImagePublicID);
+                    user.ImageUrl = null;
+                    user.ImagePublicID = null;
+                }
+            }
+            catch (Exception cloudinaryException)
+            {
+                _logger.LogInformation(cloudinaryException.Message);
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+
+            await _signInManager.RefreshSignInAsync(user);
+            StatusMessage = "La photo de profil a bien été supprimée";
             return RedirectToPage();
         }
     }
