@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using WildPay.Interfaces;
 using WildPay.Models.Entities;
 using WildPay.Models.ViewModels;
+using WildPay.Services.Interfaces;
 
 namespace WildPay.Controllers;
 
@@ -13,11 +14,13 @@ public class GroupController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IGroupRepository _groupRepository;
+    private readonly IVerificationService _verificationService;
 
-    public GroupController(UserManager<ApplicationUser> userManager, IGroupRepository groupRepository)
+    public GroupController(UserManager<ApplicationUser> userManager, IGroupRepository groupRepository, IVerificationService verificationService)
     {
         _userManager = userManager;
         _groupRepository = groupRepository;
+        _verificationService = verificationService;
     }
 
     // READ: get all the groups for the connected user
@@ -37,11 +40,9 @@ public class GroupController : Controller
         //Get the group
         Group? group = await _groupRepository.GetGroupByIdAsync(Id);
 
-        //Return not found if no group is found
-        if (group is null) return NotFound();
-
         //Verify if the User belongs to the group, else we block the access
-        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
+        bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+        if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
 
         return View(group);
     }
@@ -73,9 +74,9 @@ public class GroupController : Controller
     {
         Group? group = await _groupRepository.GetGroupByIdAsync(Id);
 
-        if (group is null) return NotFound();
-
-        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return RedirectToAction("List", "Group");
+        //Verify if the User belongs to the group, else we block the access
+        bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+        if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
 
         UpdateGroupModel updateGroupModel = new UpdateGroupModel
         {
@@ -107,6 +108,12 @@ public class GroupController : Controller
     [HttpPost]
     public async Task<IActionResult> UpdateGroup(Group group)
     {
+        Group? currentGroup = await _groupRepository.GetGroupByIdAsync(group.Id);
+
+        //Verify if the User belongs to the group, else we block the access
+        bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), currentGroup);
+        if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
+
         if (!ModelState.IsValid)
         {
             Group? invalidGroup = await _groupRepository.GetGroupByIdAsync(group.Id);
@@ -158,9 +165,9 @@ public class GroupController : Controller
 
         Group? group = await _groupRepository.GetGroupByIdAsync(newMember.GroupId);
 
-        if (group is null) return NotFound();
-
-        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(user => user.Id == _userManager.GetUserId(User)) is null) return NotFound();
+        //Verify if the User belongs to the group, else we block the access
+        bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+        if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
 
         bool OldMember = group.ApplicationUsers.Any(u => u.NormalizedEmail == newMember.Email.ToUpper());
 
@@ -181,15 +188,16 @@ public class GroupController : Controller
     public async Task<IActionResult> DeleteMemberFromGroup(string userId, int groupId)
     {
         Group? group = await _groupRepository.GetGroupByIdAsync(groupId);
-        if (group is null) return NotFound();
+
+        //Verify if the User belongs to the group, else we block the access
+        bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+        if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
 
         ApplicationUser? userToRemove = group.ApplicationUsers.FirstOrDefault(u => u.Id == userId);
 
         if (group is null) return NotFound();
 
         if (userToRemove is null) return NotFound();
-
-        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
 
         ViewBag.user = userToRemove;
         return View("DeleteMemberFromGroup", group);
@@ -201,9 +209,9 @@ public class GroupController : Controller
     {
         Group? userGroup = await _groupRepository.GetGroupByIdAsync(groupId);
 
-        if (userGroup is null) return NotFound();
-
-        if (_userManager.GetUserId(User) is null || userGroup.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
+        //Verify if the User belongs to the group, else we block the access
+        bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), userGroup);
+        if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
 
         // Returns false if no match is found;
         // think about a way to handle the case the email doesn't match a user
@@ -223,9 +231,9 @@ public class GroupController : Controller
     {
         Group? group = await _groupRepository.GetGroupByIdAsync(Id);
 
-        if (group is null) return NotFound();
-
-        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
+        //Verify if the User belongs to the group, else we block the access
+        bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+        if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
 
         ViewBag.Action = viewSender;
 
@@ -234,8 +242,14 @@ public class GroupController : Controller
 
     // DELETE group action 
     [HttpPost]
-    public async Task<IActionResult> DeleteGroup(int Id, Group group)
+    public async Task<IActionResult> DeleteGroup(int Id)
     {
+        Group? group = await _groupRepository.GetGroupByIdAsync(Id);
+
+        //Verify if the User belongs to the group, else we block the access
+        bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+        if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
+
         await _groupRepository.DeleteGroupAsync(Id);
         return RedirectToAction(actionName: "ListMyGroups", controllerName: "Group");
     }

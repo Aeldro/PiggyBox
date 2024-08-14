@@ -4,5 +4,5 @@
     <partial name="_BackButtonPartial" />
     
     Groupe : @Model.Name
-    <a class="group-settings-button material-symbols-outlined" asp-action="UpdateGroup" asp-controller="Group" asp-route-id=@Model.Id>edit</a>
+    <a class="group-settings-button material-symbols-outlined" href="@Url.ActionLink("UpdateGroup", "Group", new {Id = Model.Id })">edit</a>
 </h2>

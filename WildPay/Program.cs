@@ -30,6 +30,7 @@ namespace WildPay
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IExpenditureService, ExpenditureService>();
             builder.Services.AddScoped<IDropDownService, DropDownService>();
+            builder.Services.AddScoped<IVerificationService, VerificationService>();
 
             var app = builder.Build();
 
