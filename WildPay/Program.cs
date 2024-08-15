@@ -5,6 +5,8 @@ using WildPay.Interfaces;
 using WildPay.Repositories;
 using WildPay.Services;
 using WildPay.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace WildPay
 {
@@ -31,6 +33,7 @@ namespace WildPay
             builder.Services.AddScoped<IExpenditureService, ExpenditureService>();
             builder.Services.AddScoped<IDropDownService, DropDownService>();
             builder.Services.AddScoped<IVerificationService, VerificationService>();
+            builder.Services.AddScoped<IEmailSender, EmailSender>();
 
             var app = builder.Build();
 
