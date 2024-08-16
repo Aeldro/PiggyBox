@@ -27,7 +27,16 @@
                                 <h5 class="card-title"><a class="group-settings-button material-symbols-outlined" href="@Url.ActionLink("UpdateExpenditure", "Expenditure", new {groupId = Model.Id, expenditureId = expenditure.Id})">edit</a> @expenditure.Name - @expenditure.Amount.ToString("F2")€</h5>
                                 @if (expenditure.Payer is not null)
                                 {
-                                    <p class="card-text">@expenditure.Amount.ToString("F2")€ payé par <img src=@expenditure.Payer.ImageUrl alt="photo de profil" class="small-profile-image" /> @expenditure.Payer.Firstname @expenditure.Payer.Lastname.</p>
+                                    <p class="card-text">@expenditure.Amount.ToString("F2")€ payé par 
+                                        @if (expenditure.Payer.ImageUrl != null)
+                                        {
+                                            <img src=@expenditure.Payer.ImageUrl alt="photo de profil" class="small-profile-image" />
+                                        }
+                                        else
+                                        {
+                                            <img src="~/images/user_image.png" alt="photo de profil" class="small-profile-image" />
+                                        }
+                                        @expenditure.Payer.Firstname @expenditure.Payer.Lastname.</p>
                                 }
                                 else
                                 {

@@ -32,8 +32,13 @@
                     </li>
                     <li class="nav-item">
                         <a id="manage" class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
-                            @if (currentUser?.ImageUrl != null) {
+                            @if (currentUser?.ImageUrl != null)
+                            {
                                 <img src="@currentUser.ImageUrl" alt="Profile Image" class="smallest-profile-image" />
+                            }
+                            else
+                            {
+                                <img src="~/images/user_image.png" alt="photo de profil" class="smallest-profile-image" />
                             }
                             Mon profil
                         </a>
