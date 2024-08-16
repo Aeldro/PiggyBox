@@ -25,7 +25,14 @@
                                 foreach (ApplicationUser user in Model.ApplicationUsers)
                                 {
                                     <hr />
-                                    <img src=@user.ImageUrl alt="photo de profil" class="big-profile-image" />
+                                    @if (user.ImageUrl != null)
+                                    {
+                                        <img src=@user.ImageUrl alt="photo de profil" class="big-profile-image" />
+                                    }
+                                    else
+                                    {
+                                        <img src="~/images/user_image.png" alt="photo de profil" class="big-profile-image" />
+                                    }
                                     <h5 class="card-title">@user.Firstname @user.Lastname</h5>
                                     <p class="card-text">@user.Email</p>
                                 }
