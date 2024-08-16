@@ -55,7 +55,7 @@
                 </button>
 
             </div>
-            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg main-button update-button-margin" asp-page-handler="Edit">Sauvegarder</button>
+            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg main-button update-button-margin" asp-page-handler="Edit" disabled>Sauvegarder</button>
         </form>
     </div>
 </div>
@@ -63,10 +63,12 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script type="text/javascript" src="~/js/imagePreview.js"></script>
+    <script type="text/javascript" src="~/js/isFormDirty.js"></script>
     <script type="text/javascript">
         // Initialize the image preview functionality
         window.onload = function () {
             setupImagePreview('customFile', 'previewImage', 'defaultImage', 'fileError');
+            setupChangeDetection('profile-form', 'update-profile-button');
         };
     </script>
 }

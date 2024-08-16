@@ -61,7 +61,7 @@ function setupImagePreview(inputId, previewImageId, defaultImageId, errorId) {
             // which can be used as the src of an image
             reader.readAsDataURL(file);
         }
-    })
+    });
 }
 
 /**
