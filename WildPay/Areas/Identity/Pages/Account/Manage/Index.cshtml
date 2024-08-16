@@ -49,11 +49,10 @@
                 </div>
                 <span asp-validation-for="Input.Image" class="text-danger"></span>
 
-                <button id="delete" class="btn btn-danger delete-button delete-margin" type="submit" asp-page-handler="DeletePicture" >
+                <button id="delete" class="btn btn-danger delete-button delete-margin" type="submit" asp-page-handler="DeletePicture" onclick="return confirmDelete();">
                     <span class="material-symbols-outlined">delete</span>
-                    Supprimer ma photo de profil    
+                    Supprimer ma photo de profil
                 </button>
-
             </div>
             <button id="update-profile-button" type="submit" class="w-100 btn btn-lg main-button update-button-margin" asp-page-handler="Edit" disabled>Sauvegarder</button>
         </form>
@@ -64,6 +63,7 @@
     <partial name="_ValidationScriptsPartial" />
     <script type="text/javascript" src="~/js/imagePreview.js"></script>
     <script type="text/javascript" src="~/js/isFormDirty.js"></script>
+    <script type="text/javascript" src="~/js/confirmDeletion.js"></script>
     <script type="text/javascript">
         // Initialize the image preview functionality
         window.onload = function () {
