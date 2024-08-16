@@ -1,6 +1,6 @@
 ﻿using WildPay.Models.Entities;
 
-namespace WildPay.Interfaces
+namespace WildPay.Repositories.Interfaces
 {
     public interface ICategoryRepository
     {

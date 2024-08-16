@@ -4,6 +4,15 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
+@{
+    ApplicationUser? currentUser = null;
+
+    if (SignInManager.IsSignedIn(User))
+    {
+        currentUser = await UserManager.GetUserAsync(User);
+    }
+}
+
 <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark shadow-sm position-fixed top-0 above w-100 bg-main-color-op100">
     <div class="container-fluid">
         <div class="logo-title-container">
@@ -22,7 +31,17 @@
                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Accueil</a>
                     </li>
                     <li class="nav-item">
-                        <a id="manage" class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Mon profil </a>
+                        <a id="manage" class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+                            @if (currentUser?.ImageUrl != null)
+                            {
+                                <img src="@currentUser.ImageUrl" alt="Profile Image" class="smallest-profile-image" />
+                            }
+                            else
+                            {
+                                <img src="~/images/user_image.png" alt="photo de profil" class="smallest-profile-image" />
+                            }
+                            Mon profil
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-controller="Group" asp-action="ListMyGroups">Mes groupes</a>
@@ -32,10 +51,9 @@
                             <button id="logout" type="submit" class="nav-link btn btn-link border-0">Déconnexion</button>
                         </form>
                     </li>
-
                 }
-
                 else
+
                 {
                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Accueil</a>

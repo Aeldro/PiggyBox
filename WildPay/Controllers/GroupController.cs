@@ -2,10 +2,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WildPay.Exceptions;
-using WildPay.Interfaces;
 using WildPay.Models.Entities;
 using WildPay.Models.ViewModels;
 using WildPay.Services.Interfaces;
+using WildPay.Repositories.Interfaces;
 
 namespace WildPay.Controllers;
 

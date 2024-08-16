@@ -46,7 +46,16 @@
                     @foreach (KeyValuePair<ApplicationUser, double> member in Model.UsersBalance)
                     {
                         <div class="card-body border-success">
-                            <h5 class="card-text">@member.Key.Firstname @member.Key.Lastname</h5>
+                            <h5 class="card-text">
+                                @if(member.Key.ImageUrl != null)
+                                {
+                                    <img src="@member.Key.ImageUrl" alt="photo de profil" class="small-profile-image" />
+                                }
+                                else
+                                {
+                                    <img src="~/images/user_image.png" alt="photo de profil" class="small-profile-image" />
+                                }
+                                @member.Key.Firstname @member.Key.Lastname</h5>
                             <h5 class="card-title">@Math.Round(member.Value, 2).ToString("F2")€</h5>
 
                             <div class="progress">

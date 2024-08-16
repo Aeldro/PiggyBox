@@ -1,0 +1,26 @@
+﻿.file-form-flex {
+    display: flex;
+    flex-direction: column;
+    max-width: fit-content;
+    max-height: fit-content;
+}
+
+.form-img {
+    object-fit: cover;
+    width: 150px;
+    height: 150px;
+
+    margin: 3%;
+}
+
+.display-none {
+    display: none;
+}
+
+button.delete-margin {
+    margin: 5% 0;
+}
+
+button.update-button-margin {
+    margin-top: 0;
+}

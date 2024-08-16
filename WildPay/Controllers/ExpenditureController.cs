@@ -7,7 +7,7 @@ using WildPay.Interfaces;
 using WildPay.Models;
 using WildPay.Models.Entities;
 using WildPay.Models.ViewModels;
-using WildPay.Services;
+using WildPay.Repositories.Interfaces;
 using WildPay.Services.Interfaces;
 
 namespace WildPay.Controllers;

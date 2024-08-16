@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WildPay.Interfaces;
 using WildPay.Models.Entities;
 using WildPay.Models.ViewModels;
+using WildPay.Repositories.Interfaces;
 using WildPay.Services.Interfaces;
 
 namespace WildPay.Services;
