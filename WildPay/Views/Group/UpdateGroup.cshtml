@@ -31,8 +31,8 @@
                 <partial name="_AddNewMemberToGroup" model="Model.NewMember" />
 
                 <hr />
-                <a class="btn btn-danger delete-button" href="@Url.ActionLink("DeleteGroup", "Group", new { Id = @Model.GroupToUpdate.Id, viewSender = "UpdateGroup" })"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
             </div>
+            <a class="btn btn-danger delete-button" href="@Url.ActionLink("DeleteGroup", "Group", new { Id = @Model.GroupToUpdate.Id, viewSender = "UpdateGroup" })"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
         </div>
     </div>
 </div>

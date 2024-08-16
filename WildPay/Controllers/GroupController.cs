@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using WildPay.Exceptions;
 using WildPay.Models.Entities;
 using WildPay.Models.ViewModels;
+using WildPay.Services.Interfaces;
 using WildPay.Repositories.Interfaces;
 
 namespace WildPay.Controllers;
@@ -13,37 +15,55 @@ public class GroupController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IGroupRepository _groupRepository;
+    private readonly IVerificationService _verificationService;
 
-    public GroupController(UserManager<ApplicationUser> userManager, IGroupRepository groupRepository)
+    public GroupController(UserManager<ApplicationUser> userManager, IGroupRepository groupRepository, IVerificationService verificationService)
     {
         _userManager = userManager;
         _groupRepository = groupRepository;
+        _verificationService = verificationService;
     }
 
     // READ: get all the groups for the connected user
     [HttpGet]
     public async Task<IActionResult> ListMyGroups()
     {
-        var userId = _userManager.GetUserId(User);
-        if (userId is null) return NotFound();
+        try
+        {
+            var userId = _userManager.GetUserId(User);
+            if (userId is null) return NotFound();
 
-        var groups = await _groupRepository.GetGroupsAsync(userId);
-        return View(groups);
+            var groups = await _groupRepository.GetGroupsAsync(userId);
+            return View(groups);
+        }
+        catch (DatabaseException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
     }
 
     [HttpGet]
     public async Task<IActionResult> GetGroup(int Id)
     {
-        //Get the group
-        Group? group = await _groupRepository.GetGroupByIdAsync(Id);
+        try
+        {
+            //Get the group
+            Group? group = await _groupRepository.GetGroupByIdAsync(Id);
 
-        //Return not found if no group is found
-        if (group is null) return NotFound();
+            //Verify if the User belongs to the group, else we block the access
+            bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+            if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
 
-        //Verify if the User belongs to the group, else we block the access
-        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
-
-        return View(group);
+            return View(group);
+        }
+        catch (DatabaseException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
+        catch (NullException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
     }
 
     // CREATE group view
@@ -57,83 +77,118 @@ public class GroupController : Controller
     [HttpPost]
     public async Task<IActionResult> AddGroup(Group group)
     {
-        if (!ModelState.IsValid) return View(group);
+        try
+        {
+            if (!ModelState.IsValid) return View(group);
 
-        string? userId = _userManager.GetUserId(User);
-        if (userId is null) return NotFound();
+            string? userId = _userManager.GetUserId(User);
+            if (userId is null) return NotFound();
 
-        await _groupRepository.AddGroupAsync(group.Name, group.Image, userId);
+            await _groupRepository.AddGroupAsync(group.Name, group.Image, userId);
 
-        return RedirectToAction(actionName: "ListMyGroups", controllerName: "Group");
+            return RedirectToAction(actionName: "ListMyGroups", controllerName: "Group");
+        }
+        catch (DatabaseException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
     }
 
     // UPDATE group view
     [HttpGet]
     public async Task<IActionResult> UpdateGroup(int Id, bool IsMemberAdded = true, bool IsMemberAlreadyExisting = false, bool FirstDisplay = true)
     {
-        Group? group = await _groupRepository.GetGroupByIdAsync(Id);
-
-        if (group is null) return NotFound();
-
-        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return RedirectToAction("List", "Group");
-
-        UpdateGroupModel updateGroupModel = new UpdateGroupModel
+        try
         {
-            GroupToUpdate = group,
-            NewMember = new MemberAdded()
+            Group? group = await _groupRepository.GetGroupByIdAsync(Id);
+
+            //Verify if the User belongs to the group, else we block the access
+            bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+            if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
+
+            UpdateGroupModel updateGroupModel = new UpdateGroupModel
             {
-                GroupId = Id,
-                Email = ""
-            }
-        };
+                GroupToUpdate = group,
+                NewMember = new MemberAdded()
+                {
+                    GroupId = Id,
+                    Email = ""
+                }
+            };
 
-        if (!IsMemberAdded)
-        {
-            ViewBag.Message = "Pas d'utilisateur trouvé avec cette adresse mail.";
-        }
-        else if (IsMemberAlreadyExisting)
-        {
-            ViewBag.Message = "Cet utilisateur appartient déjà au groupe.";
-        }
-        else if (!FirstDisplay)
-        {
-            ViewBag.Message = "Utilisateur ajouté au groupe avec succès.";
-        }
+            if (!IsMemberAdded)
+            {
+                ViewBag.Message = "Pas d'utilisateur trouvé avec cette adresse mail.";
+            }
+            else if (IsMemberAlreadyExisting)
+            {
+                ViewBag.Message = "Cet utilisateur appartient déjà au groupe.";
+            }
+            else if (!FirstDisplay)
+            {
+                ViewBag.Message = "Utilisateur ajouté au groupe avec succès.";
+            }
 
             return View(updateGroupModel);
+        }
+        catch (DatabaseException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
+        catch (NullException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
     }
 
     // UPDATE group action
     [HttpPost]
     public async Task<IActionResult> UpdateGroup(Group group)
     {
-        if (!ModelState.IsValid)
+        try
         {
-            Group? invalidGroup = await _groupRepository.GetGroupByIdAsync(group.Id);
+            Group? currentGroup = await _groupRepository.GetGroupByIdAsync(group.Id);
 
-            UpdateGroupModel updateGroupModel = new UpdateGroupModel
+            //Verify if the User belongs to the group, else we block the access
+            bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), currentGroup);
+            if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
+
+            if (!ModelState.IsValid)
             {
-                GroupToUpdate = invalidGroup,
-                NewMember = new MemberAdded()
+                Group? invalidGroup = await _groupRepository.GetGroupByIdAsync(group.Id);
+
+                UpdateGroupModel updateGroupModel = new UpdateGroupModel
                 {
-                    GroupId = invalidGroup.Id,
-                    Email = ""
-                }
-            };
+                    GroupToUpdate = invalidGroup,
+                    NewMember = new MemberAdded()
+                    {
+                        GroupId = invalidGroup.Id,
+                        Email = ""
+                    }
+                };
 
-            return View(updateGroupModel);
+                return View(updateGroupModel);
+            }
+
+            if (group is null) return NotFound();
+
+            if (group.Image is null)
+            {
+                group.Image = string.Empty;
+            }
+
+            await _groupRepository.EditGroupAsync(group);
+
+            return RedirectToAction(actionName: "GetGroup", controllerName: "Group", new { group.Id });
         }
-
-        if (group is null) return NotFound();
-
-        if (group.Image is null)
+        catch (DatabaseException ex)
         {
-            group.Image = string.Empty;
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
         }
-
-        await _groupRepository.EditGroupAsync(group);
-
-        return RedirectToAction(actionName: "GetGroup", controllerName: "Group", new { group.Id });
+        catch (NullException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
     }
 
     // Add a member to a group using a form
@@ -141,102 +196,164 @@ public class GroupController : Controller
     [HttpPost]
     public async Task<IActionResult> AddMemberToGroup(MemberAdded newMember)
     {
-        if (!ModelState.IsValid)
+        try
         {
-            Group? groupUpdated = await _groupRepository.GetGroupByIdAsync(newMember.GroupId);
-
-            if (groupUpdated is null) return NotFound();
-
-            UpdateGroupModel updateGroupModel = new UpdateGroupModel
+            if (!ModelState.IsValid)
             {
-                GroupToUpdate = groupUpdated,
-                NewMember = newMember
-            };
+                Group? groupUpdated = await _groupRepository.GetGroupByIdAsync(newMember.GroupId);
 
-            return View("UpdateGroup", updateGroupModel);
+                if (groupUpdated is null) return NotFound();
+
+                UpdateGroupModel updateGroupModel = new UpdateGroupModel
+                {
+                    GroupToUpdate = groupUpdated,
+                    NewMember = newMember
+                };
+
+                return View("UpdateGroup", updateGroupModel);
+            }
+
+            Group? group = await _groupRepository.GetGroupByIdAsync(newMember.GroupId);
+
+            //Verify if the User belongs to the group, else we block the access
+            bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+            if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
+
+            bool OldMember = group.ApplicationUsers.Any(u => u.NormalizedEmail == newMember.Email.ToUpper());
+
+            if (!OldMember)
+            {
+                // Returns false if no match is found;
+                // think about a way to handle the case the email doesn't match a user
+                bool IsFound = await _groupRepository.AddMemberToGroupAsync(group, newMember.Email);
+
+                return RedirectToAction(actionName: "UpdateGroup", controllerName: "Group", new { Id = newMember.GroupId, IsMemberAdded = IsFound, FirstDisplay = false });
+            }
+
+            return RedirectToAction(actionName: "UpdateGroup", controllerName: "Group", new { Id = newMember.GroupId, IsMemberAlreadyExisting = OldMember, FirstDisplay = false });
         }
-
-        Group? group = await _groupRepository.GetGroupByIdAsync(newMember.GroupId);
-
-        if (group is null) return NotFound();
-
-        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(user => user.Id == _userManager.GetUserId(User)) is null) return NotFound();
-
-        bool OldMember = group.ApplicationUsers.Any(u => u.NormalizedEmail == newMember.Email.ToUpper());
-
-        if (!OldMember)
+        catch (DatabaseException ex)
         {
-            // Returns false if no match is found;
-            // think about a way to handle the case the email doesn't match a user
-            bool IsFound = await _groupRepository.AddMemberToGroupAsync(group, newMember.Email);
-
-            return RedirectToAction(actionName: "UpdateGroup", controllerName: "Group", new { Id = newMember.GroupId, IsMemberAdded = IsFound, FirstDisplay = false });
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
         }
-
-        return RedirectToAction(actionName: "UpdateGroup", controllerName: "Group", new { Id = newMember.GroupId, IsMemberAlreadyExisting = OldMember, FirstDisplay = false });
+        catch (NullException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
     }
 
     // Delete a member from a group view
     [HttpGet]
     public async Task<IActionResult> DeleteMemberFromGroup(string userId, int groupId)
     {
-        Group? group = await _groupRepository.GetGroupByIdAsync(groupId);
-        if (group is null) return NotFound();
+        try
+        {
+            Group? group = await _groupRepository.GetGroupByIdAsync(groupId);
 
-        ApplicationUser? userToRemove = group.ApplicationUsers.FirstOrDefault(u => u.Id == userId);
+            //Verify if the User belongs to the group, else we block the access
+            bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+            if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
 
-        if (group is null) return NotFound();
+            ApplicationUser? userToRemove = group.ApplicationUsers.FirstOrDefault(u => u.Id == userId);
 
-        if (userToRemove is null) return NotFound();
+            if (group is null) return NotFound();
 
-        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
+            if (userToRemove is null) return NotFound();
 
-        ViewBag.user = userToRemove;
-        return View("DeleteMemberFromGroup", group);
+            ViewBag.user = userToRemove;
+            return View("DeleteMemberFromGroup", group);
+        }
+        catch (DatabaseException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
+        catch (NullException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
     }
 
     // Delete a member from a group action
     [HttpPost]
     public async Task<IActionResult> DeleteMemberFromGroup(string userId, int groupId, Group group)
     {
-        Group? userGroup = await _groupRepository.GetGroupByIdAsync(groupId);
-
-        if (userGroup is null) return NotFound();
-
-        if (_userManager.GetUserId(User) is null || userGroup.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
-
-        // Returns false if no match is found;
-        // think about a way to handle the case the email doesn't match a user
-        await _groupRepository.DeleteMemberFromGroupAsync(userGroup, userId);
-
-        if (_userManager.GetUserId(User) == userId)
+        try
         {
-            return RedirectToAction(actionName: "ListMyGroups", controllerName: "Group");
-        }
+            Group? userGroup = await _groupRepository.GetGroupByIdAsync(groupId);
 
-        return RedirectToAction(actionName: "UpdateGroup", controllerName: "Group", new { Id = groupId });
+            //Verify if the User belongs to the group, else we block the access
+            bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), userGroup);
+            if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
+
+            // Returns false if no match is found;
+            // think about a way to handle the case the email doesn't match a user
+            await _groupRepository.DeleteMemberFromGroupAsync(userGroup, userId);
+
+            if (_userManager.GetUserId(User) == userId)
+            {
+                return RedirectToAction(actionName: "ListMyGroups", controllerName: "Group");
+            }
+
+            return RedirectToAction(actionName: "UpdateGroup", controllerName: "Group", new { Id = groupId });
+        }
+        catch (DatabaseException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
+        catch (NullException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
     }
 
     // DELETE group view
     [HttpGet]
     public async Task<IActionResult> DeleteGroup(int Id, string viewSender)
     {
-        Group? group = await _groupRepository.GetGroupByIdAsync(Id);
+        try
+        {
+            Group? group = await _groupRepository.GetGroupByIdAsync(Id);
 
-        if (group is null) return NotFound();
+            //Verify if the User belongs to the group, else we block the access
+            bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+            if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
 
-        if (_userManager.GetUserId(User) is null || group.ApplicationUsers.FirstOrDefault(el => el.Id == _userManager.GetUserId(User)) is null) return NotFound();
+            ViewBag.Action = viewSender;
 
-        ViewBag.Action = viewSender;
-
-        return View(group);
+            return View(group);
+        }
+        catch (DatabaseException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
+        catch (NullException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
     }
 
     // DELETE group action 
     [HttpPost]
-    public async Task<IActionResult> DeleteGroup(int Id, Group group)
+    public async Task<IActionResult> DeleteGroup(int Id)
     {
-        await _groupRepository.DeleteGroupAsync(Id);
-        return RedirectToAction(actionName: "ListMyGroups", controllerName: "Group");
+        try
+        {
+            Group? group = await _groupRepository.GetGroupByIdAsync(Id);
+
+            //Verify if the User belongs to the group, else we block the access
+            bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
+            if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
+
+            await _groupRepository.DeleteGroupAsync(Id);
+            return RedirectToAction(actionName: "ListMyGroups", controllerName: "Group");
+        }
+        catch (DatabaseException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
+        catch (NullException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
     }
 }

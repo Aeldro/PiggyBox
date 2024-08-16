@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using WildPay.Data;
+using WildPay.Exceptions;
 using WildPay.Models.Entities;
 using WildPay.Repositories.Interfaces;
 
@@ -16,56 +18,84 @@ namespace WildPay.Repositories
 
         public async Task<List<Category>> GetCategoriesAsync(int groupId)
         {
-            List<Category> categories = await _context.Categories
+            try
+            {
+                List<Category> categories = await _context.Categories
                 .Where(c => c.GroupId == groupId)
                 .Select(category => category)
                 .ToListAsync();
 
-            return categories;
+                return categories;
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new DatabaseException();
+            }
         }
 
         public async Task<Category?> GetCategoryByIdAsync(int categoryId)
         {
-            Category? category = await _context.Categories.FindAsync(categoryId);
-            return category;
+            try
+            {
+                Category? category = await _context.Categories.FindAsync(categoryId);
+
+                if (category == null) throw new NullException();
+
+                return category;
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new DatabaseException();
+            }
         }
 
-        public async Task UpdateCategoryAsync(Category category)
+        public async Task UpdateCategoryAsync(Category updatedCategory)
         {
-            if (await _context.Categories.FindAsync(category.Id) is Category found && found != null)
+            try
             {
-                found.Name = category.Name;
+                Category? categoryToUpdate = await GetCategoryByIdAsync(updatedCategory.Id);
+
+                if (categoryToUpdate == null) throw new NullException();
+
+                categoryToUpdate.Name = updatedCategory.Name;
 
                 await _context.SaveChangesAsync();
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new DatabaseException();
             }
         }
 
         public async Task AddCategoryAsync(Category category)
         {
-            Category newCategory = new Category
+            try
             {
-                Name = category.Name,
-                GroupId = category.GroupId,
-                Group = category.Group,
-            };
+                Category newCategory = new Category
+                {
+                    Name = category.Name,
+                    GroupId = category.GroupId,
+                    Group = category.Group,
+                };
 
-            await _context.Categories.AddAsync(newCategory);
-            await _context.SaveChangesAsync();
-        }
-        public async Task EditCategoryAsync(Category category)
-        {
-            if (await _context.Categories.FindAsync(category.Id) is Category found && found != null)
-            {
-                found.Name = category.Name;
+                await _context.Categories.AddAsync(newCategory);
                 await _context.SaveChangesAsync();
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new DatabaseException();
             }
         }
 
         public async Task<bool> DeleteCategoryAsync(int categoryId)
         {
-            if (await _context.Categories.FindAsync(categoryId) is Category found)
+            try
             {
-                _context.Categories.Remove(found);
+                Category? categoryToDelete = await GetCategoryByIdAsync(categoryId);
+
+                if (categoryToDelete == null) throw new NullException();
+
+                _context.Categories.Remove(categoryToDelete);
 
                 // This method is override in WildPayDbContext
                 // and delete all the expenditures linked to the removed group
@@ -73,9 +103,11 @@ namespace WildPay.Repositories
                 await _context.SaveChangesAsync();
                 return true;
             }
-
-            return false;
+            catch (SqlException sqlEx)
+            {
+                throw new DatabaseException();
+            }
         }
-      
+
     }
 }

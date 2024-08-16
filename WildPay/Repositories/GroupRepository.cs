@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using WildPay.Data;
+using WildPay.Exceptions;
 using WildPay.Models.Entities;
 using WildPay.Repositories.Interfaces;
 
@@ -18,33 +20,54 @@ namespace WildPay.Repositories
         // We want to retrieve only the groups to whom the user belongs.
         public async Task<List<Group>> GetGroupsAsync(string userId)
         {
-            List<Group> groups = await _context.Users
+            try
+            {
+                List<Group> groups = await _context.Users
                 .Where(u => u.Id == userId)
                 .SelectMany(u => u.Groups)
                 .ToListAsync();
-            return groups;
+                return groups;
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new DatabaseException();
+            }
         }
 
         public async Task<Group?> GetGroupByIdAsync(int groupId)
         {
-            Group? group = await _context.Groups
-                .Include(g => g.ApplicationUsers)
-                .Include(g => g.Expenditures)
-                .ThenInclude(ex => ex.RefundContributors)
-                .Include(g => g.Categories)
-                .FirstOrDefaultAsync(g => g.Id == groupId);
-            return group;
+            try
+            {
+                Group? group = await _context.Groups
+                    .Include(g => g.ApplicationUsers)
+                    .Include(g => g.Expenditures)
+                    .ThenInclude(ex => ex.RefundContributors)
+                    .Include(g => g.Categories)
+                    .FirstOrDefaultAsync(g => g.Id == groupId);
+                if (group == null) throw new NullException();
+                return group;
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new DatabaseException();
+            }
         }
 
         // Change only the name and image
-        public async Task EditGroupAsync(Group group)
+        public async Task EditGroupAsync(Group groupUpdated)
         {
-            if (await _context.Groups.FindAsync(group.Id) is Group found && found != null)
+            try
             {
-                found.Name = group.Name;
-                found.Image = group.Image;
+                Group? groupToUpdate = await GetGroupByIdAsync(groupUpdated.Id);
+                if (groupToUpdate == null) throw new NullException();
+                groupToUpdate.Name = groupUpdated.Name;
+                groupToUpdate.Image = groupUpdated.Image;
 
                 await _context.SaveChangesAsync();
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new DatabaseException();
             }
         }
 
@@ -52,75 +75,102 @@ namespace WildPay.Repositories
         // + call the method to add the user to the group
         public async Task AddGroupAsync(string name, string image, string userId)
         {
-            Group newGroup = new Group()
+            try
             {
-                Name = name,
-                Image = image
-            };
+                Group newGroup = new Group()
+                {
+                    Name = name,
+                    Image = image
+                };
 
-            await _context.Groups.AddAsync(newGroup);
-            await _context.SaveChangesAsync();
+                await _context.Groups.AddAsync(newGroup);
+                await _context.SaveChangesAsync();
 
-            var user = await _context.Users.FindAsync(userId);
+                var user = await _context.Users.FindAsync(userId);
 
-            // Add the user that creates the group to the group
-            // == new record into the join table ApplicationUserGroups
-            await AddMemberToGroupAsync(newGroup, user.NormalizedEmail);
+                // Add the user that creates the group to the group
+                // == new record into the join table ApplicationUserGroups
+                await AddMemberToGroupAsync(newGroup, user.NormalizedEmail);
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new DatabaseException();
+            }
         }
 
         // Add a member to the group using its email (case insensitive)
         public async Task<bool> AddMemberToGroupAsync(Group group, string email)
         {
-            email = email.ToUpper();
-
-            // returns the default value (null) for user if no match is found
-            ApplicationUser? newMember = await _context.Users
-                .FirstOrDefaultAsync(user => user.NormalizedEmail == email);
-
-            if (newMember == null) return false;
-
-            // Check if the new member is already part of the group
-            if (!group.ApplicationUsers.Exists(user => user.Id == newMember.Id))
+            try
             {
-                newMember.Groups.Add(group);
+                email = email.ToUpper();
 
-                await _context.SaveChangesAsync();
+                // returns the default value (null) for user if no match is found
+                ApplicationUser? newMember = await _context.Users
+                    .FirstOrDefaultAsync(user => user.NormalizedEmail == email);
+
+                if (newMember == null) return false;
+
+                // Check if the new member is already part of the group
+                if (!group.ApplicationUsers.Exists(user => user.Id == newMember.Id))
+                {
+                    newMember.Groups.Add(group);
+
+                    await _context.SaveChangesAsync();
+                }
+
+                return true;
             }
-
-            return true;
+            catch (SqlException sqlEx)
+            {
+                throw new DatabaseException();
+            }
         }
 
         // Delete the link between the user and the group;
         // user and group should remain untouched.
         public async Task DeleteMemberFromGroupAsync(Group group, string userId)
         {
-            ApplicationUser? member = await _context.Users.
+            try
+            {
+                ApplicationUser? member = await _context.Users.
                 Include(u => u.Groups).
                 Include(u => u.ExpendituresPayer).
                 Include(u => u.RefundContributions).
                 FirstOrDefaultAsync(u => u.Id == userId);
 
-            if (member != null && member.Groups.Exists(g => g == group))
+                if (member == null) throw new NullException();
+
+                if (member != null && member.Groups.Exists(g => g == group))
+                {
+                    // remove all references of expenditures to pay from the group
+                    // that the user is quitting
+                    member.RefundContributions.RemoveAll(ex => ex.GroupId == group.Id);
+
+                    // remove all references of expenditures been paid by the user
+                    // for the group that the user is quitting
+                    member.ExpendituresPayer.RemoveAll(ex => ex.GroupId == group.Id);
+
+                    member.Groups.Remove(group);
+
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (SqlException sqlEx)
             {
-                // remove all references of expenditures to pay from the group
-                // that the user is quitting
-                member.RefundContributions.RemoveAll(ex => ex.GroupId == group.Id);
-
-                // remove all references of expenditures been paid by the user
-                // for the group that the user is quitting
-                member.ExpendituresPayer.RemoveAll(ex => ex.GroupId == group.Id);
-
-                member.Groups.Remove(group);
-
-                await _context.SaveChangesAsync();
+                throw new DatabaseException();
             }
         }
 
         public async Task<bool> DeleteGroupAsync(int groupId)
         {
-            if (await _context.Groups.FindAsync(groupId) is Group found)
+            try
             {
-                _context.Groups.Remove(found);
+                Group? group = await GetGroupByIdAsync(groupId);
+
+                if (group == null) throw new NullException();
+
+                _context.Groups.Remove(group);
 
                 // This method is override in WildPayDbContext
                 // and delete all the expenditures linked to the removed group
@@ -128,8 +178,10 @@ namespace WildPay.Repositories
                 await _context.SaveChangesAsync();
                 return true;
             }
-
-            return false;
+            catch (SqlException sqlEx)
+            {
+                throw new DatabaseException();
+            }
         }
     }
 }
