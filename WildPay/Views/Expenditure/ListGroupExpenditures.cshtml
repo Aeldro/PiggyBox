@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = "Dépenses " + Model.Name;
-    
+
     ViewData["ReturnPageAction"] = "ListMyGroups";
     ViewData["ReturnPageController"] = "Group";
 }
@@ -39,7 +39,9 @@
                     }
                     else
                     {
-                        <p>Ce groupe ne contient aucune dépense.</p>
+                        <div class="card-body">
+                            <p class="card-text">Ce groupe ne contient aucune dépense.</p>
+                        </div>
                     }
                 </div>
             </section>

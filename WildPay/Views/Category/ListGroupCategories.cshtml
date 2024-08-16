@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = "Catégories " + Model.Name;
-    
+
     ViewData["ReturnPageAction"] = "ListMyGroups";
     ViewData["ReturnPageController"] = "Group";
 }
@@ -35,6 +35,7 @@
                         else
                         {
                             <p class="card-text">Ce groupe ne contient aucune catégorie.</p>
+                            <a class="btn btn-lg main-button" asp-action="AddCategory" asp-controller="Category" asp-route-Id=@Model.Id>Créer une catégorie</a>
                         }
                     </div>
                 </div>
