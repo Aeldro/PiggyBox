@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using WildPay.Data;
 using WildPay.Exceptions;
-using WildPay.Interfaces;
 using WildPay.Models.Entities;
 using WildPay.Repositories.Interfaces;
 
