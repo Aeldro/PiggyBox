@@ -22,6 +22,7 @@ namespace WildPay.Services
             // Configurer le client SMTP
             SmtpClient smtpClient = new SmtpClient("smtp-relay.brevo.com", 587)
             {
+                //Secrets
                 Credentials = new NetworkCredential(Environment.GetEnvironmentVariable("BREVO_ID"), Environment.GetEnvironmentVariable("BREVO_PASSWORD")),
                 EnableSsl = true
             };
