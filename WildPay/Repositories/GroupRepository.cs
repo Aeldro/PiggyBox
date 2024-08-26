@@ -61,7 +61,8 @@ namespace WildPay.Repositories
                 Group? groupToUpdate = await GetGroupByIdAsync(groupUpdated.Id);
                 if (groupToUpdate == null) throw new NullException();
                 groupToUpdate.Name = groupUpdated.Name;
-                groupToUpdate.Image = groupUpdated.Image;
+                groupToUpdate.GroupImageUrl = groupUpdated.GroupImageUrl;
+                groupToUpdate.GroupImagePublicId = groupUpdated.GroupImagePublicId;
 
                 await _context.SaveChangesAsync();
             }
@@ -73,14 +74,15 @@ namespace WildPay.Repositories
 
         // Add a new group to the entity table
         // + call the method to add the user to the group
-        public async Task AddGroupAsync(string name, string image, string userId)
+        public async Task AddGroupAsync(string name, string image, string imagePublicId, string userId)
         {
             try
             {
                 Group newGroup = new Group()
                 {
                     Name = name,
-                    Image = image
+                    GroupImageUrl = image,
+                    GroupImagePublicId = imagePublicId
                 };
 
                 await _context.Groups.AddAsync(newGroup);
