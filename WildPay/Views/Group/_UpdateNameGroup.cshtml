@@ -1,11 +1,13 @@
-﻿@model WildPay.Models.Entities.Group
+﻿@model WildPay.Models.ViewModels.GroupInfos
 @{
+
     ViewData["Title"] = Model.Name;
+
+    string defaultImage = ViewBag.Image;
 }
 <h3>Modifier le groupe</h3>
-<form method="post">
-   
-    <input type="text" asp-for="@Model.Id" hidden="hidden" readonly />
+<form id="profile-form" method="post" enctype="multipart/form-data">
+    <input type="text" asp-for="@Model.GroupId" hidden="hidden" readonly />
 
     <div class="form-floating mb-3">
         <input class="form-control" type="text" asp-for="@Model.Name" placeholder="Nom du groupe" required />
@@ -13,11 +15,38 @@
         <span asp-validation-for="@Model.Name" class="text-danger"></span>
     </div>
 
-    <div class="form-floating mb-3">
-        <input class="form-control" type="text" asp-for="@Model.Image" placeholder="Image" />
-        <label class="control-label" asp-for="@Model.Image">Image du groupe</label>
+    <div class="form-floating">
+        <div class="custom-file file-form-flex">
+            <label asp-for="@Model.Image" class="control-label"></label>
+
+            @if (defaultImage != null)
+            {
+                <img id="defaultImage" class="form-img" src="@defaultImage" alt="[Photo du groupe]" />
+            }
+
+            <img src="#" id="previewImage" class="form-img display-none" alt="Pré-visualisation de l'image choisie" />
+            <div id="fileError" class="text-danger display-none"></div>
+
+            <input asp-for="@Model.Image" class="custom-file-input" id="customFile" accept=".jpeg, .jpg, .png" />
+        </div>
         <span asp-validation-for="@Model.Image" class="text-danger"></span>
-    </div>
+
+        <button id="delete" class="btn btn-danger delete-button delete-margin" type="submit" asp-page-handler="DeletePicture" onclick="return confirmDelete();">
+            <span class="material-symbols-outlined">delete</span>
+            Supprimer ma photo de profil
+        </button>
 
     <button class="btn btn-lg main-button" asp-action="UpdateGroup" asp-controller="Group">Enregistrer</button>
 </form>
+
+@section Scripts {
+    <script type="text/javascript" src="~/js/imagePreview.js"></script>
+    <script type="text/javascript" src="~/js/confirmDeletion.js"></script>
+
+    <script type="text/javascript">
+        // Initialize the image preview functionality
+        window.onload = function () {
+            setupImagePreview('customFile', 'previewImage', 'defaultImage', 'fileError');
+        };
+    </script>
+}
