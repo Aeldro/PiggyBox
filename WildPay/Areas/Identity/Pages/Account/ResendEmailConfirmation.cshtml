@@ -4,11 +4,11 @@
     ViewData["Title"] = "Renvoyer l'email de validation";
 }
 
-<h1>@ViewData["Title"]</h1>
-<h2>Entrez votre email.</h2>
-<hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-4 m-auto">
+        <h1>@ViewData["Title"]</h1>
+        <hr />
+        <p>Entrez votre adresse email.</p>
         <form method="post">
             <div asp-validation-summary="All" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
@@ -16,7 +16,7 @@
                 <label asp-for="Input.Email" class="form-label"></label>
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Renvoyer</button>
+            <button type="submit" class="w-100 btn btn-lg main-button">Renvoyer</button>
         </form>
     </div>
 </div>
