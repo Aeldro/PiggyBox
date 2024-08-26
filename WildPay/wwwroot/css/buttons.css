@@ -11,6 +11,11 @@
         color: var(--main-dark);
     }
 
+.back-button {
+    border: 1px solid var(--main-dark);
+    border-radius: 0.5rem;
+}
+
 .main-button {
     background-color: var(--main-color-op100);
     color: var(--main-light);
@@ -30,7 +35,7 @@
     color: var(--main-light);
 }
 
-.delete-button:hover {
-    background-color: initial;
-    color: red;
-}
+    .delete-button:hover {
+        background-color: initial;
+        color: red;
+    }

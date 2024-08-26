@@ -1,0 +1,14 @@
+﻿.big-profile-image {
+    border-radius: 20%;
+    margin-bottom: 1%;
+}
+
+.smallest-profile-image {
+    border-radius: 50%;
+    max-width: 1.4em;
+}
+
+.small-profile-image {
+    border-radius: 50%;
+    max-width: 1.4em;
+}

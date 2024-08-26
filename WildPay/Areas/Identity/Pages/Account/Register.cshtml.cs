@@ -18,7 +18,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using WildPay.Helpers;
 using WildPay.Models.Entities;
+using WildPay.Services.Interfaces;
 
 namespace WildPay.Areas.Identity.Pages.Account
 {
@@ -30,13 +32,15 @@ namespace WildPay.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ICloudinaryService _cloudinaryService;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ICloudinaryService cloudinaryService)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -44,6 +48,7 @@ namespace WildPay.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _cloudinaryService = cloudinaryService;
         }
 
         /// <summary>
@@ -90,6 +95,12 @@ namespace WildPay.Areas.Identity.Pages.Account
             [Display(Name = "Nom de famille")]
             public string Lastname { get; set; }
 
+            [Display(Name = "Choisissez une photo de profil"),]
+            //[Required(ErrorMessage = "Vous devez ajouter une photo de profil")]
+            [AllowedExtensions(new string[] { ".jpg", ".jpeg", ".png" })]
+            [MaxFileSize(2 * 1024 * 1024)]
+            public IFormFile Image { get; set; }
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -129,6 +140,24 @@ namespace WildPay.Areas.Identity.Pages.Account
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 user.Firstname = Input.Firstname;
                 user.Lastname = Input.Lastname;
+
+                if (Input.Image != null && Input.Image.Length > 0)
+                {
+                    try
+                    {
+                        List<string> ImageInfos = await _cloudinaryService.UploadImageCloudinaryAsync(Input.Image);
+                        user.ImageUrl = ImageInfos[0];
+                        user.ImagePublicID = ImageInfos[1];
+                    }
+                    catch (Exception cloudinaryException)
+                    {
+                        _logger.LogInformation(cloudinaryException.Message);
+                        user.ImageUrl = null;
+                        user.ImagePublicID = null;
+                    }
+                }
+
+                // user.Image = Input.Image.Filename (non car passage par Cloudinary)
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)

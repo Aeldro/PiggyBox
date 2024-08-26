@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = "Catégories " + Model.Name;
-    
+
     ViewData["ReturnPageAction"] = "ListMyGroups";
     ViewData["ReturnPageController"] = "Group";
 }
@@ -27,13 +27,15 @@
                             {
                                 <hr />
                                 <h5 class="card-title">
-                                <a class="group-settings-button material-symbols-outlined" asp-action="UpdateCategory" asp-controller="Category" asp-route-id=@category.Id>edit</a>@category.Name</h5>
+                                    <a class="group-settings-button material-symbols-outlined" href="@Url.ActionLink("UpdateCategory", "Category", new {groupId = Model.Id, categoryId = category.Id})">edit</a>@category.Name
+                                </h5>
                                 <a class="btn btn-outline-danger material-symbols-outlined" asp-action="DeleteCategory" asp-controller="Category" asp-route-Id=@category.Id>delete</a>
                             }
                         }
                         else
                         {
                             <p class="card-text">Ce groupe ne contient aucune catégorie.</p>
+                            <a class="btn btn-lg main-button" asp-action="AddCategory" asp-controller="Category" asp-route-Id=@Model.Id>Créer une catégorie</a>
                         }
                     </div>
                 </div>

@@ -42,7 +42,7 @@
                     <!-- form to choose Category -->
                     <div class="form-floating mb-3">
                         <select class="form-select" asp-for="@Model.CategoryId" asp-items="@(new SelectList(Model.CategoriesInGroup, "Id", "Name"))">
-                            <option value="">- sélectionnez un item -</option> <!-- Placeholder -->
+                            <option value="">- Sélectionnez une catégorie -</option> <!-- Placeholder -->
                         </select>
                         <label asp-for="@Model.CategoryId">Catégorie</label>
                     </div>

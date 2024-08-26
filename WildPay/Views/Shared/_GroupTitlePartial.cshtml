@@ -1,13 +1,8 @@
 ﻿@model WildPay.Models.Entities.Group
-@{
-    var action = ViewData["ReturnPageAction"] as string;
-    var controller = ViewData["ReturnPageController"] as string;
-    var id = ViewData["ReturnId"] as int?;
-}
 
-<h2>
-    <a asp-action="@action" asp-controller="@controller" asp-route-Id="@id"><span class="material-symbols-outlined">arrow_back</span></a>
+<h2 class="d-inline-flex gap-3 align-items-center justify-content-center">
+    <partial name="_BackButtonPartial" />
     
     Groupe : @Model.Name
-    <a class="group-settings-button material-symbols-outlined" asp-action="UpdateGroup" asp-controller="Group" asp-route-id=@Model.Id>edit</a>
+    <a class="group-settings-button material-symbols-outlined" href="@Url.ActionLink("UpdateGroup", "Group", new {Id = Model.Id })">edit</a>
 </h2>

@@ -1,0 +1,17 @@
+﻿.alert-resize {
+    width: 1.3em;
+    height: 1.3em;
+    margin-left: 1%;
+}
+
+.alert-padding {
+    margin-left: 2%;
+}
+
+.alert-flexbox {
+    padding: 1%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+}
