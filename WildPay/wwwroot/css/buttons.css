@@ -39,3 +39,15 @@
         background-color: initial;
         color: red;
     }
+
+.plus-button {
+    color: var(--main-color-op100); /* Couleur du texte */
+    background-color: var(--main-light); /* Couleur de fond */
+    border-color: var(--main-color-op100); /* Couleur de la bordure */
+}
+
+    .plus-button:hover {
+        color: var(--main-light); /* Couleur du texte */
+        background-color: var(--main-color-op100); /* Couleur de fond au survol */
+        border-color: var(--main-color-op100); /* Couleur de la bordure au survol */
+    }
