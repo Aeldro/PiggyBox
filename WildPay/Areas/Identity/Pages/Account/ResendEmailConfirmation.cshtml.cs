@@ -77,10 +77,13 @@ namespace WildPay.Areas.Identity.Pages.Account
                 pageHandler: null,
                 values: new { userId = userId, code = code },
                 protocol: Request.Scheme);
+
+            string emailTitle = $"🐷 PiggyBox : Validez votre adresse email";
+            string emailContent = $"<h1>🐷 Bienvenue sur PiggyBox 🐷</h1><h3>Vous venez de créer un compte sur PiggyBox. Avant de pouvoir vous connecter, vous devez confirmer votre adresse email.</h3><a style=\"display: inline-block; font-weight: 400; text-align: center; vertical-align: middle; user-select: none; border: 1px solid transparent; line-height: 1.5; transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; cursor: pointer; text-decoration: none; padding: 0.5rem 1rem; font-size: 1.25rem; line-height: 1.5; border-radius: 0.3rem; background-color: rgba(74, 163, 162, 1); color: rgba(245, 245, 245); border-color: rgba(74, 163, 162, 1); margin-top: 1em;\" href=\"{HtmlEncoder.Default.Encode(callbackUrl)}\">Je confirme mon adresse email</a>";
             await _emailSender.SendEmailAsync(
                 Input.Email,
-                "Validez votre adresse email",
-                $"<a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Cliquez ici</a> pour valider votre adresse email.");
+                emailTitle,
+                emailContent);
 
             ModelState.AddModelError(string.Empty, "Un email de vérification a été envoyé.");
             return Page();
