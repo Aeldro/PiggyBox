@@ -18,7 +18,15 @@ By creating an account in Piggy Box, users can create groups, track expenses, an
 
 Additionally, Piggy Box allows you to organize your expenses by creating categories within your groups, ensuring that your finances are well-structured and easy to manage.
 
-![PiggyBox_Home](readme_img/HomeDesktop.png)
+
+![PiggyBox Home](readme_img/HomeDesktop.png)
+Home page in desktop version
+
+![PiggyBox Expense Creation Mobile](readme_img/ExpenseCreationMobile.png)
+Expense creation page in mobile version
+
+![PiggyBox Balance Mobile](readme_img/Balance_mobile.png)
+Balance displayed in mobile version
 
 ### Contributors
 
@@ -32,7 +40,6 @@ Additionally, Piggy Box allows you to organize your expenses by creating categor
 
 - [C# .NET 8.0](https://learn.microsoft.com/en-us/dotnet/csharp/)
 - [Razor Pages](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-8.0&tabs=visual-studio)
-
 
 #### Installation
 
