@@ -31,22 +31,12 @@
         </div>
         <span asp-validation-for="@Model.Image" class="text-danger"></span>
 
-        <button id="delete" class="btn btn-danger delete-button delete-margin" type="submit" asp-page-handler="DeletePicture" onclick="return confirmDelete();">
-            <span class="material-symbols-outlined">delete</span>
-            Supprimer ma photo de profil
-        </button>
-
+        <div class="less-margin">
+            <button id="delete" class="btn btn-danger delete-button delete-margin" type="submit" asp-page-handler="DeletePicture" onclick="return confirmDelete();">
+                <span class="material-symbols-outlined">delete</span>
+                Supprimer ma photo de profil
+            </button>
+        </div>
+        
     <button class="btn btn-lg main-button" asp-action="UpdateGroup" asp-controller="Group">Enregistrer</button>
 </form>
-
-@section Scripts {
-    <script type="text/javascript" src="~/js/imagePreview.js"></script>
-    <script type="text/javascript" src="~/js/confirmDeletion.js"></script>
-
-    <script type="text/javascript">
-        // Initialize the image preview functionality
-        window.onload = function () {
-            setupImagePreview('customFile', 'previewImage', 'defaultImage', 'fileError');
-        };
-    </script>
-}

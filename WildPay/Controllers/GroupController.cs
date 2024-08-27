@@ -197,6 +197,10 @@ public class GroupController : Controller
         {
             return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
         }
+        catch (CloudinaryResponseNotOkException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
     }
 
     // Add a member to a group using a form

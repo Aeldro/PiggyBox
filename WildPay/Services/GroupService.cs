@@ -37,7 +37,7 @@ namespace WildPay.Services
             }
             catch (CloudinaryResponseNotOkException)
             {
-                throw new Exception("Fail to upload image on cloudinary");
+                throw new CloudinaryResponseNotOkException("Fail to upload image on cloudinary");
             }
         }
 
@@ -45,24 +45,38 @@ namespace WildPay.Services
         {
             try
             {
-                Group group = new Group();
+                Group? actualGroup = await _groupRepository.GetGroupByIdAsync(model.GroupId);
 
-                group.Name = model.Name;
+                if (actualGroup == null) throw new NullException();
+
+                actualGroup.Name = model.Name;
 
                 if (model.Image != null && model.Image.Length > 0)
                 {
+                    if (!string.IsNullOrEmpty(actualGroup.GroupImageUrl))
+                    {
+                        await _cloudinaryService.DeleteImageCloudinaryAsync(actualGroup.GroupImagePublicId);
+                    }
 
+                    List<string> ImageInfos = await _cloudinaryService.UploadImageCloudinaryAsync(model.Image);
+
+                    actualGroup.GroupImageUrl = ImageInfos[0];
+                    actualGroup.GroupImagePublicId = ImageInfos[1];
                 }
 
-                _groupRepository.EditGroupAsync(group);
+                _groupRepository.EditGroupAsync(actualGroup);
             }
             catch (SqlException)
             {
                 throw new DatabaseException();
             }
+            catch (NullException)
+            {
+                throw new NullException();
+            }
             catch (CloudinaryResponseNotOkException)
             {
-                throw new Exception("Fail to upload image on cloudinary");
+                throw new CloudinaryResponseNotOkException("Fail to upload image on cloudinary");
             }
         }
     }

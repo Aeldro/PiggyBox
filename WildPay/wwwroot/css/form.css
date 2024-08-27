@@ -24,3 +24,8 @@ button.delete-margin {
 button.update-button-margin {
     margin-top: 0;
 }
+
+.less-margin {
+    width: fit-content;
+    margin-top: 0.1em;
+}

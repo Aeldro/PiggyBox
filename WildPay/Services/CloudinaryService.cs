@@ -14,24 +14,22 @@ namespace WildPay.Services
             _cloudinary = cloudinary;
         }
 
-        public async Task<List<string>> UploadImageCloudinaryAsync(IFormFile image)
+        public async Task<List<string>> UploadImageCloudinaryAsync(IFormFile image, bool isProfilePic = true)
         {
             // unique file name
             // otherwise it can be overwrite by a file of the same name
             string fileName = Guid.NewGuid().ToString() + "_" + image.FileName;
 
-            // Transformation: resizes the image in 150x150
-            // crop = image fills all the dimensions, respecting the aspect ratio
-            // gravity = centers the image on the face if it is found
-            var uploadParams = new ImageUploadParams()
+            ImageUploadParams uploadParams;
+
+            if (isProfilePic)
             {
-                File = new FileDescription(fileName, image.OpenReadStream()),
-                Transformation = new Transformation().Width(150).Height(150).Crop("fill").Gravity("face"),
-                UseFilename = true,
-                UniqueFilename = false,
-                Overwrite = true,
-                Folder = "PiggyBox_profile_pic"
-            };
+                uploadParams = CreateParams(fileName, image, 150, 150, "PiggyBox_profile_pic");
+            }
+            else
+            {
+                uploadParams = CreateParams(fileName, image, 512, 384, "PiggyBox_group_pic");
+            }
 
             // upload(file, options)
             var uploadResult = await _cloudinary.UploadAsync(uploadParams);
@@ -56,6 +54,22 @@ namespace WildPay.Services
             {
                 throw new CloudinaryResponseNotOkException("Fail to delete image of Cloudinary");
             }
+        }
+
+        private ImageUploadParams CreateParams(string fileName, IFormFile image, int width, int height, string folder)
+        {
+            // Transformation: resizes the image in 150x150
+            // crop = image fills all the dimensions, respecting the aspect ratio
+            // gravity = centers the image on the face if it is found
+            return new ImageUploadParams()
+            {
+                File = new FileDescription(fileName, image.OpenReadStream()),
+                Transformation = new Transformation().Width(width).Height(height).Crop("fill").Gravity("face"),
+                UseFilename = true,
+                UniqueFilename = false,
+                Overwrite = true,
+                Folder = folder
+            };
         }
     }
 }

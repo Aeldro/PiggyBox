@@ -40,3 +40,15 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script type="text/javascript" src="~/js/imagePreview.js"></script>
+    <script type="text/javascript" src="~/js/confirmDeletion.js"></script>
+
+    <script type="text/javascript">
+        // Initialize the image preview functionality
+        window.onload = function () {
+            setupImagePreview('customFile', 'previewImage', 'defaultImage', 'fileError');
+        };
+    </script>
+}
