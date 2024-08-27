@@ -24,7 +24,18 @@
             <div class="list-group">
                 @foreach (var user in Model.GroupToUpdate.ApplicationUsers)
                 {
-                    <a class="list-group-item list-group-item-action list-group-item-danger d-inline-flex justify-content-center" href="@Url.ActionLink("DeleteMemberFromGroup", "Group", new {userId = user.Id, groupId = Model.GroupToUpdate.Id})"><span class="material-symbols-outlined">delete</span> @user.Firstname @user.Lastname</a>
+                     <form method="post">
+                        <button class="list-group-item list-group-item-action list-group-item-danger d-inline-flex justify-content-center" 
+                                type="submit" 
+                                asp-action="DeleteMemberFromGroup" 
+                                asp-controller="Group"             
+                                asp-route-userId="@user.Id"
+                                asp-route-groupId="@Model.GroupToUpdate.Id"  
+                                onclick="return confirmDelete();">
+                            <span class="material-symbols-outlined">delete</span>
+                            @user.Firstname @user.Lastname
+                        </button>
+                    </form>
                 }
 
                 <hr />
@@ -32,7 +43,16 @@
 
                 <hr />
             </div>
-            <a class="btn btn-danger delete-button" href="@Url.ActionLink("DeleteGroup", "Group", new { Id = @Model.GroupToUpdate.Id, viewSender = "UpdateGroup" })"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
+            <form method="post">
+                <button class="btn btn-danger delete-button" type="submit" asp-action="DeleteGroup" asp-controller="Group" asp-route-Id="@Model.GroupToUpdate.Id" onclick="return confirmDelete();">
+                    <span class="material-symbols-outlined">delete</span>
+                    Supprimer le groupe
+                </button>
+            </form>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script type="text/javascript" src="~/js/confirmDeletion.js"></script>
+}

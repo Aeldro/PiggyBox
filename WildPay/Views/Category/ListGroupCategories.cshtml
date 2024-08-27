@@ -29,7 +29,12 @@
                                 <h5 class="card-title">
                                     <a class="group-settings-button material-symbols-outlined" href="@Url.ActionLink("UpdateCategory", "Category", new {groupId = Model.Id, categoryId = category.Id})">edit</a>@category.Name
                                 </h5>
-                                <a class="btn btn-outline-danger material-symbols-outlined" asp-action="DeleteCategory" asp-controller="Category" asp-route-Id=@category.Id>delete</a>
+                                <form method="post">
+                                    <button class="btn btn-danger delete-button" type="submit" asp-action="DeleteCategory" asp-controller="Category" asp-route-Id=@category.Id onclick="return confirmDelete();">
+                                        <span class="material-symbols-outlined">delete</span>
+                                        Supprimer la catégorie
+                                    </button>
+                                </form>
                             }
                         }
                         else
@@ -43,3 +48,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script type="text/javascript" src="~/js/confirmDeletion.js"></script>
+}
