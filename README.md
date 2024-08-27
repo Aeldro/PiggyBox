@@ -19,19 +19,22 @@ By creating an account in Piggy Box, users can create groups, track expenses, an
 Additionally, Piggy Box allows you to organize your expenses by creating categories within your groups, ensuring that your finances are well-structured and easy to manage.
 
 
-![PiggyBox Home](readme_img/HomeDesktop.png)
+![PiggyBox Home](readme_img/HomeDesktop.png)\
 *Home page in desktop version*
+\
+\
 
 
-
-![PiggyBox Expense Creation Mobile](readme_img/ExpenseCreationMobile.png)
+![PiggyBox Expense Creation Mobile](readme_img/ExpenseCreationMobile.png)\
 *Expense creation page in mobile version*
+\
+\
 
 
-
-![PiggyBox Balance Mobile](readme_img/BalanceMobile.png)
+![PiggyBox Balance Mobile](readme_img/BalanceMobile.png)\
 *Balance displayed in mobile version*
-
+\
+\
 
 
 ### Contributors
