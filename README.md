@@ -11,12 +11,13 @@
 
 ### About
 
-Piggy Box is an application developed during a C# course. The primary goal of this application is to help users create groups and manage expenses effectively.
+Piggy Box is an application developed in C# .NET with the primary goal to help users create groups and manage expenses effectively.
 
 By creating an account in Piggy Box, users can create groups, track expenses, and add participants to each expense. The application calculates the amount each participant needs to contribute, making it easier to settle group expenses.
 
 Additionally, Piggy Box allows you to organize your expenses by creating categories within your groups, ensuring that your finances are well-structured and easy to manage.
 
+All design and illustrations are originals.
 
 ![PiggyBox Home](readme_img/HomeDesktop.png)\
 *Home page in desktop version*
@@ -30,8 +31,8 @@ Additionally, Piggy Box allows you to organize your expenses by creating categor
 ### Contributors
 
 - [Helena](https://github.com/lena-my)
-- [Nolan](https://github.com/Aeldro)
 - [Kevin](https://github.com/K-Dawg92)
+- [Nolan](https://github.com/Aeldro)
 - [Pauline](https://github.com/popobg)
 
 
@@ -42,7 +43,7 @@ Additionally, Piggy Box allows you to organize your expenses by creating categor
 
 ### Installation
 
-Clone the repository:
+Clone the repository.
 
 ```shell script
 git clone https://github.com/Aeldro/PiggyBox.git
