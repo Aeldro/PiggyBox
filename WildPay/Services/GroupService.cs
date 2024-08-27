@@ -43,16 +43,27 @@ namespace WildPay.Services
 
         public async Task EditGroupAsync(AddGroup model)
         {
-            Group group = new Group();
-
-            group.Name = model.Name;
-
-            if (model.Image != null && model.Image.Length > 0)
+            try
             {
+                Group group = new Group();
 
+                group.Name = model.Name;
+
+                if (model.Image != null && model.Image.Length > 0)
+                {
+
+                }
+
+                _groupRepository.EditGroupAsync(group);
             }
-
-            _groupRepository.EditGroupAsync(group);
+            catch (SqlException)
+            {
+                throw new DatabaseException();
+            }
+            catch (CloudinaryResponseNotOkException)
+            {
+                throw new Exception("Fail to upload image on cloudinary");
+            }
         }
     }
 }
