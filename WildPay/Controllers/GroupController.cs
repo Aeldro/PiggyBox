@@ -130,15 +130,15 @@ public class GroupController : Controller
 
             if (!IsMemberAdded)
             {
-                ViewBag.Message = "Pas d'utilisateur trouvé avec cette adresse mail.";
+                ViewBag.Message = "Pas d'utilisateur trouvï¿½ avec cette adresse mail.";
             }
             else if (IsMemberAlreadyExisting)
             {
-                ViewBag.Message = "Cet utilisateur appartient déjà au groupe.";
+                ViewBag.Message = "Cet utilisateur appartient dï¿½jï¿½ au groupe.";
             }
             else if (!FirstDisplay)
             {
-                ViewBag.Message = "Utilisateur ajouté au groupe avec succès.";
+                ViewBag.Message = "Utilisateur ajoutï¿½ au groupe avec succï¿½s.";
             }
 
             return View(updateGroupModel);
@@ -253,38 +253,7 @@ public class GroupController : Controller
             return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
         }
     }
-
-    // Delete a member from a group view
-    [HttpGet]
-    public async Task<IActionResult> DeleteMemberFromGroup(string userId, int groupId)
-    {
-        try
-        {
-            Group? group = await _groupRepository.GetGroupByIdAsync(groupId);
-
-            //Verify if the User belongs to the group, else we block the access
-            bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
-            if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
-
-            ApplicationUser? userToRemove = group.ApplicationUsers.FirstOrDefault(u => u.Id == userId);
-
-            if (group is null) return NotFound();
-
-            if (userToRemove is null) return NotFound();
-
-            ViewBag.user = userToRemove;
-            return View("DeleteMemberFromGroup", group);
-        }
-        catch (DatabaseException ex)
-        {
-            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
-        }
-        catch (NullException ex)
-        {
-            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
-        }
-    }
-
+    
     // Delete a member from a group action
     [HttpPost]
     public async Task<IActionResult> DeleteMemberFromGroup(string userId, int groupId, Group group)
@@ -307,32 +276,6 @@ public class GroupController : Controller
             }
 
             return RedirectToAction(actionName: "UpdateGroup", controllerName: "Group", new { Id = groupId });
-        }
-        catch (DatabaseException ex)
-        {
-            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
-        }
-        catch (NullException ex)
-        {
-            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
-        }
-    }
-
-    // DELETE group view
-    [HttpGet]
-    public async Task<IActionResult> DeleteGroup(int Id, string viewSender)
-    {
-        try
-        {
-            Group? group = await _groupRepository.GetGroupByIdAsync(Id);
-
-            //Verify if the User belongs to the group, else we block the access
-            bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
-            if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
-
-            ViewBag.Action = viewSender;
-
-            return View(group);
         }
         catch (DatabaseException ex)
         {

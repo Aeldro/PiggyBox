@@ -1,3 +1,3 @@
 ﻿function confirmDelete() {
-    return confirm('Are you sure you want to delete your profile picture?');
+    return confirm('Voulez-vous vraiment supprimer cet item?');
 }

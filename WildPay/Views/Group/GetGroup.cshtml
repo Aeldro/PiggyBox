@@ -49,8 +49,17 @@
                     <p>Comment êtes-vous arrivés là ?</p>
                 }
                 <hr />
-                <a class="btn btn-danger delete-button" href="@Url.ActionLink("DeleteGroup", "Group", new { Id = @Model.Id, viewSender = "GetGroup" })"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
-            </section>
+                <form method="post">
+                    <button class="btn btn-danger delete-button" type="submit" asp-action="DeleteGroup" asp-controller="Group" asp-route-Id="@Model.Id" onclick="return confirmDelete();">
+                        <span class="material-symbols-outlined">delete</span>
+                        Supprimer le groupe
+                    </button>
+                </form>
+                </section>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script type="text/javascript" src="~/js/confirmDeletion.js"></script>
+}
