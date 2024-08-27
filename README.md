@@ -20,17 +20,17 @@ Additionally, Piggy Box allows you to organize your expenses by creating categor
 
 
 ![PiggyBox Home](readme_img/HomeDesktop.png)
-Home page in desktop version
+*Home page in desktop version*
 
 
 
 ![PiggyBox Expense Creation Mobile](readme_img/ExpenseCreationMobile.png)
-Expense creation page in mobile version
+*Expense creation page in mobile version*
 
 
 
 ![PiggyBox Balance Mobile](readme_img/Balance_mobile.png)
-Balance displayed in mobile version
+*Balance displayed in mobile version*
 
 
 
