@@ -26,7 +26,7 @@ namespace WildPay.Services
 
                 if (groupToAdd.Image != null && groupToAdd.Image.Length > 0)
                 {
-                    imageInfos = await _cloudinaryService.UploadImageCloudinaryAsync(groupToAdd.Image);
+                    imageInfos = await _cloudinaryService.UploadImageCloudinaryAsync(groupToAdd.Image, false);
                 }
 
                 await _groupRepository.AddGroupAsync(groupToAdd.Name, imageInfos[0], imageInfos[1], userId);
@@ -58,7 +58,7 @@ namespace WildPay.Services
                         await _cloudinaryService.DeleteImageCloudinaryAsync(actualGroup.GroupImagePublicId);
                     }
 
-                    List<string> ImageInfos = await _cloudinaryService.UploadImageCloudinaryAsync(model.Image);
+                    List<string> ImageInfos = await _cloudinaryService.UploadImageCloudinaryAsync(model.Image, false);
 
                     actualGroup.GroupImageUrl = ImageInfos[0];
                     actualGroup.GroupImagePublicId = ImageInfos[1];
