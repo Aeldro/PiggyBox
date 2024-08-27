@@ -1,0 +1,26 @@
+﻿.home-logo {
+    width: 30%;
+    height: auto;
+}
+
+.home-container {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}
+
+.home-element {
+    width: 50%;
+}
+
+@media screen and (max-width: 767px) {
+
+    .home-container {
+        flex-direction: column;
+    }
+
+    .home-element {
+        width: 90%;
+    }
+
+}
