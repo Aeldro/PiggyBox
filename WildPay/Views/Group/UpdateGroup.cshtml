@@ -24,8 +24,7 @@
             <div class="list-group">
                 @foreach (var user in Model.GroupToUpdate.ApplicationUsers)
                 {
-                    @*<a class="list-group-item list-group-item-action list-group-item-danger d-inline-flex justify-content-center" href="@Url.ActionLink("DeleteMemberFromGroup", "Group", new {userId = user.Id, groupId = Model.GroupToUpdate.Id})"><span class="material-symbols-outlined">delete</span> @user.Firstname @user.Lastname</a>*@
-                    <form method="post">
+                     <form method="post">
                         <button class="list-group-item list-group-item-action list-group-item-danger d-inline-flex justify-content-center" 
                                 type="submit" 
                                 asp-action="DeleteMemberFromGroup" 
