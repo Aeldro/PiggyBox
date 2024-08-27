@@ -7,7 +7,6 @@ using WildPay.Interfaces;
 using WildPay.Repositories;
 using WildPay.Services;
 using WildPay.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using WildPay.Repositories.Interfaces;
 

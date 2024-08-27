@@ -17,14 +17,14 @@
 
     <div class="form-floating">
         <div class="custom-file file-form-flex">
-            <label asp-for="@Model.Image" class="control-label"></label>
+            <label asp-for="@Model.Image" class="control-label">Photo du groupe</label>
 
             @if (defaultImage != null)
             {
                 <img id="defaultImage" class="form-img" src="@defaultImage" alt="[Photo du groupe]" />
             }
 
-            <img src="#" id="previewImage" class="form-img display-none" alt="Pré-visualisation de l'image choisie" />
+            <img src="#" id="previewImage" class="form-img display-none" alt="[Pré-visualisation de l'image choisie]" />
             <div id="fileError" class="text-danger display-none"></div>
 
             <input asp-for="@Model.Image" class="custom-file-input" id="customFile" accept=".jpeg, .jpg, .png" />
@@ -32,9 +32,9 @@
         <span asp-validation-for="@Model.Image" class="text-danger"></span>
 
         <div class="less-margin">
-            <button id="delete" class="btn btn-danger delete-button delete-margin" type="submit" asp-page-handler="DeletePicture" onclick="return confirmDelete();">
+            <button id="delete" class="btn btn-danger delete-button delete-margin" type="submit" asp-action="DeleteGroupImage" asp-controller="Group" asp-route-Id="@Model.GroupId" onclick="return confirmDelete();">
                 <span class="material-symbols-outlined">delete</span>
-                Supprimer ma photo de profil
+                Supprimer la photo du groupe
             </button>
         </div>
         

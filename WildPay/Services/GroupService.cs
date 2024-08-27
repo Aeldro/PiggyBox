@@ -49,7 +49,10 @@ namespace WildPay.Services
 
                 if (actualGroup == null) throw new NullException();
 
-                actualGroup.Name = model.Name;
+                Group groupToUpdate = new Group();
+
+                groupToUpdate.Id = model.GroupId;
+                groupToUpdate.Name = model.Name;
 
                 if (model.Image != null && model.Image.Length > 0)
                 {
@@ -60,11 +63,11 @@ namespace WildPay.Services
 
                     List<string> ImageInfos = await _cloudinaryService.UploadImageCloudinaryAsync(model.Image, false);
 
-                    actualGroup.GroupImageUrl = ImageInfos[0];
-                    actualGroup.GroupImagePublicId = ImageInfos[1];
+                    groupToUpdate.GroupImageUrl = ImageInfos[0];
+                    groupToUpdate.GroupImagePublicId = ImageInfos[1];
                 }
 
-                _groupRepository.EditGroupAsync(actualGroup);
+                await _groupRepository.EditGroupAsync(groupToUpdate);
             }
             catch (SqlException)
             {
@@ -74,9 +77,33 @@ namespace WildPay.Services
             {
                 throw new NullException();
             }
-            catch (CloudinaryResponseNotOkException)
+            catch (CloudinaryResponseNotOkException ex)
             {
-                throw new CloudinaryResponseNotOkException("Fail to upload image on cloudinary");
+                throw new CloudinaryResponseNotOkException(ex.Message);
+            }
+        }
+
+        public async Task DeleteGroupImageAsync(Group group)
+        {
+            try
+            {
+                if(!string.IsNullOrEmpty(group.GroupImageUrl))
+                {
+                    await _cloudinaryService.DeleteImageCloudinaryAsync(group.GroupImagePublicId);
+
+                    Group groupToUpdate = new Group();
+
+                    groupToUpdate.Id = group.Id;
+                    groupToUpdate.Name = group.Name;
+                    groupToUpdate.GroupImagePublicId = null;
+                    groupToUpdate.GroupImageUrl = null;
+
+                    await _groupRepository.EditGroupAsync(groupToUpdate);
+                }
+            }
+            catch (CloudinaryResponseNotOkException ex)
+            {
+                throw new CloudinaryResponseNotOkException(ex.Message);
             }
         }
     }

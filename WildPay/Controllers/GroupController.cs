@@ -130,15 +130,15 @@ public class GroupController : Controller
 
             if (!IsMemberAdded)
             {
-                ViewBag.Message = "Pas d'utilisateur trouv� avec cette adresse mail.";
+                ViewBag.Message = "Pas d'utilisateur trouvé avec cette adresse mail.";
             }
             else if (IsMemberAlreadyExisting)
             {
-                ViewBag.Message = "Cet utilisateur appartient d�j� au groupe.";
+                ViewBag.Message = "Cet utilisateur appartient déjà au groupe.";
             }
             else if (!FirstDisplay)
             {
-                ViewBag.Message = "Utilisateur ajout� au groupe avec succ�s.";
+                ViewBag.Message = "Utilisateur ajouté au groupe avec succès.";
             }
 
             return View(updateGroupModel);
@@ -187,7 +187,35 @@ public class GroupController : Controller
 
             await _groupService.EditGroupAsync(modelInfos);
 
-            return RedirectToAction(actionName: "GetGroup", controllerName: "Group", new { modelInfos.GroupId });
+            return RedirectToAction(actionName: "GetGroup", controllerName: "Group", new { Id = modelInfos.GroupId });
+        }
+        catch (DatabaseException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
+        catch (NullException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
+        catch (CloudinaryResponseNotOkException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
+    }
+
+    // Delete the picture of a group
+    [HttpPost]
+    public async Task<IActionResult> DeleteGroupImage(int Id)
+    {
+        try
+        {
+            Group? currentGroup = await _groupRepository.GetGroupByIdAsync(Id);
+
+            if (currentGroup == null) throw new NullException();
+
+            await _groupService.DeleteGroupImageAsync(currentGroup);
+
+            return RedirectToAction(actionName: "UpdateGroup", controllerName: "Group", new { Id = currentGroup.Id });
         }
         catch (DatabaseException ex)
         {
