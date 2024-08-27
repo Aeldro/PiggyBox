@@ -43,7 +43,12 @@
 
                 <hr />
             </div>
-            <a class="btn btn-danger delete-button" href="@Url.ActionLink("DeleteGroup", "Group", new { Id = @Model.GroupToUpdate.Id, viewSender = "UpdateGroup" })"><span class="material-symbols-outlined">delete</span>Supprimer le groupe</a>
+            <form method="post">
+                <button class="btn btn-danger delete-button" type="submit" asp-action="DeleteGroup" asp-controller="Group" asp-route-Id="@Model.GroupToUpdate.Id" onclick="return confirmDelete();">
+                    <span class="material-symbols-outlined">delete</span>
+                    Supprimer le groupe
+                </button>
+            </form>
         </div>
     </div>
 </div>
