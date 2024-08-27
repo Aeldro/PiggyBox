@@ -46,6 +46,11 @@ namespace WildPay.Controllers
             return View();
         }
 
+        public IActionResult CookiesPolicy()
+        {
+            return View();
+        }
+        
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
