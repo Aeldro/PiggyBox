@@ -46,7 +46,7 @@ Balance displayed in mobile version
 Clone the repository:
 
 ```shell script
-git clone [https://github.com/Aeldro/PiggyBox.git]
+git clone https://github.com/Aeldro/PiggyBox.git
 ```
 
 
