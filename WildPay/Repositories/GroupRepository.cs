@@ -59,7 +59,9 @@ namespace WildPay.Repositories
             try
             {
                 Group? groupToUpdate = await GetGroupByIdAsync(groupUpdated.Id);
+
                 if (groupToUpdate == null) throw new NullException();
+
                 groupToUpdate.Name = groupUpdated.Name;
                 groupToUpdate.GroupImageUrl = groupUpdated.GroupImageUrl;
                 groupToUpdate.GroupImagePublicId = groupUpdated.GroupImagePublicId;

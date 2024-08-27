@@ -115,7 +115,7 @@ public class GroupController : Controller
             UpdateGroupModel updateGroupModel = new UpdateGroupModel
             {
                 GroupToUpdate = group,
-                InfosToUpdate = new GroupInfos()
+                InfosToUpdate = new AddGroup()
                 {
                     GroupId = Id,
                     Name = group.Name,
@@ -155,7 +155,7 @@ public class GroupController : Controller
 
     // UPDATE group action
     [HttpPost]
-    public async Task<IActionResult> UpdateGroup(GroupInfos modelInfos)
+    public async Task<IActionResult> UpdateGroup(AddGroup modelInfos)
     {
         try
         {

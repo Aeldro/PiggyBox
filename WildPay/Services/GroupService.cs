@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using WildPay.Exceptions;
+using WildPay.Models.Entities;
 using WildPay.Models.ViewModels;
 using WildPay.Repositories.Interfaces;
 using WildPay.Services.Interfaces;
@@ -40,9 +41,18 @@ namespace WildPay.Services
             }
         }
 
-        public async Task EditGroupAsync()
+        public async Task EditGroupAsync(AddGroup model)
         {
+            Group group = new Group();
 
+            group.Name = model.Name;
+
+            if (model.Image != null && model.Image.Length > 0)
+            {
+
+            }
+
+            _groupRepository.EditGroupAsync(group);
         }
     }
 }

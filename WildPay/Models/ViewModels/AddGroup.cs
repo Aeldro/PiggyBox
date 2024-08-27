@@ -5,6 +5,8 @@ namespace WildPay.Models.ViewModels
 {
     public class AddGroup
     {
+        public int GroupId { get; set; }
+
         [Required(ErrorMessage = "Le champ nom doit contenir au moins un caractère.")]
         [MaxLength(50)]
         public string Name { get; set; } = string.Empty;
