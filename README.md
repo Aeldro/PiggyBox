@@ -29,7 +29,7 @@ Additionally, Piggy Box allows you to organize your expenses by creating categor
 
 
 
-![PiggyBox Balance Mobile](readme_img/Balance_mobile.png)
+![PiggyBox Balance Mobile](readme_img/BalanceMobile.png)
 *Balance displayed in mobile version*
 
 
