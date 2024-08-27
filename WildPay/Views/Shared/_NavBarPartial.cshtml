@@ -16,8 +16,7 @@
 <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark shadow-sm position-fixed top-0 above w-100 bg-main-color-op100">
     <div class="container-fluid">
         <div class="logo-title-container">
-            <img class="nav-logo" src="~/images/piggybox_logo.png" alt="PiggyBox logo" />
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PiggyBox</a>
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img class="nav-logo" src="~/images/piggybox_logo.png" alt="PiggyBox logo" />PiggyBox</a>
         </div>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                 aria-expanded="false" aria-label="Toggle navigation">
@@ -27,9 +26,6 @@
             <ul class="navbar-nav flex-grow-1 justify-content-end">
                 @if (SignInManager.IsSignedIn(User))
                 {
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Accueil</a>
-                    </li>
                     <li class="nav-item">
                         <a id="manage" class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
                             @if (currentUser?.ImageUrl != null)
@@ -55,9 +51,6 @@
                 else
 
                 {
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Accueil</a>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link" id="register" asp-area="Identity" asp-page="/Account/Register">S'inscrire</a>
                     </li>

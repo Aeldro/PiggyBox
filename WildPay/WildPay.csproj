@@ -29,4 +29,8 @@
     <Compile Remove="Views\Expenditure\AddExpenditure.cshtml.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\css\home.css" />
+  </ItemGroup>
+
 </Project>
