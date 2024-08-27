@@ -18,8 +18,9 @@ By creating an account in Piggy Box, users can create groups, track expenses, an
 
 Additionally, Piggy Box allows you to organize your expenses by creating categories within your groups, ensuring that your finances are well-structured and easy to manage.
 
+![PiggyBox_Home](readme_img/HomeDesktop.png)
 
-#### Contributors
+### Contributors
 
 - [Helena](https://github.com/lena-my)
 - [Nolan](https://github.com/Aeldro)
@@ -35,7 +36,7 @@ Additionally, Piggy Box allows you to organize your expenses by creating categor
 
 #### Installation
 
-1. Clone the repository:
+Clone the repository:
 
 ```shell script
 git clone [https://github.com/Aeldro/PiggyBox.git]
