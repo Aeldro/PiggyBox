@@ -269,32 +269,7 @@ public class ExpenditureController : Controller
             return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
         }
     }
-
-    // DELETE
-    [HttpGet]
-    public async Task<IActionResult> DeleteExpenditure(int Id)
-    {
-        try
-        {
-            Expenditure expenditureToRemove = await _expenditureService.GetExpenditureById(Id);
-            Group? group = await _groupRepository.GetGroupByIdAsync(expenditureToRemove.GroupId);
-
-            //Verify if the User belongs to the group, else we block the access
-            bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), group);
-            if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
-
-            return View(expenditureToRemove);
-        }
-        catch (DatabaseException ex)
-        {
-            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
-        }
-        catch (NullException ex)
-        {
-            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
-        }
-    }
-
+    
     // DELETE
     [HttpPost]
     public async Task<IActionResult> DeleteExpenditure(Expenditure expenditure)

@@ -113,29 +113,7 @@ namespace WildPay.Controllers
                 return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
             }
         }
-
-        [HttpGet]
-        public async Task<IActionResult> DeleteCategory(int id)
-        {
-            try
-            {
-                var category = await _categoryRepository.GetCategoryByIdAsync(id);
-                if (category == null)
-                {
-                    return NotFound();
-                }
-                return View(category);
-            }
-            catch (DatabaseException ex)
-            {
-                return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
-            }
-            catch (NullException ex)
-            {
-                return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
-            }
-        }
-
+        
         [HttpPost]
         public async Task<IActionResult> DeleteCategory(int Id, Category category)
         {
