@@ -10,7 +10,8 @@
 }
 
 .home-element {
-    width: 50%;
+    width: 60%;
+    padding: 10%;
 }
 
 @media screen and (max-width: 767px) {
@@ -20,7 +21,7 @@
     }
 
     .home-element {
-        width: 90%;
+        width: 100%;
     }
 
 }
