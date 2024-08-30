@@ -2,7 +2,15 @@
 
 <h2 class="d-inline-flex gap-3 align-items-center justify-content-center">
     <partial name="_BackButtonPartial" />
-    
-    Groupe : @Model.Name
+
+    @if (Model.GroupImageUrl != null)
+    {
+        <img src=@Model.GroupImageUrl alt="Photo de groupe" class="large-group-image" />
+    }
+    else
+    {
+        <img src="~/images/users_image.png" alt="Photo de groupe" class="large-group-image" />
+    }
+    @Model.Name
     <a class="group-settings-button material-symbols-outlined" href="@Url.ActionLink("UpdateGroup", "Group", new {Id = Model.Id })">edit</a>
 </h2>

@@ -2,6 +2,8 @@
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
 * text=auto
+*.cs text working-tree-encoding=UTF-8
+*.cshtml text working-tree-encoding=UTF-8
 
 ###############################################################################
 # Set default behavior for command prompt diff.
