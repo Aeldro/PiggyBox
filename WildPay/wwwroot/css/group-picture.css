@@ -1,5 +1,15 @@
 ﻿.small-group-image {
     border-radius: 50%;
     max-width: 3em;
+    height: 3em;
+    object-fit:cover;
     margin-right: 1em;
+}
+
+.large-group-image {
+    border-radius: 50%;
+    max-width: 1.8em;
+    height: 1.8em;
+    object-fit: cover;
+    margin-left: 0.5em;
 }
