@@ -1,4 +1,14 @@
-﻿.nav-link {
+﻿img.nav-logo {
+    max-width: 2.4em;
+    height: auto;
+}
+
+.logo-title-container {
+    max-width: fit-content;
+    max-height: fit-content;
+}
+
+.nav-link {
     color: var(--main-color-op80);
 }
 

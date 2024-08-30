@@ -6,7 +6,7 @@ namespace WildPay.Models.Entities
     {
         public int Id { get; set; }
 
-        [Required (ErrorMessage= "Le champ nom doit contenir au moins un caractère.")]
+        [Required(ErrorMessage = "Le champ nom doit contenir au moins un caractère.")]
         [MaxLength(35)]
         public string Name { get; set; } = string.Empty;
         public int GroupId { get; set; }

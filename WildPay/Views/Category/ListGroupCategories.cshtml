@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = "Catégories " + Model.Name;
-    
+
     ViewData["ReturnPageAction"] = "ListMyGroups";
     ViewData["ReturnPageController"] = "Group";
 }
@@ -20,20 +20,27 @@
                 <div class="card">
 
                     <div class="card-body">
-                        <h3><a class="btn btn-outline-success material-symbols-outlined" asp-action="AddCategory" asp-controller="Category" asp-route-Id=@Model.Id>add</a> Catégories :</h3>
+                        <h3><a class="btn plus-button material-symbols-outlined" asp-action="AddCategory" asp-controller="Category" asp-route-Id=@Model.Id>add</a> Catégories :</h3>
                         @if (Model is not null && Model.Categories.Count != 0)
                         {
                             foreach (Category category in Model.Categories)
                             {
                                 <hr />
                                 <h5 class="card-title">
-                                <a class="group-settings-button material-symbols-outlined" asp-action="UpdateCategory" asp-controller="Category" asp-route-id=@category.Id>edit</a>@category.Name</h5>
-                                <a class="btn btn-outline-danger material-symbols-outlined" asp-action="DeleteCategory" asp-controller="Category" asp-route-Id=@category.Id>delete</a>
+                                    <a class="group-settings-button material-symbols-outlined" href="@Url.ActionLink("UpdateCategory", "Category", new {groupId = Model.Id, categoryId = category.Id})">edit</a>@category.Name
+                                </h5>
+                                <form method="post">
+                                    <button class="btn btn-danger delete-button" type="submit" asp-action="DeleteCategory" asp-controller="Category" asp-route-Id=@category.Id onclick="return confirmDelete();">
+                                        <span class="material-symbols-outlined">delete</span>
+                                        Supprimer la catégorie
+                                    </button>
+                                </form>
                             }
                         }
                         else
                         {
                             <p class="card-text">Ce groupe ne contient aucune catégorie.</p>
+                            <a class="btn btn-lg main-button" asp-action="AddCategory" asp-controller="Category" asp-route-Id=@Model.Id>Créer une catégorie</a>
                         }
                     </div>
                 </div>
@@ -41,3 +48,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script type="text/javascript" src="~/js/confirmDeletion.js"></script>
+}

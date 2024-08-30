@@ -18,7 +18,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using WildPay.Helpers;
 using WildPay.Models.Entities;
+using WildPay.Services.Interfaces;
 
 namespace WildPay.Areas.Identity.Pages.Account
 {
@@ -30,13 +32,15 @@ namespace WildPay.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ICloudinaryService _cloudinaryService;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ICloudinaryService cloudinaryService)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -44,6 +48,7 @@ namespace WildPay.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _cloudinaryService = cloudinaryService;
         }
 
         /// <summary>
@@ -90,6 +95,12 @@ namespace WildPay.Areas.Identity.Pages.Account
             [Display(Name = "Nom de famille")]
             public string Lastname { get; set; }
 
+            [Display(Name = "Choisissez une photo de profil"),]
+            //[Required(ErrorMessage = "Vous devez ajouter une photo de profil")]
+            [AllowedExtensions(new string[] { ".jpg", ".jpeg", ".png" })]
+            [MaxFileSize(2 * 1024 * 1024)]
+            public IFormFile Image { get; set; }
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -129,6 +140,24 @@ namespace WildPay.Areas.Identity.Pages.Account
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 user.Firstname = Input.Firstname;
                 user.Lastname = Input.Lastname;
+
+                if (Input.Image != null && Input.Image.Length > 0)
+                {
+                    try
+                    {
+                        List<string> ImageInfos = await _cloudinaryService.UploadImageCloudinaryAsync(Input.Image);
+                        user.ImageUrl = ImageInfos[0];
+                        user.ImagePublicID = ImageInfos[1];
+                    }
+                    catch (Exception cloudinaryException)
+                    {
+                        _logger.LogInformation(cloudinaryException.Message);
+                        user.ImageUrl = null;
+                        user.ImagePublicID = null;
+                    }
+                }
+
+                // user.Image = Input.Image.Filename (non car passage par Cloudinary)
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
@@ -144,8 +173,9 @@ namespace WildPay.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Validez votre adresse email",
-                        $"<a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Cliquez ici</a> pour valider votre adresse email");
+                    string emailTitle = $"🐷 PiggyBox : Validez votre adresse email";
+                    string emailContent = $"<h1>🐷 Bienvenue sur PiggyBox 🐷</h1><h3>Vous venez de créer un compte sur PiggyBox. Avant de pouvoir vous connecter, vous devez confirmer votre adresse email.</h3><a style=\"display: inline-block; font-weight: 400; text-align: center; vertical-align: middle; user-select: none; border: 1px solid transparent; line-height: 1.5; transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; cursor: pointer; text-decoration: none; padding: 0.5rem 1rem; font-size: 1.25rem; line-height: 1.5; border-radius: 0.3rem; background-color: rgba(74, 163, 162, 1); color: rgba(245, 245, 245); border-color: rgba(74, 163, 162, 1); margin-top: 1em;\" href=\"{HtmlEncoder.Default.Encode(callbackUrl)}\">Je confirme mon adresse email</a>";
+                    await _emailSender.SendEmailAsync(Input.Email, emailTitle, emailContent);
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

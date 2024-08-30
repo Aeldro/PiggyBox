@@ -1,8 +1,54 @@
-﻿@{
+﻿@model List<WildPay.Models.Entities.Group>
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="m-auto">
+        <h1 class="text-center">Bonjour, @ViewBag.Firstname !</h1>
+        <div class="home-container">
+            <img class="home-logo d-block mx-auto" src="~/images/piggybox_logo.png" alt="logo de Piggybox" />
+            <div class="home-element">
+                <h5>
+                    Mes groupes :
+                </h5>
+
+                @if (Model.Count > 0)
+                {
+                    <div class="list-group">
+                        @foreach (var group in Model)
+                        {
+                            <a class="list-group-item bg-main-color-op80 list-element" href="@Url.ActionLink("GetGroup", "Group", new {Id = group.Id })">@group.Name</a>
+                        }
+                        <a class="btn btn-lg main-button" asp-action="AddGroup" asp-controller="Group">Créer un groupe</a>
+                    </div>
+                }
+                else
+                {
+                    <p>Vous ne faites partie d'aucun groupe.</p>
+                    <a class="btn btn-lg main-button" asp-action="AddGroup" asp-controller="Group">Créer un groupe</a>
+                }
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="m-auto">
+        <h1 class="text-center">Bienvenue sur PiggyBox !</h1>
+        <div class="home-container">
+            <img class="home-logo d-block mx-auto" src="~/images/piggybox_logo.png" alt="logo de Piggybox" />
+            <div class="home-element">
+                <hr />
+                <p>Besoin de partager des dépenses avec votre groupe d'amis? Que ce soit pour un voyage, des vacances ou une simple soirée, Piggybox vous offre la possibilité de vous répartir automatiquement le montant de votre sortie.</p>
+                <p>Créez un groupe, invitez-y vos amis et ajoutez une dépense en renseignant les personnes qui doivent y participer. Derrière, Piggybox effectue le calcul pour vous et vous indique qui doit quoi à qui.</p>
+                <div>
+                    <a class="btn btn-lg main-button m-2" asp-area="Identity" asp-page="/Account/Register">S'inscrire</a>
+                    <a class="btn btn-lg main-button m-2" asp-area="Identity" asp-page="/Account/Login">Se connecter</a>
+                </div>
+                <hr />
+            </div>
+        </div>
+    </div>
+}

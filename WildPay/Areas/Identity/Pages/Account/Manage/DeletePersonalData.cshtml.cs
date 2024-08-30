@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using WildPay.Models.Entities;
+using WildPay.Services.Interfaces;
 
 namespace WildPay.Areas.Identity.Pages.Account.Manage
 {
@@ -18,15 +19,18 @@ namespace WildPay.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<DeletePersonalDataModel> _logger;
+        private readonly ICloudinaryService _cloudinaryService;
 
         public DeletePersonalDataModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ILogger<DeletePersonalDataModel> logger)
+            ILogger<DeletePersonalDataModel> logger,
+            ICloudinaryService cloudinaryService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _cloudinaryService = cloudinaryService;
         }
 
         /// <summary>
@@ -86,6 +90,16 @@ namespace WildPay.Areas.Identity.Pages.Account.Manage
                     ModelState.AddModelError(string.Empty, "Mot de passe incorrect.");
                     return Page();
                 }
+            }
+
+            // delete the profile picture on Cloudinary
+            try
+            {
+                await _cloudinaryService.DeleteImageCloudinaryAsync(user.ImagePublicID);
+            }
+            catch (Exception cloudinaryException)
+            {
+                _logger.LogInformation(cloudinaryException.Message);
             }
 
             var result = await _userManager.DeleteAsync(user);

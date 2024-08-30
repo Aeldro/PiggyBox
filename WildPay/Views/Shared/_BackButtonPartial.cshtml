@@ -1,0 +1,7 @@
+﻿@{
+    var action = ViewData["ReturnPageAction"] as string;
+    var controller = ViewData["ReturnPageController"] as string;
+    var id = ViewData["ReturnId"] as int?;
+}
+
+<a class="back-button group-settings-button material-symbols-outlined" asp-action="@action" asp-controller="@controller" asp-route-Id="@id">arrow_back</a>

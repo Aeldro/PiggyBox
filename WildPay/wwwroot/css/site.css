@@ -5,6 +5,9 @@
 @import "list.css";
 @import "checkboxes.css";
 @import "alerts.css";
+@import "form.css";
+@import "profile-picture.css";
+@import "home.css";
 
 :root {
     --main-color-op100: rgba(74, 163, 162, 1);
@@ -52,7 +55,7 @@ html {
 }
 
 body {
-    margin-bottom: 60px;
+    margin-bottom: 50px;
 }
 
 .above {

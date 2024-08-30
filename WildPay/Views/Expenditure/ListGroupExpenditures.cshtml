@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = "Dépenses " + Model.Name;
-    
+
     ViewData["ReturnPageAction"] = "ListMyGroups";
     ViewData["ReturnPageController"] = "Group";
 }
@@ -17,17 +17,33 @@
             <section>
                 <div class="card">
                     <h5 class="card-header">
-                        <a class="btn btn-outline-success material-symbols-outlined" asp-action="AddExpenditure" asp-controller="Expenditure" asp-route-id=@Model.Id>add</a> Dépenses :
+                        <a class="btn plus-button material-symbols-outlined" asp-action="AddExpenditure" asp-controller="Expenditure" asp-route-id=@Model.Id>add</a> Dépenses :
                     </h5>
                     @if (Model is not null && Model.Expenditures.Count != 0)
                     {
-                        foreach (Expenditure expenditure in Model.Expenditures)
+                        foreach (Expenditure expenditure in Model.Expenditures.OrderByDescending(e => e.Date))
                         {
                             <div class="card-body">
-                                <h5 class="card-title"><a class="group-settings-button material-symbols-outlined" href="@Url.ActionLink("UpdateExpenditure", "Expenditure", new {groupId = Model.Id, expenditureId = expenditure.Id})">edit</a> @expenditure.Name - @expenditure.Amount.ToString("F2")€</h5>
+                                <h5 class="card-title"><a class="group-settings-button material-symbols-outlined" href="@Url.ActionLink("UpdateExpenditure", "Expenditure", new {groupId = Model.Id, expenditureId = expenditure.Id})">edit</a> @expenditure.Amount.ToString("F2")€</h5>
+                                <h5 class="card-text">@expenditure.Name</h5>
+                                @if (expenditure.Category is not null)
+                                {
+                                    <h6>@expenditure.Category.Name</h6>
+                                }
                                 @if (expenditure.Payer is not null)
                                 {
-                                    <p class="card-text">@expenditure.Amount.ToString("F2")€ payé par @expenditure.Payer.Firstname @expenditure.Payer.Lastname.</p>
+                                    <p class="card-text">
+                                        @expenditure.Amount.ToString("F2")€ payé par
+                                        @if (expenditure.Payer.ImageUrl != null)
+                                        {
+                                            <img src=@expenditure.Payer.ImageUrl alt="photo de profil" class="small-profile-image" />
+                                        }
+                                        else
+                                        {
+                                            <img src="~/images/user_image.png" alt="photo de profil" class="small-profile-image" />
+                                        }
+                                        @expenditure.Payer.Firstname @expenditure.Payer.Lastname.
+                                    </p>
                                 }
                                 else
                                 {
@@ -39,7 +55,9 @@
                     }
                     else
                     {
-                        <p>Ce groupe ne contient aucune dépense.</p>
+                        <div class="card-body">
+                            <p class="card-text">Ce groupe ne contient aucune dépense.</p>
+                        </div>
                     }
                 </div>
             </section>

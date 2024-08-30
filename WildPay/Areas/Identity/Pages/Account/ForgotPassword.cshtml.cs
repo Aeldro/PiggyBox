@@ -71,10 +71,12 @@ namespace WildPay.Areas.Identity.Pages.Account
                     values: new { area = "Identity", code },
                     protocol: Request.Scheme);
 
+                string emailTitle = $"🐷 PiggyBox : Réinitialisez votre mot de passe";
+                string emailContent = $"<h1>🐷 J'ai oublié mon mot de passe 🐷</h1><h3>Vous avez effectué une demande de réinitialisation de votre mot de passe sur PiggyBox. Si vous n'êtes pas à l'origine de cette demande, veuillez ignorer cet email. Si vous êtes à l'origine de cette demande, cliquez sur le bouton ci-dessous.</h3><a style=\"display: inline-block; font-weight: 400; text-align: center; vertical-align: middle; user-select: none; border: 1px solid transparent; line-height: 1.5; transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; cursor: pointer; text-decoration: none; padding: 0.5rem 1rem; font-size: 1.25rem; line-height: 1.5; border-radius: 0.3rem; background-color: rgba(74, 163, 162, 1); color: rgba(245, 245, 245); border-color: rgba(74, 163, 162, 1); margin-top: 1em;\" href=\"{HtmlEncoder.Default.Encode(callbackUrl)}\">Je réinitialise mon mot de passe</a>";
                 await _emailSender.SendEmailAsync(
                     Input.Email,
-                    "Réinitialisation du mot de passe",
-                    $"<a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Cliquez ici</a> pour réinitialiser votre mot de passe.");
+                    emailTitle,
+                    emailContent);
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }
