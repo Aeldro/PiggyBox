@@ -11,11 +11,13 @@ namespace WildPay.Services
     {
         public readonly IGroupRepository _groupRepository;
         private readonly ICloudinaryService _cloudinaryService;
+        private readonly ILogger<IGroupService> _logger;
 
-        public GroupService(IGroupRepository groupRepository, ICloudinaryService cloudinaryService)
+        public GroupService(IGroupRepository groupRepository, ICloudinaryService cloudinaryService, ILogger<IGroupService> logger)
         {
             _groupRepository = groupRepository;
             _cloudinaryService = cloudinaryService;
+            _logger = logger;
         }
 
         public async Task AddGroupAsync(AddGroup groupToAdd, string userId)
@@ -26,7 +28,14 @@ namespace WildPay.Services
 
                 if (groupToAdd.Image != null && groupToAdd.Image.Length > 0)
                 {
-                    imageInfos = await _cloudinaryService.UploadImageCloudinaryAsync(groupToAdd.Image, false);
+                    try
+                    {
+                        imageInfos = await _cloudinaryService.UploadImageCloudinaryAsync(groupToAdd.Image, false);
+                    }
+                    catch (CloudinaryResponseNotOkException ex)
+                    {
+                        _logger.LogInformation(ex.Message);
+                    }
                 }
 
                 await _groupRepository.AddGroupAsync(groupToAdd.Name, imageInfos[0], imageInfos[1], userId);
@@ -34,10 +43,6 @@ namespace WildPay.Services
             catch (SqlException)
             {
                 throw new DatabaseException();
-            }
-            catch (CloudinaryResponseNotOkException)
-            {
-                throw new CloudinaryResponseNotOkException("Fail to upload image on cloudinary");
             }
         }
 
@@ -58,13 +63,32 @@ namespace WildPay.Services
                 {
                     if (!string.IsNullOrEmpty(actualGroup.GroupImageUrl))
                     {
-                        await _cloudinaryService.DeleteImageCloudinaryAsync(actualGroup.GroupImagePublicId);
+                        try
+                        {
+                            await _cloudinaryService.DeleteImageCloudinaryAsync(actualGroup.GroupImagePublicId);
+                        }
+                        catch (CloudinaryResponseNotOkException ex)
+                        {
+                            _logger.LogInformation(ex.Message);
+                        }
                     }
 
-                    List<string> ImageInfos = await _cloudinaryService.UploadImageCloudinaryAsync(model.Image, false);
+                    try
+                    {
+                        List<string> ImageInfos = await _cloudinaryService.UploadImageCloudinaryAsync(model.Image, false);
+                        groupToUpdate.GroupImageUrl = ImageInfos[0];
+                        groupToUpdate.GroupImagePublicId = ImageInfos[1];
+                    }
+                    catch (CloudinaryResponseNotOkException ex)
+                    {
+                        _logger.LogInformation(ex.Message);
+                    }
+                }
 
-                    groupToUpdate.GroupImageUrl = ImageInfos[0];
-                    groupToUpdate.GroupImagePublicId = ImageInfos[1];
+                if (model.Image == null && actualGroup.GroupImageUrl != null)
+                {
+                    groupToUpdate.GroupImageUrl = actualGroup.GroupImageUrl;
+                    groupToUpdate.GroupImagePublicId = actualGroup.GroupImageUrl;
                 }
 
                 await _groupRepository.EditGroupAsync(groupToUpdate);
@@ -77,33 +101,29 @@ namespace WildPay.Services
             {
                 throw new NullException();
             }
-            catch (CloudinaryResponseNotOkException ex)
-            {
-                throw new CloudinaryResponseNotOkException(ex.Message);
-            }
         }
 
         public async Task DeleteGroupImageAsync(Group group)
         {
-            try
+            if (!string.IsNullOrEmpty(group.GroupImageUrl))
             {
-                if(!string.IsNullOrEmpty(group.GroupImageUrl))
+                try
                 {
                     await _cloudinaryService.DeleteImageCloudinaryAsync(group.GroupImagePublicId);
-
-                    Group groupToUpdate = new Group();
-
-                    groupToUpdate.Id = group.Id;
-                    groupToUpdate.Name = group.Name;
-                    groupToUpdate.GroupImagePublicId = null;
-                    groupToUpdate.GroupImageUrl = null;
-
-                    await _groupRepository.EditGroupAsync(groupToUpdate);
                 }
-            }
-            catch (CloudinaryResponseNotOkException ex)
-            {
-                throw new CloudinaryResponseNotOkException(ex.Message);
+                catch (CloudinaryResponseNotOkException ex)
+                {
+                    _logger.LogInformation(ex.Message);
+                }
+
+                Group groupToUpdate = new Group();
+
+                groupToUpdate.Id = group.Id;
+                groupToUpdate.Name = group.Name;
+                groupToUpdate.GroupImagePublicId = null;
+                groupToUpdate.GroupImageUrl = null;
+
+                await _groupRepository.EditGroupAsync(groupToUpdate);
             }
         }
     }
