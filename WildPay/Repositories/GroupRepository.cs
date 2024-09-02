@@ -28,7 +28,7 @@ namespace WildPay.Repositories
                 .ToListAsync();
                 return groups;
             }
-            catch (SqlException sqlEx)
+            catch (SqlException)
             {
                 throw new DatabaseException();
             }
@@ -47,7 +47,7 @@ namespace WildPay.Repositories
                 if (group == null) throw new NullException();
                 return group;
             }
-            catch (SqlException sqlEx)
+            catch (SqlException)
             {
                 throw new DatabaseException();
             }
@@ -59,13 +59,16 @@ namespace WildPay.Repositories
             try
             {
                 Group? groupToUpdate = await GetGroupByIdAsync(groupUpdated.Id);
+
                 if (groupToUpdate == null) throw new NullException();
+
                 groupToUpdate.Name = groupUpdated.Name;
-                groupToUpdate.Image = groupUpdated.Image;
+                groupToUpdate.GroupImageUrl = groupUpdated.GroupImageUrl;
+                groupToUpdate.GroupImagePublicId = groupUpdated.GroupImagePublicId;
 
                 await _context.SaveChangesAsync();
             }
-            catch (SqlException sqlEx)
+            catch (SqlException)
             {
                 throw new DatabaseException();
             }
@@ -73,14 +76,15 @@ namespace WildPay.Repositories
 
         // Add a new group to the entity table
         // + call the method to add the user to the group
-        public async Task AddGroupAsync(string name, string image, string userId)
+        public async Task AddGroupAsync(string name, string imageUrl, string imagePublicId, string userId)
         {
             try
             {
                 Group newGroup = new Group()
                 {
                     Name = name,
-                    Image = image
+                    GroupImageUrl = imageUrl,
+                    GroupImagePublicId = imagePublicId
                 };
 
                 await _context.Groups.AddAsync(newGroup);
@@ -92,7 +96,7 @@ namespace WildPay.Repositories
                 // == new record into the join table ApplicationUserGroups
                 await AddMemberToGroupAsync(newGroup, user.NormalizedEmail);
             }
-            catch (SqlException sqlEx)
+            catch (SqlException)
             {
                 throw new DatabaseException();
             }
@@ -121,7 +125,7 @@ namespace WildPay.Repositories
 
                 return true;
             }
-            catch (SqlException sqlEx)
+            catch (SqlException)
             {
                 throw new DatabaseException();
             }
@@ -156,7 +160,7 @@ namespace WildPay.Repositories
                     await _context.SaveChangesAsync();
                 }
             }
-            catch (SqlException sqlEx)
+            catch (SqlException)
             {
                 throw new DatabaseException();
             }
@@ -178,7 +182,7 @@ namespace WildPay.Repositories
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch (SqlException sqlEx)
+            catch (SqlException)
             {
                 throw new DatabaseException();
             }

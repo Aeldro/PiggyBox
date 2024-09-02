@@ -16,12 +16,14 @@ public class GroupController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IGroupRepository _groupRepository;
     private readonly IVerificationService _verificationService;
+    private readonly IGroupService _groupService;
 
-    public GroupController(UserManager<ApplicationUser> userManager, IGroupRepository groupRepository, IVerificationService verificationService)
+    public GroupController(UserManager<ApplicationUser> userManager, IGroupRepository groupRepository, IGroupService groupService, IVerificationService verificationService)
     {
         _userManager = userManager;
         _groupRepository = groupRepository;
         _verificationService = verificationService;
+        _groupService = groupService;
     }
 
     // READ: get all the groups for the connected user
@@ -75,20 +77,24 @@ public class GroupController : Controller
 
     // CREATE group action
     [HttpPost]
-    public async Task<IActionResult> AddGroup(Group group)
+    public async Task<IActionResult> AddGroup(AddGroup groupToAdd)
     {
         try
         {
-            if (!ModelState.IsValid) return View(group);
+            if (!ModelState.IsValid) return View();
 
             string? userId = _userManager.GetUserId(User);
             if (userId is null) return NotFound();
 
-            await _groupRepository.AddGroupAsync(group.Name, group.Image, userId);
+            await _groupService.AddGroupAsync(groupToAdd, userId);
 
             return RedirectToAction(actionName: "ListMyGroups", controllerName: "Group");
         }
         catch (DatabaseException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
+        catch (CloudinaryResponseNotOkException ex)
         {
             return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
         }
@@ -109,6 +115,12 @@ public class GroupController : Controller
             UpdateGroupModel updateGroupModel = new UpdateGroupModel
             {
                 GroupToUpdate = group,
+                InfosToUpdate = new AddGroup()
+                {
+                    GroupId = Id,
+                    Name = group.Name,
+                    Image = null
+                },
                 NewMember = new MemberAdded()
                 {
                     GroupId = Id,
@@ -118,15 +130,15 @@ public class GroupController : Controller
 
             if (!IsMemberAdded)
             {
-                ViewBag.Message = "Pas d'utilisateur trouv� avec cette adresse mail.";
+                ViewBag.Message = "Pas d'utilisateur trouvé avec cette adresse mail.";
             }
             else if (IsMemberAlreadyExisting)
             {
-                ViewBag.Message = "Cet utilisateur appartient d�j� au groupe.";
+                ViewBag.Message = "Cet utilisateur appartient déjà au groupe.";
             }
             else if (!FirstDisplay)
             {
-                ViewBag.Message = "Utilisateur ajout� au groupe avec succ�s.";
+                ViewBag.Message = "Utilisateur ajouté au groupe avec succès.";
             }
 
             return View(updateGroupModel);
@@ -143,26 +155,29 @@ public class GroupController : Controller
 
     // UPDATE group action
     [HttpPost]
-    public async Task<IActionResult> UpdateGroup(Group group)
+    public async Task<IActionResult> UpdateGroup(AddGroup modelInfos)
     {
         try
         {
-            Group? currentGroup = await _groupRepository.GetGroupByIdAsync(group.Id);
+            if (modelInfos == null) throw new NullException();
 
-            //Verify if the User belongs to the group, else we block the access
+            Group? currentGroup = await _groupRepository.GetGroupByIdAsync(modelInfos.GroupId);
+
+            if (currentGroup == null) throw new NullException();
+
+            // Verify if the User belongs to the group, else we block the access
             bool isUserFromGroup = _verificationService.IsUserBelongsToGroup(_userManager.GetUserId(User), currentGroup);
             if (!isUserFromGroup) return RedirectToAction(actionName: "Index", controllerName: "Home");
 
             if (!ModelState.IsValid)
             {
-                Group? invalidGroup = await _groupRepository.GetGroupByIdAsync(group.Id);
-
                 UpdateGroupModel updateGroupModel = new UpdateGroupModel
                 {
-                    GroupToUpdate = invalidGroup,
+                    GroupToUpdate = currentGroup,
+                    InfosToUpdate = modelInfos,
                     NewMember = new MemberAdded()
                     {
-                        GroupId = invalidGroup.Id,
+                        GroupId = currentGroup.Id,
                         Email = ""
                     }
                 };
@@ -170,22 +185,47 @@ public class GroupController : Controller
                 return View(updateGroupModel);
             }
 
-            if (group is null) return NotFound();
+            await _groupService.EditGroupAsync(modelInfos);
 
-            if (group.Image is null)
-            {
-                group.Image = string.Empty;
-            }
-
-            await _groupRepository.EditGroupAsync(group);
-
-            return RedirectToAction(actionName: "GetGroup", controllerName: "Group", new { group.Id });
+            return RedirectToAction(actionName: "GetGroup", controllerName: "Group", new { Id = modelInfos.GroupId });
         }
         catch (DatabaseException ex)
         {
             return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
         }
         catch (NullException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
+        catch (CloudinaryResponseNotOkException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
+    }
+
+    // Delete the picture of a group
+    [HttpPost]
+    public async Task<IActionResult> DeleteGroupImage(int Id)
+    {
+        try
+        {
+            Group? currentGroup = await _groupRepository.GetGroupByIdAsync(Id);
+
+            if (currentGroup == null) throw new NullException();
+
+            await _groupService.DeleteGroupImageAsync(currentGroup);
+
+            return RedirectToAction(actionName: "UpdateGroup", controllerName: "Group", new { Id = currentGroup.Id });
+        }
+        catch (DatabaseException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
+        catch (NullException ex)
+        {
+            return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
+        }
+        catch (CloudinaryResponseNotOkException ex)
         {
             return RedirectToAction(actionName: "Exception", controllerName: "Home", new { message = ex.Message });
         }

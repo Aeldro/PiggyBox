@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using WildPay.Exceptions;
 using WildPay.Helpers;
 using WildPay.Models.Entities;
 using WildPay.Services.Interfaces;
@@ -161,7 +162,7 @@ namespace WildPay.Areas.Identity.Pages.Account.Manage
                     {
                         await _cloudinaryService.DeleteImageCloudinaryAsync(user.ImagePublicID);
                     }
-                    catch (Exception cloudinaryException)
+                    catch (CloudinaryResponseNotOkException cloudinaryException)
                     {
                         _logger.LogInformation(cloudinaryException.Message);
                     }
@@ -173,7 +174,7 @@ namespace WildPay.Areas.Identity.Pages.Account.Manage
                     user.ImageUrl = ImageInfos[0];
                     user.ImagePublicID = ImageInfos[1];
                 }
-                catch (Exception cloudinaryException)
+                catch (CloudinaryResponseNotOkException cloudinaryException)
                 {
                     _logger.LogInformation(cloudinaryException.Message);
                 }
@@ -199,7 +200,7 @@ namespace WildPay.Areas.Identity.Pages.Account.Manage
                     user.ImagePublicID = null;
                 }
             }
-            catch (Exception cloudinaryException)
+            catch (CloudinaryResponseNotOkException cloudinaryException)
             {
                 _logger.LogInformation(cloudinaryException.Message);
             }
