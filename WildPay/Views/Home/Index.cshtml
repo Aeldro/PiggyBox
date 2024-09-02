@@ -19,7 +19,17 @@
                     <div class="list-group">
                         @foreach (var group in Model)
                         {
-                            <a class="list-group-item bg-main-color-op80 list-element" href="@Url.ActionLink("GetGroup", "Group", new {Id = group.Id })">@group.Name</a>
+                            <a class="list-group-item bg-main-color-op80 list-element" href="@Url.ActionLink("GetGroup", "Group", new {Id = group.Id })">
+                                @if (group.GroupImageUrl != null)
+                                {
+                                    <img src=@group.GroupImageUrl alt="Photo de groupe" class="small-group-image" />
+                                }
+                                else
+                                {
+                                    <img src="~/images/users_image.png" alt="Photo de groupe" class="small-group-image" />
+                                }
+                                @group.Name
+                            </a>
                         }
                         <a class="btn btn-lg main-button" asp-action="AddGroup" asp-controller="Group">Créer un groupe</a>
                     </div>

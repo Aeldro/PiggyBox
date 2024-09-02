@@ -1,7 +1,4 @@
-﻿//import { IsTypeValid } from "./imagePreview.js";
-//import { IsSizeValid } from "./imagePreview.js";
-
-function setupChangeDetection(formId, buttonId) {
+﻿function setupChangeDetection(formId, buttonId) {
     let form = document.getElementById(formId);
     let button = document.getElementById(buttonId);
     let initialValues = {};
