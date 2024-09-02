@@ -204,7 +204,7 @@ public class GroupController : Controller
     }
 
     // Delete the picture of a group
-    [HttpPost]
+    [HttpGet]
     public async Task<IActionResult> DeleteGroupImage(int Id)
     {
         try
