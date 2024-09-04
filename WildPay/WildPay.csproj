@@ -33,8 +33,4 @@
     <_ContentIncludedByDefault Remove="wwwroot\css\home.css" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="readme_img\" />
-  </ItemGroup>
-
 </Project>
